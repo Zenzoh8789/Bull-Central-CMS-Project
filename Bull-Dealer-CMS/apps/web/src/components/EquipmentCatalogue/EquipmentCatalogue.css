@@ -1,0 +1,9 @@
+.api-message {
+  padding: 25px;
+  text-align: center;
+}
+.api-message button {
+  background: var(--yellow);
+  border: 0;
+  padding: 8px 16px;
+}

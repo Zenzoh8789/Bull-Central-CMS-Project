@@ -1,0 +1,35 @@
+.enquiry-form label {
+  display: grid;
+  gap: 7px;
+  margin: 0 0 18px;
+}
+.enquiry-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 18px;
+}
+.enquiry-form input,
+.enquiry-form select,
+.enquiry-form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 0;
+  background: #fff;
+  color: #222;
+  font: inherit;
+}
+.enquiry-form .consent {
+  display: flex;
+  align-items: flex-start;
+  font-size: 14px;
+}
+.enquiry-form .consent input {
+  width: auto;
+  margin-top: 4px;
+}
+@media (max-width: 600px) {
+  .enquiry-fields {
+    grid-template-columns: 1fr;
+  }
+}

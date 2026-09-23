@@ -1,0 +1,17 @@
+.section-dots {
+  position: fixed;
+  right: 1%;
+  top: 36%;
+  z-index: 15;
+  padding: 12px 7px;
+  border-radius: 30px;
+  background: #4141419a;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+@media (max-width: 700px) {
+  .section-dots {
+    display: none;
+  }
+}

@@ -1,0 +1,46 @@
+.contact-banner-image {
+  width: 100%;
+  display: block;
+}
+.contact-page-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 65px;
+  padding: 50px 25px;
+}
+.contact-page h1,
+.contact-page h2 {
+  margin: 0 0 20px;
+}
+.contact-identity {
+  padding: 35px;
+  text-align: center;
+}
+.contact-identity img {
+  max-width: 300px;
+  max-height: 120px;
+}
+.locations {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 35px;
+  padding: 25px 25px 70px;
+}
+.locations iframe {
+  width: 100%;
+  height: 250px;
+  border: 0;
+}
+.locations p {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .contact-page-content,
+  .locations {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+  .contact-identity {
+    padding: 15px;
+  }
+}

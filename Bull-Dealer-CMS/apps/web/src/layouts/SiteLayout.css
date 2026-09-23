@@ -1,0 +1,4 @@
+.route-page {
+  padding-top: var(--header-height);
+  min-height: 50vh;
+}

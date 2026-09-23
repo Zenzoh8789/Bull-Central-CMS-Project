@@ -1,0 +1,159 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+:root {
+  font-family: "Poppins", sans-serif;
+  color: #111;
+  background: #fff;
+  font-synthesis: none;
+  --yellow: #ffbf00;
+  --header-height: clamp(74px, 4.85vw, 94px);
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--header-height);
+}
+body {
+  margin: 0;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+button {
+  cursor: pointer;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  color: inherit;
+}
+img {
+  max-width: 100%;
+  display: block;
+}
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #d79300;
+  outline-offset: 4px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.content-width {
+  width: 82%;
+  max-width: 1360px;
+  margin: 0 auto;
+}
+.skip {
+  position: fixed;
+  left: 20px;
+  top: -80px;
+  z-index: 60;
+  background: #fff;
+  padding: 14px;
+}
+.skip:focus {
+  top: 10px;
+}
+.dot {
+  width: clamp(18px, 1.2vw, 23px);
+  height: clamp(18px, 1.2vw, 23px);
+  border-radius: 50%;
+  background: #fff;
+  color: transparent;
+  border: 0;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.dot.active,
+.dot:hover {
+  background: var(--yellow);
+  color: #111;
+}
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px 25px;
+  border: 0;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+.yellow {
+  background: var(--yellow);
+  color: #252525;
+}
+.yellow:hover {
+  background: #ed3237;
+  color: #fff;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+@media (min-width: 1700px) {
+  .content-width {
+    max-width: 1450px;
+  }
+}
+@media (max-width: 1100px) {
+  .content-width {
+    width: 88%;
+  }
+}
+@media (max-width: 700px) {
+  :root {
+    --header-height: 72px;
+  }
+}
+@media (max-width: 700px) {
+  .button {
+    padding: 12px 22px;
+    font-size: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *:before,
+  *:after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

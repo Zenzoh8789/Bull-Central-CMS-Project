@@ -1,0 +1,741 @@
+/* =========================================================
+   TESTIMONIAL SECTION
+========================================================= */
+
+.testimonials {
+  position: relative;
+
+  width: 100%;
+
+  padding: 70px 0 60px;
+
+  background: #ffffff;
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   HEADING
+========================================================= */
+
+.testimonials h2 {
+  margin: 0 20px 40px;
+
+  font-family: "Poppins", sans-serif;
+
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.2;
+
+  text-align: center;
+  text-transform: uppercase;
+
+  color: #252525;
+}
+
+
+/* =========================================================
+   CAROUSEL
+========================================================= */
+
+.testimonial-carousel {
+  position: relative;
+
+  width: 100%;
+
+  /*
+   * Main spacing between card center points.
+   *
+   * 330px gives:
+   * - 5 cards visible
+   * - symmetrical left/right layout
+   * - no joining outer cards
+   */
+  --slide-step: 330px;
+}
+
+
+/* =========================================================
+   STRIP
+========================================================= */
+
+.testimonial-strip {
+  position: relative;
+
+  width: 100%;
+  height: 640px;
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.testimonial {
+  position: absolute;
+
+  left: 50%;
+  top: 20px;
+
+  width: 400px;
+  height: 600px;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  /*
+   * Remove native button appearance.
+   */
+  border: 0 !important;
+  outline: 0 !important;
+
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  /*
+   * Transparent prevents visible edge.
+   */
+  background: transparent !important;
+
+  box-shadow: none !important;
+
+  /*
+   * Card shape.
+   */
+  border-radius: 20px;
+
+  overflow: hidden;
+
+  /*
+   * Button reset.
+   */
+  font: inherit;
+  text-align: left;
+
+  cursor: pointer;
+
+  /*
+   * Smooth scale/position animation.
+   */
+  transform-origin: center center;
+
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+
+  -webkit-tap-highlight-color: transparent;
+
+  will-change: transform;
+
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+/* =========================================================
+   REMOVE BORDER / LINE ON ALL STATES
+========================================================= */
+
+.testimonial:hover,
+.testimonial:active,
+.testimonial:focus,
+.testimonial:focus-visible,
+.testimonial.active {
+  border: 0 !important;
+
+  outline: 0 !important;
+
+  box-shadow: none !important;
+
+  background: transparent !important;
+}
+
+
+/*
+ * Some global button CSS can create
+ * ::before / ::after borders.
+ */
+
+.testimonial::before,
+.testimonial::after {
+  content: none !important;
+
+  display: none !important;
+}
+
+
+/* =========================================================
+   IMAGE
+========================================================= */
+
+.testimonial .testimonial-image {
+  position: absolute;
+
+  /*
+   * Overscan image by 2px.
+   *
+   * This prevents thin lines appearing
+   * when browser scales the card.
+   */
+  top: -2px;
+  left: -2px;
+
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+
+  z-index: 1;
+
+  display: block;
+
+  max-width: none;
+
+  margin: 0;
+  padding: 0;
+
+  border: 0 !important;
+  outline: 0 !important;
+
+  box-shadow: none !important;
+
+  border-radius: 21px;
+
+  object-fit: cover;
+
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+
+  transform: translateZ(0);
+
+  transition: transform 0.4s ease;
+}
+
+
+/* =========================================================
+   IMAGE HOVER
+========================================================= */
+
+.testimonial:hover .testimonial-image {
+  transform:
+    translateZ(0)
+    scale(1.012);
+}
+
+
+/* =========================================================
+   YOUTUBE PLAY BUTTON
+========================================================= */
+
+.testimonial .youtube-play {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  z-index: 50;
+
+  display: block;
+
+  width: 72px;
+  height: auto;
+
+  margin: 0;
+  padding: 0;
+
+  border: 0 !important;
+  outline: 0 !important;
+
+  box-shadow: none !important;
+
+  transform:
+    translate(-50%, -50%)
+    translateZ(0);
+
+  pointer-events: none;
+
+  transition:
+    transform 0.25s ease;
+}
+
+
+/* =========================================================
+   PLAY HOVER
+========================================================= */
+
+.testimonial:hover .youtube-play {
+  transform:
+    translate(-50%, -50%)
+    translateZ(0)
+    scale(1.07);
+}
+
+
+.testimonial-description {
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  z-index: 30;
+
+  width: calc(100% + 4px);
+  box-sizing: border-box;
+
+  padding: 80px 30px 32px;
+
+  pointer-events: none;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.18) 20%,
+    rgba(0, 0, 0, 0.55) 45%,
+    rgba(0, 0, 0, 0.88) 70%,
+    rgba(0, 0, 0, 0.98) 100%
+  );
+}
+
+.testimonial-description p {
+  margin: 0;
+  padding: 0;
+
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+
+  color: #fff;
+  text-align: left;
+
+  text-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.95),
+    0 1px 2px rgba(0, 0, 0, 0.95);
+
+  /* MAXIMUM 4 LINES */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   DESCRIPTION TEXT
+========================================================= */
+
+.testimonial-description p {
+  position: relative;
+
+  z-index: 31;
+
+  width: 100%;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  outline: 0 !important;
+
+  font-family: "Poppins", sans-serif;
+
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.55;
+
+  text-align: left;
+
+  color: #ffffff !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  text-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.95),
+    0 1px 2px rgba(0, 0, 0, 0.95);
+}
+
+
+/* =========================================================
+   PREVIOUS / NEXT ARROWS
+========================================================= */
+
+.carousel-arrow {
+  position: absolute;
+
+  top: 48%;
+
+  z-index: 100;
+
+  display: grid;
+
+  place-items: center;
+
+  width: 48px;
+  height: 48px;
+
+  margin: 0;
+  padding: 0;
+
+  border: 0 !important;
+  outline: 0 !important;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.88);
+
+  color: #373737;
+
+  box-shadow: none;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+
+/* =========================================================
+   ARROW HOVER
+========================================================= */
+
+.carousel-arrow:hover {
+  background: #ffffff;
+
+  transform: scale(1.06);
+}
+
+.carousel-arrow:focus,
+.carousel-arrow:focus-visible {
+  outline: none !important;
+
+  box-shadow: none !important;
+}
+
+
+/* =========================================================
+   ARROW POSITION
+========================================================= */
+
+.carousel-arrow.previous {
+  left: 20px;
+}
+
+.carousel-arrow.next {
+  right: 20px;
+}
+
+
+/* =========================================================
+   DOTS
+========================================================= */
+
+.carousel-dots {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  margin-top: 6px;
+}
+
+
+/* =========================================================
+   DOT BUTTON
+========================================================= */
+
+.carousel-dots button {
+  width: 9px;
+  height: 9px;
+
+  margin: 0;
+  padding: 0;
+
+  border: 0 !important;
+  outline: 0 !important;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  border-radius: 50%;
+
+  background: #d0d0d0;
+
+  box-shadow: none;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+/* =========================================================
+   ACTIVE DOT
+========================================================= */
+
+.testimonials
+  .carousel-dots
+  button[aria-current="true"] {
+  background: #585858;
+
+  transform: scale(1.25);
+}
+
+
+/* =========================================================
+   DESKTOP
+   1200px+
+========================================================= */
+
+@media (min-width: 1200px) {
+
+  /*
+   * IMPORTANT:
+   *
+   * Do NOT enlarge card on 1920px.
+   * Keeping same base size ensures
+   * carousel spacing stays correct.
+   */
+
+  .testimonial-carousel {
+    --slide-step: 330px;
+  }
+
+  .testimonial-strip {
+    height: 640px;
+  }
+
+  .testimonial {
+    width: 400px;
+    height: 600px;
+  }
+}
+
+
+/* =========================================================
+   VERY LARGE DESKTOP
+   1700px+
+========================================================= */
+
+@media (min-width: 1700px) {
+
+  /*
+   * Slightly wider spacing only.
+   *
+   * Card size remains 400 x 600.
+   */
+
+  .testimonial-carousel {
+    --slide-step: 350px;
+  }
+
+  .testimonial-strip {
+    height: 640px;
+  }
+
+  .testimonial {
+    width: 400px;
+    height: 600px;
+  }
+
+  .testimonials h2 {
+    font-size: 40px;
+  }
+}
+
+
+/* =========================================================
+   SMALL DESKTOP
+   901 - 1199
+========================================================= */
+
+@media (min-width: 901px) and (max-width: 1199px) {
+
+  .testimonial-carousel {
+    --slide-step: 290px;
+  }
+
+  .testimonial {
+    width: 350px;
+    height: 525px;
+  }
+
+  .testimonial-strip {
+    height: 565px;
+  }
+
+  .testimonial-description {
+    padding:
+      130px
+      27px
+      31px
+      27px;
+  }
+
+  .testimonial-description p {
+    font-size: 15px;
+  }
+
+  .testimonial .youtube-play {
+    width: 66px;
+  }
+}
+
+
+/* =========================================================
+   TABLET
+   600 - 900
+========================================================= */
+
+@media (min-width: 600px) and (max-width: 900px) {
+
+  .testimonial-carousel {
+    --slide-step: 250px;
+  }
+
+  .testimonial {
+    width: 320px;
+    height: 480px;
+  }
+
+  .testimonial-strip {
+    height: 520px;
+  }
+
+  .testimonial-description {
+    padding:
+      110px
+      24px
+      28px
+      24px;
+  }
+
+  .testimonial-description p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .testimonial .youtube-play {
+    width: 62px;
+  }
+
+  .carousel-arrow {
+    width: 42px;
+    height: 42px;
+  }
+
+  .carousel-arrow.previous {
+    left: 10px;
+  }
+
+  .carousel-arrow.next {
+    right: 10px;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   BELOW 600
+========================================================= */
+
+@media (max-width: 599px) {
+
+  .testimonials {
+    padding: 45px 0;
+  }
+
+  .testimonials h2 {
+    margin-bottom: 25px;
+
+    font-size: 27px;
+  }
+
+  .testimonial-carousel {
+    /*
+     * Active card + partial side cards.
+     */
+    --slide-step: 70vw;
+  }
+
+  .testimonial {
+    width: 76vw;
+
+    height: 114vw;
+
+    max-height: 560px;
+
+    border-radius: 18px;
+  }
+
+  .testimonial-strip {
+    height: calc(114vw + 40px);
+
+    max-height: 600px;
+  }
+
+  .testimonial-description {
+    padding:
+      100px
+      23px
+      28px
+      23px;
+  }
+
+  .testimonial-description p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .testimonial .youtube-play {
+    width: 58px;
+  }
+
+  .carousel-arrow {
+    width: 38px;
+    height: 38px;
+  }
+
+  .carousel-arrow.previous {
+    left: 5px;
+  }
+
+  .carousel-arrow.next {
+    right: 5px;
+  }
+
+  .carousel-dots {
+    gap: 7px;
+  }
+
+  .carousel-dots button {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .testimonial,
+  .testimonial-image,
+  .youtube-play,
+  .carousel-arrow,
+  .carousel-dots button {
+    transition: none;
+  }
+}

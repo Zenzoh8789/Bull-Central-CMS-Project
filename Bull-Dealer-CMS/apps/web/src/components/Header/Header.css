@@ -1,0 +1,205 @@
+.original-header {
+  height: var(--header-height);
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 20;
+  background: #fff;
+  border-bottom: 2px solid #111;
+  box-shadow: 0 3px 8px #0003;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.1%;
+}
+.bull-logo {
+  width: 13.3%;
+  max-width: 260px;
+}
+.dealer-logo {
+  width: 10.7%;
+  max-width: 215px;
+  margin-right: 0;
+}
+.bull-logo img,
+.dealer-logo img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+.header-centre {
+  position: absolute;
+  left: 17.3%;
+  right: 17.3%;
+  height: 100%;
+  top: 0;
+}
+.utility-nav {
+  height: 40%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 21.5%;
+  gap: 14px;
+  position: relative;
+  isolation: isolate;
+  color: #fff;
+  font-size: clamp(11px, 0.81vw, 16px);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.utility-nav::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 6%;
+  background: #838282;
+  clip-path: polygon(2.5% 0, 100% 0, 97.5% 100%, 0 100%);
+  z-index: -1;
+}
+.utility-nav a {
+  white-space: nowrap;
+  transition: color 280ms ease;
+}
+.utility-nav i {
+  width: 5px;
+  height: 5px;
+  background: #f2cd1d;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.utility-nav a:hover {
+  color: #f2cd1d;
+}
+.primary-nav {
+  height: 60%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  padding-right: 13%;
+  isolation: isolate;
+  position: relative;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: clamp(15px, 0.93vw, 20px);
+}
+.primary-nav::before {
+  content: "";
+  position: absolute;
+  inset: 0 6% 0 0;
+  background: #414141;
+  clip-path: polygon(3% 0, 100% 0, 97.3% 100%, 0 100%);
+  z-index: -1;
+}
+.primary-nav > a,
+.primary-nav .products-menu-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 clamp(20px, 1.3vw, 25px);
+  background: transparent;
+  border: 0;
+  white-space: nowrap;
+  text-transform: uppercase;
+  font-weight: 400;
+  position: relative;
+  isolation: isolate;
+  transition: color 280ms ease;
+}
+.primary-nav > a::before,
+.primary-nav .products-menu-trigger::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: skew(-25deg);
+  background: #fbb120;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 280ms ease;
+}
+.primary-nav > a:not(:last-child)::after,
+.primary-nav .products-menu-trigger::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 1px;
+  background: #777373;
+  transform: skew(-25deg);
+}
+.primary-nav > a:hover,
+.primary-nav .products-menu.is-open .products-menu-trigger {
+  color: #111;
+}
+.primary-nav > a:hover::before,
+.primary-nav .products-menu.is-open .products-menu-trigger::before {
+  opacity: 1;
+}
+.mobile-toggle,
+.mobile-nav {
+  display: none;
+}
+@media (max-width: 1300px) {
+  .utility-nav {
+    gap: 10px;
+    padding-right: 17%;
+    font-size: 11px;
+  }
+  .primary-nav {
+    padding-right: 10%;
+  }
+  .primary-nav > a,
+  .primary-nav .products-menu-trigger {
+    padding: 0 20px;
+  }
+}
+@media (max-width: 1000px) {
+  .original-header {
+    padding: 0 14px;
+  }
+  .bull-logo {
+    width: clamp(100px, 22vw, 170px);
+  }
+  .dealer-logo {
+    width: clamp(100px, 21vw, 160px);
+    margin-left: auto;
+    margin-right: 16px;
+  }
+  .header-centre {
+    display: none;
+  }
+  .mobile-toggle {
+    display: flex;
+    background: #414141;
+    color: #fff;
+    padding: 7px;
+    border: 0;
+  }
+  .mobile-nav {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #414141;
+    color: #fff;
+    padding: 10px 20px 20px;
+    box-shadow: 0 8px 15px #0003;
+    max-height: calc(100dvh - var(--header-height));
+    overflow-y: auto;
+  }
+  .mobile-nav > a {
+    font-size: 13px;
+    text-transform: uppercase;
+    padding: 12px 5px;
+    border-bottom: 1px solid #666;
+  }
+  .mobile-nav > a:hover {
+    color: #fbb120;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .original-header *,
+  .original-header *::before {
+    transition: none !important;
+  }
+}

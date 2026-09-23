@@ -1,0 +1,137 @@
+dialog {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 38px;
+  max-width: 540px;
+  width: calc(100% - 32px);
+  box-shadow: 0 35px 100px #0004;
+  max-height: 90dvh;
+  overflow: auto;
+}
+dialog::backdrop {
+  background: #000b;
+}
+dialog h2 {
+  font-size: 28px;
+  line-height: 1.2;
+  margin: 14px 0;
+}
+dialog .eyebrow {
+  font-size: 10px;
+  color: #886800;
+}
+.close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  border: 0;
+  background: #eee;
+  border-radius: 50%;
+  padding: 6px;
+  display: flex;
+}
+.muted {
+  font-size: 12px;
+  line-height: 1.7;
+  color: #666;
+}
+form {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+}
+form label {
+  display: grid;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 500;
+}
+form input,
+form select,
+form textarea {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 11px;
+  background: #fafafa;
+  font-size: 12px;
+}
+form textarea {
+  resize: vertical;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+form .consent {
+  display: flex;
+  align-items: flex-start;
+  font-size: 10px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+form .consent input {
+  width: 14px;
+  margin: 2px 5px 0 0;
+  accent-color: #a27300;
+}
+form small {
+  text-align: center;
+  font-size: 9px;
+  color: #666;
+}
+.full {
+  width: 100%;
+}
+.error {
+  color: #ad352c;
+  font-size: 12px;
+}
+.success {
+  text-align: center;
+  padding: 20px 0;
+}
+.success-icon {
+  display: inline-flex;
+  border-radius: 50%;
+  padding: 15px;
+  background: var(--yellow);
+  margin-bottom: 25px;
+}
+.success > p:not(.eyebrow) {
+  font-size: 13px;
+  line-height: 1.8;
+}
+.reference {
+  background: #eee;
+  padding: 10px;
+}
+.spin {
+  animation: spin 1s linear infinite;
+}
+.demo-notice {
+  background: #fff4d7;
+  border: 1px solid #e6c56f;
+  padding: 12px;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.demo-notice[hidden] {
+  display: none;
+}
+@media (max-width: 700px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 700px) {
+  dialog {
+    padding: 32px 22px;
+  }
+}
+@media (max-width: 700px) {
+  dialog h2 {
+    font-size: 25px;
+  }
+}

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+*.log
+artifacts/
+reference.html
+
+.local/
+.env.*
+!.env.example
+uploads/
+

@@ -1,0 +1,84 @@
+services:
+  mysql:
+    image: mysql:8.4
+    ports:
+      - "127.0.0.1:3308:3306"
+
+    environment:
+      MYSQL_DATABASE: bull_dealers
+      MYSQL_USER: bull
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./infra/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./infra/migrations/003_central_cms.sql:/docker-entrypoint-initdb.d/02-cms.sql:ro
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'mysqladmin ping -h localhost -u root -p"$$MYSQL_ROOT_PASSWORD"'
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+    restart: unless-stopped
+
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+
+    ports:
+      - "127.0.0.1:3000:3000"
+
+    environment:
+      NODE_ENV: production
+
+      # Admin Login - Username + Password only
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
+
+      # Media
+      MEDIA_DIR: /app/uploads
+      MEDIA_STORAGE: ${MEDIA_STORAGE:-local}
+
+      # Cloudflare R2 - optional
+      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID:-}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      R2_BUCKET: ${R2_BUCKET:-}
+      R2_PUBLIC_URL: ${R2_PUBLIC_URL:-}
+
+      # Database
+      DATABASE_URL: mysql://bull:${MYSQL_PASSWORD}@mysql:3306/bull_dealers
+
+    volumes:
+      - cms_uploads:/app/uploads
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+
+    ports:
+      - "8080:80"
+
+    depends_on:
+      - api
+
+    restart: unless-stopped
+
+
+volumes:
+  mysql_data:
+  cms_uploads:

@@ -1,0 +1,18 @@
+.service-section img {
+  width: 100%;
+  display: block;
+}
+.optional-section {
+  padding: 45px 20px;
+}
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+.gallery-grid figure {
+  margin: 0;
+}
+.gallery-grid img {
+  width: 100%;
+}

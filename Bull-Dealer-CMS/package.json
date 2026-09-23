@@ -1,0 +1,30 @@
+{
+  "name": "bull-dealer-platform",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently --kill-others-on-fail -n web,admin,api -c yellow,magenta,cyan \"npm run dev -w apps/web\" \"npm run dev -w apps/admin\" \"npm run dev -w apps/api\"",
+    "build": "npm run build --workspaces --if-present",
+    "check": "npm run check -w apps/web && npm run check -w apps/admin && npm run build -w apps/api",
+    "test": "npm run test -w apps/api",
+    "setup:cms": "node infra/scripts/bootstrap-cms.cjs",
+    "test:integration": "npm run build -w apps/api && node infra/scripts/test-cms.cjs",
+    "db:migrate": "node infra/scripts/migrate.cjs",
+    "admin:credentials": "node infra/scripts/admin-credentials.cjs",
+    "db:setup": "npm run build -w apps/api && npm run db:migrate && npm run setup:cms",
+    "test:local": "node infra/scripts/local-smoke.cjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "prettier": "^3.9.8"
+  },
+  "overrides": {
+    "multer": "^2.3.0"
+  },
+  "version": "1.0.2",
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

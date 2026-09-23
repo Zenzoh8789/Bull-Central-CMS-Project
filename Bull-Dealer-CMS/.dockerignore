@@ -1,0 +1,13 @@
+node_modules
+**/node_modules
+**/dist
+.git
+.env
+artifacts
+reference.html
+.local
+.env.*
+!.env.example
+docs/reference
+uploads
+*.zip

@@ -1,0 +1,27 @@
+{
+  "timestamp": "2026-09-22T06:34:42.373Z",
+  "database": "MySQL 8.4.11",
+  "dealers": 130,
+  "passed": [
+    "authentication required",
+    "20-section registry",
+    "ALL publishes every section to 130 dealers atomically",
+    "drafts do not change live sites",
+    "SELECTED only updates selected dealers",
+    "GROUP membership and precedence",
+    "SINGLE dealer-specific publishing",
+    "common publishing preserves dealer and group content and explicit overrides",
+    "explicit override removal restores inheritance",
+    "dealer isolation and editor publish restrictions",
+    "stale edits and stale publishing previews rejected",
+    "invalid target sets rejected without partial publication",
+    "unknown domain cannot read another tenant",
+    "contact form persists all six fields and dealer-owned status changes",
+    "publication history hides other dealer recipients",
+    "media storage and unsupported active-file rejection",
+    "dealer onboarding, activation, unique domains and transactional domain rollback",
+    "group CRUD and membership changes invalidate recipient preview",
+    "user creation, deactivation and immediate session revocation",
+    "logout invalidates the server session"
+  ]
+}

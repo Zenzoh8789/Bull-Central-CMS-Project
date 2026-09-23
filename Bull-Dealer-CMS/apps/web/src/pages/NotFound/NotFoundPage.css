@@ -1,0 +1,4 @@
+.not-found-page {
+  text-align: center;
+  padding: calc(var(--header-height) + 60px) 20px 70px;
+}

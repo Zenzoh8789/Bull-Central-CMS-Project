@@ -1,0 +1,526 @@
+{
+  "banners": {
+    "items": [
+      {
+        "alt": "BULL SD76 Super Smart backhoe loader",
+        "url": "",
+        "image": "/Asset/Images/Banner/super-smart-new-banner.webp"
+      },
+      {
+        "alt": "BULL Grandia",
+        "url": "",
+        "image": "/Asset/Images/Banner/grandia-banner.webp"
+      },
+      {
+        "alt": "BULL manufacturing facility",
+        "url": "",
+        "image": "/Asset/Images/Banner/plant.jpg"
+      }
+    ],
+    "enabled": true,
+    "autoplay": true,
+    "interval": 5000,
+    "scrollLabel": "Scroll Down"
+  },
+  "contact": {
+    "intro": "Please fill up the below rows and Submit your Enquiry.",
+    "banner": "/Asset/Images/contact-us/contact-us-banner.jpg",
+    "fields": [
+      {
+        "name": "name",
+        "label": "Name",
+        "required": true,
+        "placeholder": "Enter your name"
+      },
+      {
+        "name": "phone",
+        "label": "Mobile Number",
+        "required": true,
+        "placeholder": "Enter mobile number"
+      },
+      {
+        "name": "email",
+        "label": "Email Address",
+        "required": true,
+        "placeholder": "Enter your email ID"
+      },
+      {
+        "name": "address",
+        "label": "Address",
+        "required": true,
+        "placeholder": "Enter your address"
+      },
+      {
+        "name": "district",
+        "label": "District / State",
+        "required": true,
+        "placeholder": "Enter the district / state"
+      },
+      {
+        "name": "message",
+        "label": "Message",
+        "required": true,
+        "placeholder": "Enter your message"
+      }
+    ],
+    "enabled": true,
+    "heading": "SEND ENQUIRY",
+    "submitLabel": "Submit",
+    "consentLabel": "I agree to be contacted about this enquiry.",
+    "successMessage": "Your enquiry has been received."
+  },
+  "downloads": {
+    "items": [
+      {
+        "url": "",
+        "title": "Product brochure",
+        "description": "Contact the dealership for the latest brochure."
+      }
+    ],
+    "enabled": false,
+    "heading": "Downloads"
+  },
+  "equipment": {
+    "enabled": true,
+    "background": "/Asset/Images/construct/consequipment-bg.jpg",
+    "categories": [
+      {
+        "id": "construct",
+        "heading": "BACKHOE\nLOADERS",
+        "category": "Backhoe loaders",
+        "subtitle": "Construction Equipments",
+        "description": "Engineered for performance, our world-class backhoe loaders offer unmatched fuel efficiency, superior operator comfort, and advanced safety with ROPS & FOPS-certified cabins."
+      },
+      {
+        "id": "skid-steers",
+        "heading": "SKID\nSTEERS",
+        "category": "Skid steers",
+        "subtitle": "Construction Equipments",
+        "description": "Compact yet powerful, our joystick-controlled skid steers come equipped with smart features like a touchscreen display, rear camera, and intuitive controls—designed for maximum versatility on site."
+      }
+    ]
+  },
+  "footer": {
+    "image": "/Asset/Images/Foot/footer.png",
+    "groups": [
+      {
+        "links": [
+          {
+            "url": "https://www.bullindia.com/about-us.php#about",
+            "label": "About Bull Machine"
+          },
+          {
+            "url": "https://www.bullindia.com/about-us.php#history",
+            "label": "Milestone"
+          },
+          {
+            "url": "https://www.bullindia.com/about-us.php#infrastructure",
+            "label": "Infrastructure"
+          },
+          {
+            "url": "https://www.bullindia.com/about-us.php#qualityassurance",
+            "label": "Quality Assurance"
+          },
+          {
+            "url": "https://www.bullindia.com/about-us.php#customers",
+            "label": "Our Customers"
+          }
+        ],
+        "heading": ""
+      },
+      {
+        "links": [
+          {
+            "url": "/products/sd76",
+            "label": "Bull SD 76 Super smart"
+          },
+          {
+            "url": "/products/hd76",
+            "label": "Bull HD 76 Loader"
+          },
+          {
+            "url": "/products/av490",
+            "label": "Bull Skid Steer"
+          }
+        ],
+        "heading": "Construction Equipments"
+      },
+      {
+        "links": [
+          {
+            "url": "https://www.bullindia.com/media.php",
+            "label": "Media"
+          },
+          {
+            "url": "https://www.bullindia.com/career.php",
+            "label": "Career"
+          },
+          {
+            "url": "https://www.bullindia.com/register.php",
+            "label": "Customer Support"
+          },
+          {
+            "url": "https://www.bullindia.com/privacypolicy.php",
+            "label": "Privacy Policy"
+          },
+          {
+            "url": "https://www.bullindia.com/app-privacypolicy.php",
+            "label": "App Privacy Policy"
+          }
+        ],
+        "heading": ""
+      }
+    ],
+    "enabled": true,
+    "imageAlt": "BULL Machines",
+    "copyright": "All Rights Reserved Bull Machines",
+    "contactHeading": "Contact us"
+  },
+  "navigation": {
+    "enabled": true,
+    "homeLabel": "Home",
+    "contactLabel": "Contact us",
+    "utilityLinks": [
+      {
+        "url": "/about",
+        "label": "About us"
+      },
+      {
+        "url": "https://www.bullindia.com/media.php",
+        "label": "Media"
+      },
+      {
+        "url": "https://www.bullindia.com/career.php",
+        "label": "Career"
+      },
+      {
+        "url": "https://www.bullindia.com/register.php",
+        "label": "Service support"
+      }
+    ],
+    "productsLabel": "Our products"
+  },
+  "news": {
+    "items": [
+      {
+        "url": "https://www.bullindia.com/coimbatore-company-transports-machines-by-train-to-delhi.php",
+        "date": "January 29, 2025",
+        "image": "/Asset/Images/news and update/015.png",
+        "title": "Coimbatore company transports machines by train to Delhi"
+      },
+      {
+        "url": "https://www.bullindia.com/bull-machines-unveils.php",
+        "date": "March 27, 2025",
+        "image": "/Asset/Images/news and update/unveils-supersmart-2.webp",
+        "title": "BULL Machines Unveils SuperSmart Backhoe Loader"
+      },
+      {
+        "url": "https://www.bullindia.com/bull-machines-reveals-120cr.php",
+        "date": "March 25, 2025",
+        "image": "/Asset/Images/news and update/bull-machines-reveals-120cr-1.webp",
+        "title": "Bull Machines reveals ₹120 Cr investment plan, 2x production soon"
+      }
+    ],
+    "enabled": true,
+    "heading": "NEWS AND UPDATES"
+  },
+  "products": {
+    "items": [
+      {
+        "id": "sd76",
+        "tag": "BULL EQUIPMENT",
+        "url": "https://www.bullindia.com/bull-sd76-bs5-super-smart.php",
+        "name": "SD76 BS5 - SUPER SMART",
+        "image": "/Asset/Images/construct/SD76_bs4.png",
+        "category": "Backhoe loaders",
+        "menuImage": "/Asset/Images/nav product/product-sd76-bs4.png",
+        "menuLabel": "SD76 - BS5 SUPER SMART",
+        "menuOrder": 1,
+        "showInMenu": true,
+        "description": "Contact your dealer for equipment specifications and availability."
+      },
+      {
+        "id": "hd76",
+        "tag": "BULL EQUIPMENT",
+        "url": "https://www.bullindia.com/bull-hd-76-loader.php",
+        "name": "Bull LOADER - HD76",
+        "image": "/Asset/Images/construct/HD76-loader.png",
+        "category": "Backhoe loaders",
+        "menuImage": "/Asset/Images/nav product/bull-loader-hd76-sm.png",
+        "menuLabel": "BULL LOADER HD76",
+        "menuOrder": 2,
+        "showInMenu": true,
+        "description": "Contact your dealer for equipment specifications and availability."
+      },
+      {
+        "id": "av490",
+        "tag": "BULL EQUIPMENT",
+        "url": "https://www.bullindia.com/bull-skid-steer-av490.php",
+        "name": "Bull Skid Steer AV490",
+        "image": "/Asset/Images/construct/SKid (2).png",
+        "category": "Skid steers",
+        "menuImage": "/Asset/Images/nav product/skid-stree-sm.png",
+        "menuLabel": "SKID STEER – AV490",
+        "menuOrder": 3,
+        "showInMenu": true,
+        "description": "Contact your dealer for equipment specifications and availability."
+      },
+      {
+        "id": "smartkid",
+        "tag": "BULL EQUIPMENT",
+        "url": "https://www.bullindia.com/",
+        "name": "Bull Smart Kid",
+        "image": "/Asset/Images/construct/Smartkid.png",
+        "category": "Skid steers",
+        "menuImage": "",
+        "menuLabel": "BULL SMART KID",
+        "menuOrder": 4,
+        "showInMenu": false,
+        "description": "Contact your dealer for equipment specifications and availability."
+      }
+    ],
+    "enabled": true
+  },
+  "service": {
+    "alt": "Service and Spare Parts Banner",
+    "url": "https://www.bullindia.com/register.php",
+    "image": "/Asset/Images/Service.png",
+    "enabled": true,
+    "heading": "SERVICES & SPARE PARTS"
+  },
+  "statistics": {
+    "items": [
+      {
+        "image": "/Asset/Images/Details/globalSprite1.png",
+        "label": "Satisfied Customers",
+        "value": "56000+"
+      },
+      {
+        "image": "/Asset/Images/Details/globalSprite2.png",
+        "label": "Spares & Service center across India",
+        "value": "150+"
+      },
+      {
+        "image": "/Asset/Images/Details/globalSprite3.png",
+        "label": "Types of buckets",
+        "value": "40+"
+      },
+      {
+        "image": "/Asset/Images/Details/globalSprite4.png",
+        "label": "Experienced Engineers",
+        "value": "250+"
+      },
+      {
+        "image": "/Asset/Images/Details/globalSprite5.png",
+        "label": "Employees",
+        "value": "2200+"
+      }
+    ],
+    "enabled": true
+  },
+  "testimonials": {
+    "items": [
+      {
+        "alt": "BULL customer testimonial 1",
+        "image": "/Asset/Images/customer/thumbnail1.jpg",
+        "videoId": "m2VSTjDi0nA"
+      },
+      {
+        "alt": "BULL customer testimonial 2",
+        "image": "/Asset/Images/customer/thumbnai2.jpg",
+        "videoId": "z1V7sK82iDc"
+      },
+      {
+        "alt": "BULL customer testimonial 3",
+        "image": "/Asset/Images/customer/thumbnail3.jpg",
+        "videoId": "GBsTrkKWsA4"
+      },
+      {
+        "alt": "BULL customer testimonial 4",
+        "image": "/Asset/Images/customer/thumbnail4.jpg",
+        "videoId": "W61SVQl3wtE"
+      },
+      {
+        "alt": "BULL customer testimonial 5",
+        "image": "/Asset/Images/customer/thumbnail5.jpg",
+        "videoId": "fzi0q8BRVVU"
+      },
+      {
+        "alt": "BULL customer testimonial 6",
+        "image": "/Asset/Images/customer/thumbnail6.jpg",
+        "videoId": "N7m2KzENATk"
+      }
+    ],
+    "enabled": true,
+    "heading": "SUCCESSFUL CUSTOMERS TESTIMONIAL"
+  },
+  "about": {
+    "alt": "BULL equipment dealership",
+    "text": "Tara Autohub Pvt. Ltd., established in 2016, brings nine years of industry experience and has been a Bull Machines channel partner for two years. Based in Begusarai, the dealership has shown strong growth with 3 machine sales in FY 2023–24 and 16 in FY 2024–25. With strong relationships with local bankers and NBFCs, Tara Autohub continues to expand Bull’s market presence with reliable support and trust.",
+    "image": "/images/dealer.jpg",
+    "enabled": true,
+    "heading": "Tara Auto Hub Pvt. Ltd.",
+    "buttonUrl": "https://www.bullindia.com/about-us.php",
+    "buttonLabel": "Read more"
+  },
+  "branding": {
+    "enabled": true,
+    "brandAlt": "BULL",
+    "brandLogo": "/Asset/Images/bull-machine-logo.png",
+    "dealerAlt": "Tara Auto Hub Pvt. Ltd.",
+    "dealerLogo": "/images/tara-logo.png"
+  },
+  "dealerContact": {
+    "logo": "/images/tara-logo.png",
+    "name": "Tara Auto Hub Pvt. Ltd.",
+    "email": "",
+    "phone": "",
+    "address": "E1-50 Block Jai Prakash Nagar, Digha Ashiana Road, Digha, Patna, Bihar 800011",
+    "caption": "Authorized Dealer for BULL Construction Equipments",
+    "enabled": true,
+    "directionsUrl": "https://www.google.com/maps/search/?api=1&query=Tara+Auto+Hub+Patna+Bihar"
+  },
+  "gallery": {
+    "items": [
+      {
+        "alt": "Dealer gallery",
+        "image": "/images/dealer.jpg",
+        "caption": "BULL equipment"
+      }
+    ],
+    "enabled": false,
+    "heading": "Gallery"
+  },
+  "locations": {
+    "items": [
+      {
+        "name": "Tara Auto Hub Pvt. Ltd.",
+        "email": "",
+        "phone": "",
+        "title": "Dealer location",
+        "mapUrl": "https://www.google.com/maps?q=Tara+Auto+Hub+Patna+Bihar&output=embed",
+        "address": "E1-50 Block Jai Prakash Nagar, Digha Ashiana Road, Digha, Patna, Bihar 800011",
+        "enabled": true
+      },
+      {
+        "name": "Bull Machines Pvt Ltd.",
+        "email": "dro@bullmachine.com",
+        "phone": "+91 120 - 475 1333, +91 9312069285",
+        "title": "North india Office",
+        "mapUrl": "https://www.google.com/maps?q=BULL+MACHINES+Noida&output=embed",
+        "address": "B-1003, 10th Floor, Urbtech Trade Centre, B-35, Sector-132, Adjacent DPS School, Noida - 201 304, Uttar Pradesh",
+        "enabled": true
+      },
+      {
+        "name": "Bull Machines Pvt Ltd.",
+        "email": "sales@bullmachine.com",
+        "phone": "+91 88832 88832, +91 98426 70184",
+        "title": "Plant 2",
+        "mapUrl": "https://www.google.com/maps?q=BULL+MACHINES+Plant+2+Sulur&output=embed",
+        "address": "S.F. No. 41, Kangeyampalayam Post, Trichy Road, Sulur, Coimbatore - 641 401, INDIA.",
+        "enabled": true
+      }
+    ],
+    "enabled": true
+  },
+  "pageLayout": {
+    "enabled": true,
+    "sections": [
+      {
+        "key": "banners",
+        "visible": true
+      },
+      {
+        "key": "statistics",
+        "visible": true
+      },
+      {
+        "key": "about",
+        "visible": true
+      },
+      {
+        "key": "equipment",
+        "visible": true
+      },
+      {
+        "key": "service",
+        "visible": true
+      },
+      {
+        "key": "testimonials",
+        "visible": true
+      },
+      {
+        "key": "news",
+        "visible": true
+      },
+      {
+        "key": "gallery",
+        "visible": true
+      },
+      {
+        "key": "downloads",
+        "visible": true
+      }
+    ],
+    "navigation": [
+      {
+        "id": "banner",
+        "label": "Home"
+      },
+      {
+        "id": "innovation",
+        "label": "About Tara Auto Hub"
+      },
+      {
+        "id": "construct",
+        "label": "Backhoe loaders"
+      },
+      {
+        "id": "skid-steers",
+        "label": "Skid steers"
+      },
+      {
+        "id": "customers",
+        "label": "Service and spare parts"
+      },
+      {
+        "id": "customer",
+        "label": "Customer testimonials"
+      },
+      {
+        "id": "news",
+        "label": "News and updates"
+      },
+      {
+        "id": "contact",
+        "label": "Contact us"
+      }
+    ]
+  },
+  "seo": {
+    "title": "Tara Auto Hub | BULL Construction Equipment",
+    "enabled": true,
+    "favicon": "/Asset/Images/favicon.ico",
+    "canonical": "https://bulltaraautohub.com/",
+    "description": "BULL construction equipment, local sales and service support.",
+    "socialImage": "/Asset/Images/Banner/super-smart-new-banner.webp"
+  },
+  "social": {
+    "items": [
+      {
+        "url": "https://www.instagram.com/bull_tara_autohub_pvt_ltd/",
+        "label": "Instagram"
+      }
+    ],
+    "enabled": true,
+    "heading": "Follow us",
+    "description": "We are socially Connected"
+  },
+  "whatsapp": {
+    "label": "Contact BULL on WhatsApp",
+    "phone": "918883288832",
+    "enabled": true,
+    "message": "Hi, I am interested in Bull Machines."
+  }
+}
