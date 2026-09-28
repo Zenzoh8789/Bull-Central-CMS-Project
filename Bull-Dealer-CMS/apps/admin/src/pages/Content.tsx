@@ -1,13 +1,20 @@
+import { normalizeNews, supportsNewsArticles } from "@bull/content/news";
+import { NewsEditor } from "../components/NewsEditor";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useOutletContext } from "react-router-dom";
 import { useReadQuery, useWriteMutation, errorText } from "../services/api";
 import { useAppSelector } from "../store";
 import { Fields } from "../components/Fields";
 import { Status } from "../components/Status";
 export function Content() {
-  const [params, setParams] = useSearchParams();
+  const [params] = useSearchParams();
+  const { setEditorState } = useOutletContext<{
+    setEditorState: (state: { dirty: boolean; busy: boolean }) => void;
+  }>();
   const user = useAppSelector((s) => s.auth.user);
-  const registry = useReadQuery("registry"),
+  const registry = useReadQuery("registry", {
+      refetchOnMountOrArgChange: true,
+    }),
     drafts = useReadQuery("drafts"),
     dealers = useReadQuery("dealers"),
     groups = useReadQuery("groups"),
@@ -21,7 +28,6 @@ export function Content() {
     skip: !owner || !["DEALER", "OVERRIDE"].includes(layer),
   });
   const section = params.get("section") || "banners";
-  const setSection = (key: string) => setParams({ section: key });
   const editorKey = layer + ":" + owner + ":" + section;
   const [loadedKey, setLoadedKey] = useState("");
   const [doc, setDoc] = useState<any>(null);
@@ -29,7 +35,13 @@ export function Content() {
   const [remove, setRemove] = useState(false);
   const [message, setMessage] = useState("");
   const [dirty, setDirty] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  useEffect(() => {
+    setEditorState({ dirty, busy: uploading || isLoading });
+    return () => setEditorState({ dirty: false, busy: false });
+  }, [dirty, uploading, isLoading, setEditorState]);
   const definition = registry.data?.find((r: any) => r.key === section);
+  const newsApiReady = section !== "news" || supportsNewsArticles(definition);
   const draft = drafts.data?.find(
     (d: any) =>
       d.layer === layer &&
@@ -37,9 +49,17 @@ export function Content() {
       d.section_key === section,
   );
   useEffect(() => {
+    if (loadedKey === editorKey && dirty) return;
+    if (
+      owner &&
+      ["DEALER", "OVERRIDE"].includes(layer) &&
+      !draft &&
+      (resolved.isFetching || resolved.isError)
+    )
+      return;
     if (definition && !drafts.isLoading) {
       setDoc(
-        structuredClone(
+        (section === "news" ? normalizeNews : structuredClone)(
           draft?.document ||
             resolved.currentData?.content[section] ||
             definition.defaultValue,
@@ -59,6 +79,10 @@ export function Content() {
     section,
     resolved.currentData,
     drafts.isLoading,
+    resolved.isFetching,
+    resolved.isError,
+    loadedKey,
+    dirty,
   ]);
   useEffect(() => {
     const f = (e: BeforeUnloadEvent) => {
@@ -80,13 +104,14 @@ export function Content() {
     <>
       <h1>Website content</h1>
       <p>
-        Edit all 20 website sections. Save a draft, then review the target
-        dealers on Publish.
+        Manage your website from the sidebar. Save changes to update the
+        selected websites.
       </p>
       <div className="toolbar">
         <label>
           Content layer
           <select
+            disabled={uploading || isLoading}
             value={layer}
             onChange={(e) =>
               changeScope(() => {
@@ -111,6 +136,7 @@ export function Content() {
           <label>
             {layer === "GROUP" ? "Group" : "Dealer"}
             <select
+              disabled={uploading || isLoading}
               value={owner}
               onChange={(e) =>
                 changeScope(() => setOwner(Number(e.target.value)))
@@ -138,18 +164,6 @@ export function Content() {
       <Status query={registry} />
       <Status query={drafts} />
       <div className="editor-layout">
-        <nav className="section-list" aria-label="Editable sections">
-          {registry.data?.map((r: any) => (
-            <button
-              key={r.key}
-              className={section === r.key ? "selected" : ""}
-              onClick={() => changeScope(() => setSection(r.key))}
-            >
-              {r.label}
-              <small>{r.preferredScope.toLowerCase()}</small>
-            </button>
-          ))}
-        </nav>
         {doc &&
           loadedKey === editorKey &&
           definition &&
@@ -160,6 +174,13 @@ export function Content() {
               onSubmit={async (e) => {
                 e.preventDefault();
                 setMessage("");
+                if (uploading || isLoading) return;
+                if (!newsApiReady) {
+                  setMessage(
+                    "The API is running the old News schema. Rebuild and restart the API with this update, then reload this page.",
+                  );
+                  return;
+                }
                 try {
                   const saved = await write({
                     path: "drafts",
@@ -173,17 +194,43 @@ export function Content() {
                     },
                   }).unwrap();
                   setRevision(saved.revision);
+                  setDoc(saved.document);
                   setDirty(false);
-                  setMessage("Draft saved. Publish it to update the website.");
+                  setMessage(
+                    saved.published
+                      ? "Saved and published to the selected website(s)."
+                      : "Draft saved. " +
+                          (saved.publishError ||
+                            "An administrator must publish this draft."),
+                  );
                 } catch (e) {
                   setMessage(errorText(e));
                 }
               }}
             >
               <h2>{definition.label}</h2>
+              {!newsApiReady && (
+                <p role="alert">
+                  The API is running the old News schema and cannot save blog
+                  articles. Install the complete news update, rebuild and
+                  restart the API, then reload this page. Your article has not
+                  been saved.
+                </p>
+              )}
+              {section === "news" && (
+                <p>
+                  Choose an image from your computer and write your article.
+                  View More opens this article; More News returns to the News
+                  and Updates listing.
+                </p>
+              )}
               <p>
-                Preferred scope: {definition.preferredScope.toLowerCase()}. This
-                editor replaces the complete section at the chosen layer.
+                Changes apply to{" "}
+                {layer === "COMMON"
+                  ? "all active dealers (except sections with an override)"
+                  : "the selected " +
+                    (layer === "GROUP" ? "dealer group" : "dealer")}
+                . Editors save drafts for administrator publishing.
               </p>
               {layer === "OVERRIDE" && (
                 <label className="check">
@@ -199,23 +246,49 @@ export function Content() {
                   content
                 </label>
               )}
-              <fieldset disabled={remove}>
-                <Fields
-                  value={doc}
-                  template={definition.defaultValue}
-                  media={media.data || []}
-                  onChange={(v) => {
-                    setDoc(v);
-                    setDirty(true);
-                  }}
-                />
+              <fieldset disabled={remove || isLoading || uploading}>
+                <>
+                  {section === "news" ? (
+                    <NewsEditor
+                      key={editorKey}
+                      value={doc}
+                      onUploadingChange={setUploading}
+                      onChange={(v) => {
+                        setDoc(v);
+                        setDirty(true);
+                      }}
+                    />
+                  ) : (
+                    <Fields
+                      key={editorKey}
+                      path={section}
+                      value={doc}
+                      template={definition.template || definition.defaultValue}
+                      media={media.data || []}
+                      onUploadingChange={setUploading}
+                      onChange={(v) => {
+                        setDoc(v);
+                        setDirty(true);
+                      }}
+                    />
+                  )}
+                </>
               </fieldset>
               <div className="sticky-actions">
                 <button
                   className="primary"
-                  disabled={isLoading || (!owner && layer !== "COMMON")}
+                  disabled={
+                    isLoading ||
+                    uploading ||
+                    !newsApiReady ||
+                    (!owner && layer !== "COMMON")
+                  }
                 >
-                  {isLoading ? "Saving…" : "Save draft"}
+                  {isLoading
+                    ? "Saving…"
+                    : user.role === "EDITOR"
+                      ? "Save draft"
+                      : "Save & publish"}
                 </button>
                 <span role="status">{message}</span>
               </div>

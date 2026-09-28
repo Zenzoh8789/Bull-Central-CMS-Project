@@ -1,25 +1,32 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mediaConfig } from "./cms/media.storage";
-test("media configuration defaults to local and requires complete R2 credentials", () => {
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { mediaConfig, MediaStorage } from "./cms/media.storage";
+
+test("media uses VPS storage and rejects unsupported drivers", () => {
   assert.equal(mediaConfig({}).driver, "local");
-  assert.throws(() => mediaConfig({ MEDIA_STORAGE: "other" }));
   assert.throws(() => mediaConfig({ MEDIA_STORAGE: "r2" }));
-  const env = {
-    MEDIA_STORAGE: "r2",
-    R2_ACCOUNT_ID: "a".repeat(32),
-    R2_ACCESS_KEY_ID: "test",
-    R2_SECRET_ACCESS_KEY: "test",
-    R2_BUCKET: "media",
-    R2_PUBLIC_URL: "https://media.example.com/",
-  };
-  const config = mediaConfig(env);
-  assert.equal(
-    config.endpoint,
-    "https://" + "a".repeat(32) + ".r2.cloudflarestorage.com",
-  );
-  assert.equal(config.publicUrl, "https://media.example.com");
-  assert.throws(() =>
-    mediaConfig({ ...env, R2_PUBLIC_URL: "http://media.example.com" }),
-  );
+  assert.throws(() => mediaConfig({ MEDIA_STORAGE: "other" }));
+});
+
+test("local uploads persist unique files and can roll back failed database inserts", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "bull-media-test-"));
+  const storage = new MediaStorage();
+  (storage as any).config = { driver: "local", dir };
+  try {
+    const bytes = Buffer.from("test image content");
+    const first = await storage.put(bytes, "png", "image/png", null);
+    const second = await storage.put(bytes, "png", "image/png", 2);
+    assert.notEqual(first.url, second.url);
+    assert.match(first.url, /^\/uploads\/[a-f0-9-]+\.png$/);
+    const path = join(dir, first.url.split("/").pop()!);
+    assert.deepEqual(await readFile(path), bytes);
+    await first.discard();
+    await assert.rejects(readFile(path));
+    await assert.rejects(storage.put(bytes, "../html", "text/html", null));
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
 });

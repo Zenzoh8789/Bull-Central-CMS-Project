@@ -1,0 +1,229 @@
+.admin-shell {
+  background: #f4f6f9;
+}
+.admin-main > main {
+  padding-top: 24px;
+}
+.admin-main > header {
+  background: #fff;
+  border-bottom: 1px solid #e5eaf0;
+}
+.admin-shell .sidebar {
+  background: #112536;
+  border: 0;
+  box-shadow: none;
+}
+.admin-shell aside nav a {
+  border-radius: 7px;
+  font-size: 13px;
+  padding: 10px 12px;
+}
+.admin-shell aside nav a.active {
+  background: #ffc928;
+  box-shadow: none;
+}
+.editor-layout {
+  display: block;
+}
+.editor-layout > .panel {
+  border: 1px solid #e1e7ee;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 4px 20px #152d4410;
+}
+.toolbar {
+  padding: 18px 22px;
+  background: #fff;
+  border: 1px solid #e1e7ee;
+  border-radius: 12px;
+}
+.toolbar .badge {
+  margin-left: auto;
+  background: #fff5cf;
+  color: #665015;
+}
+.field-grid {
+  gap: 20px;
+}
+.field label,
+.panel > label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #33485c;
+}
+.array-editor {
+  margin: 20px 0;
+}
+.array-editor > details {
+  border: 1px solid #e1e7ee;
+  border-radius: 10px;
+  padding: 14px 18px;
+  background: #fff;
+  margin: 12px 0;
+}
+.array-editor > details[open] {
+  background: #fafbfd;
+}
+.array-editor summary {
+  font-weight: 600;
+}
+.array-actions {
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.media-field {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border: 1px dashed #b4c4d3;
+  background: #f7f9fc;
+  border-radius: 10px;
+}
+.media-field input[type="file"] {
+  background: #fff;
+  font-size: 12px;
+}
+.media-field input::file-selector-button {
+  background: #15344b;
+  border: 0;
+  border-radius: 5px;
+  padding: 8px 12px;
+  color: white;
+  margin-right: 10px;
+  cursor: pointer;
+}
+.media-field .field-image {
+  width: 100%;
+  max-width: 360px;
+  height: 160px;
+  object-fit: contain;
+  border-radius: 7px;
+  background: white;
+}
+.media-field button {
+  justify-self: start;
+  font-size: 12px;
+}
+.media-field span {
+  font-size: 12px;
+  color: #40556b;
+}
+.media-field span:empty {
+  display: none;
+}
+.sticky-actions {
+  margin-top: 24px;
+  padding: 18px 0;
+  border-top: 1px solid #e5eaf0;
+  z-index: 5;
+  flex-wrap: wrap;
+}
+.sticky-actions .primary {
+  min-width: 170px;
+}
+@media (max-width: 650px) {
+  .editor-layout > .panel {
+    padding: 18px;
+  }
+  .toolbar {
+    padding: 14px;
+  }
+  .toolbar label {
+    min-width: 0;
+    width: 100%;
+  }
+  .toolbar .badge {
+    margin-left: 0;
+  }
+  .sticky-actions .primary {
+    width: 100%;
+  }
+}
+.admin-main > header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+.admin-shell,
+.admin-shell input,
+.admin-shell select,
+.admin-shell textarea,
+.admin-shell button {
+  font-size: 15px;
+}
+.admin-shell h1,
+.admin-shell h2,
+.admin-shell h3,
+.admin-shell .hero-copy h1 {
+  font-size: 16px;
+  letter-spacing: normal;
+}
+.admin-shell small,
+.admin-shell label,
+.admin-shell th,
+.admin-shell td,
+.admin-shell .badge,
+.admin-shell aside nav a,
+.admin-shell .media-field span {
+  font-size: 14px;
+}
+.admin-shell .metrics strong,
+.admin-shell .metric-card strong {
+  font-size: 16px;
+}
+.file-picker {
+  display: flex;
+  position: relative;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border: 1px solid #d6e0e8;
+  border-radius: 7px;
+  background: #fff;
+  min-width: 0;
+}
+.file-picker .file-picker-button {
+  display: block;
+  flex-shrink: 0;
+  margin: 0;
+  background: #15344b;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 5px;
+}
+.file-picker-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.file-picker input.file-picker-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.file-picker:focus-within {
+  outline: 2px solid #286bb7;
+  outline-offset: 2px;
+}
+.delete-dealer {
+  color: #b52e2e;
+}
+.admin-shell p,
+.admin-shell .hero-copy .hero-description,
+.admin-shell .admin-search input:not([type]) {
+  font-size: 15px;
+}
+.admin-shell .hero-copy > p:first-child,
+.admin-shell .hero-values span,
+.admin-shell .metric-card span,
+.admin-shell .user-chip,
+.admin-shell .eyebrow {
+  font-size: 14px;
+}
+.login h1,
+.login .brand b {
+  font-size: 16px;
+}

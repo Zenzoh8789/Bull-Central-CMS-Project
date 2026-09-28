@@ -9,7 +9,11 @@ import { useAppSelector } from "../store/hooks";
 import "./SiteLayout.css";
 export function SiteLayout() {
   const enquiryOpen = useAppSelector((s) => s.ui.enquiryOpen);
-  const { data, isLoading, isError, refetch } = useSiteQuery();
+  const { data, isLoading, isError, refetch } = useSiteQuery(undefined, {
+    pollingInterval: 10000,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+  });
   useEffect(() => {
     const seo = data?.content.seo;
     if (!seo?.enabled) return;

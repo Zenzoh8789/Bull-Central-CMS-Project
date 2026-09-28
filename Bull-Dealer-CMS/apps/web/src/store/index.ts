@@ -1,3 +1,4 @@
+import { setupListeners } from "@reduxjs/toolkit/query";
 import { configureStore } from "@reduxjs/toolkit";
 import uiReducer from "./uiSlice";
 import { api } from "../services/siteApi";
@@ -7,3 +8,5 @@ export const store = configureStore({
 });
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+setupListeners(store.dispatch);

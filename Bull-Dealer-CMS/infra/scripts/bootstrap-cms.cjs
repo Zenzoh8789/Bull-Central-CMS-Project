@@ -11,19 +11,20 @@ const { hashPassword } = require("../../apps/api/dist/cms/auth");
     );
     let actor = users[0]?.id;
     if (!actor) {
-      const password = process.env.ADMIN_PASSWORD,
-        email = process.env.ADMIN_EMAIL;
-      if (!email || !password || password.length < 8)
+      const password = process.env.ADMIN_PASSWORD;
+      const username = (process.env.ADMIN_USERNAME || "admin").trim().toLowerCase();
+      if (!/^[a-z0-9_.-]{3,80}$/.test(username)) throw Error("Invalid ADMIN_USERNAME");
+      if (!password || password.length < 8)
         throw Error(
-          "Set ADMIN_EMAIL and ADMIN_PASSWORD (8+ characters) for the first CMS administrator",
+          "Set ADMIN_USERNAME and ADMIN_PASSWORD (8+ characters) for the first CMS administrator",
         );
       const [r] = await db.execute(
         "INSERT INTO cms_users(email,name,password_hash,role,username) VALUES (?,? ,?,'SUPER_ADMIN',?)",
         [
-          email,
+          null,
           "Platform administrator",
           hashPassword(password),
-          process.env.ADMIN_USERNAME || "admin",
+          username,
         ],
       );
       actor = r.insertId;

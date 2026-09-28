@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-09-24T15:08:51.245Z",
+  "database": "8.0.46",
+  "passed": [
+    "Legacy COMMON articles normalize on read without mutating stored data; API capability is ready",
+    "Legacy seeded external stories are removed; new articles use local blog content",
+    "Real multipart image upload persists and is publicly readable",
+    "Administrator COMMON save publishes image/content to all dealers and preserves unrelated sections",
+    "Draft, public content and uploaded image survive an actual API process restart",
+    "DEALER save affects only its owner; later COMMON publication preserves higher-priority dealer content",
+    "Editor saves remain drafts; preview/publish are forbidden; administrator approval publishes the saved revision",
+    "Dealer boundaries and stale draft revision protection remain enforced",
+    "Explicit override removal restores inheritance; removing an article persists",
+    "Administrator can approve an untouched legacy draft through the normal publish workflow",
+    "Independent News banner upload saves and publishes without changing article images",
+    "Dealer deletion is administrator-only, removes tenant resolution and leaves other dealers intact"
+  ]
+}

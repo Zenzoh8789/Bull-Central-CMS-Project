@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import { BlogPage } from "../pages/News/BlogPage";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { SiteLayout } from "../layouts/SiteLayout";
 import { HomePage } from "../pages/Home/HomePage";
 import { AboutPage } from "../pages/About/AboutPage";
@@ -17,7 +18,9 @@ export function AppRoutes() {
         <Route path="products" element={<ProductsPage />} />
         <Route path="products/:productId" element={<ProductDetailsPage />} />
         <Route path="testimonials" element={<TestimonialsPage />} />
-        <Route path="news" element={<NewsPage />} />
+        <Route path="news" element={<Navigate to="/blog" replace />} />
+        <Route path="blog" element={<NewsPage />} />
+        <Route path="blog/:slug" element={<BlogPage />} />
         <Route path="contact" element={<ContactPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

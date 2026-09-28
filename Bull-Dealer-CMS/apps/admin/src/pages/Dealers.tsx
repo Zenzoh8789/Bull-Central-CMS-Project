@@ -1,3 +1,4 @@
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useReadQuery, useWriteMutation, errorText } from "../services/api";
@@ -130,14 +131,45 @@ export function Dealers() {
                     Inspect published content
                   </button>
                   {user.role === "SUPER_ADMIN" && (
-                    <button
-                      onClick={() => {
-                        setEdit(d);
-                        setDomains(d.domains.join("\n"));
-                      }}
-                    >
-                      Edit
-                    </button>
+                    <>
+                      <button
+                        onClick={() => {
+                          setEdit(d);
+                          setDomains(d.domains.join("\n"));
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="delete-dealer"
+                        aria-label={"Delete " + d.name}
+                        title="Delete dealer"
+                        disabled={isLoading}
+                        onClick={async () => {
+                          if (
+                            !window.confirm(
+                              "Delete " +
+                                d.name +
+                                "? Its domains, content and enquiries will be removed and its users disabled.",
+                            )
+                          )
+                            return;
+                          try {
+                            await write({
+                              path: "dealers/" + d.id,
+                              method: "DELETE",
+                            }).unwrap();
+                            if (preview === d.id) setPreview(0);
+                            if (edit?.id === d.id) setEdit(null);
+                            setMessage("Dealer deleted.");
+                          } catch (error) {
+                            setMessage(errorText(error));
+                          }
+                        }}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </>
                   )}
                 </td>
               </tr>

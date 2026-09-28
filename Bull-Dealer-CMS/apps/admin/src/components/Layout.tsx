@@ -20,7 +20,6 @@ import {
   MapPin,
   Share2,
   CheckCircle,
-  Shield,
   History,
   Settings,
   Search,
@@ -38,12 +37,21 @@ import { api, useLogoutMutation, useMeQuery } from "../services/api";
 const links = [
   ["/", "Dashboard", LayoutDashboard],
   ["/dealers", "Dealers", Users],
-  ["/content", "Global Content", Globe],
-  ["/content?section=branding", "Header & Logo", PanelTop],
+  ["/content?section=seo", "SEO", Globe],
+  ["/content?section=navigation", "Navigation", Menu],
+  ["/content?section=branding", "Dealer Logo", PanelTop],
   ["/content?section=banners", "Main Banner", Image],
+  ["/content?section=statistics", "Statistics", LayoutDashboard],
   ["/content?section=about", "About Us", Info],
   ["/content?section=products", "Products", Box],
   ["/content?section=equipment", "Equipment Sections", Layers],
+  ["/content?section=service", "Service", Settings],
+  ["/content?section=dealerContact", "Dealer Contact", MapPin],
+  ["/content?section=locations", "Locations", MapPin],
+  ["/content?section=whatsapp", "WhatsApp", Mail],
+  ["/content?section=pageLayout", "Page Layout", Layers],
+  ["/content?section=gallery", "Gallery", Images],
+  ["/content?section=downloads", "Downloads", Box],
   ["/media", "Media Library", Images],
   ["/content?section=testimonials", "Videos & Testimonials", Video],
   ["/content?section=news", "News & Updates", Newspaper],
@@ -54,7 +62,6 @@ const links = [
   ["/publish", "Publish Center", CheckCircle],
   ["/enquiries", "Enquiries", Mail],
   ["/history", "Logs & History", History],
-  ["/content?section=seo", "Site Settings", Settings],
 ] as const;
 export function Layout() {
   const { token, user } = useAppSelector((s) => s.auth);
@@ -65,13 +72,14 @@ export function Layout() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [editorState, setEditorState] = useState({ dirty: false, busy: false });
+  const canLeave = () =>
+    !editorState.busy &&
+    (!editorState.dirty || window.confirm("Discard unsaved edits?"));
   const searchRef = useRef<HTMLInputElement>(null);
   if (!token) return <Navigate to="/login" replace />;
   if (me.isLoading) return <p>Verifying session…</p>;
-  const navigation =
-    user?.role === "SUPER_ADMIN"
-      ? [...links, ["/users", "Users & Roles", Shield] as const]
-      : links;
+  const navigation = links;
   const matches = search.trim()
     ? navigation.filter(([, label]) =>
         label.toLowerCase().includes(search.toLowerCase()),
@@ -80,7 +88,14 @@ export function Layout() {
   return (
     <div className="admin-shell">
       <aside className={open ? "sidebar is-open" : "sidebar"}>
-        <Link className="brand" to="/" aria-label="BULL CMS dashboard">
+        <Link
+          onClick={(event) => {
+            if (!canLeave()) event.preventDefault();
+          }}
+          className="brand"
+          to="/"
+          aria-label="BULL CMS dashboard"
+        >
           <div className="brand-logo">
             <img src="/admin/brand/bull-machine-logo.webp" alt="BULL" />
             <img
@@ -102,7 +117,15 @@ export function Layout() {
             <Link
               key={path}
               to={path}
-              onClick={() => setOpen(false)}
+              onClick={(event) => {
+                if (!canLeave()) event.preventDefault();
+                else setOpen(false);
+              }}
+              aria-current={
+                location.pathname + location.search === path
+                  ? "page"
+                  : undefined
+              }
               className={
                 location.pathname + location.search === path ? "active" : ""
               }
@@ -115,6 +138,7 @@ export function Layout() {
         <div className="session">
           <button
             onClick={async () => {
+              if (!canLeave()) return;
               await logout();
               dispatch(signedOut());
               dispatch(api.util.resetApiState());
@@ -144,6 +168,7 @@ export function Layout() {
               onKeyDown={(e) => {
                 if (e.key === "Escape") setSearch("");
                 if (e.key === "Enter" && matches[0]) {
+                  if (!canLeave()) return;
                   navigate(matches[0][0]);
                   setSearch("");
                 }
@@ -153,7 +178,14 @@ export function Layout() {
               <div className="search-results">
                 {matches.length ? (
                   matches.map(([path, label]) => (
-                    <Link key={path} to={path} onClick={() => setSearch("")}>
+                    <Link
+                      key={path}
+                      to={path}
+                      onClick={(event) => {
+                        if (!canLeave()) event.preventDefault();
+                        else setSearch("");
+                      }}
+                    >
                       {label}
                     </Link>
                   ))
@@ -166,7 +198,12 @@ export function Layout() {
           <a
             className="website-link"
             href={
-              window.location.port === "5174" ? "http://localhost:5173" : "/"
+              window.location.port === "5174"
+                ? window.location.protocol +
+                  "//" +
+                  window.location.hostname +
+                  ":5173"
+                : "/"
             }
             target="_blank"
             rel="noreferrer"
@@ -177,7 +214,7 @@ export function Layout() {
           <span className="user-chip">ADMIN PANEL</span>
         </header>
         <main>
-          <Outlet />
+          <Outlet context={{ setEditorState }} />
         </main>
       </div>
     </div>

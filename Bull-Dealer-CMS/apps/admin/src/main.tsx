@@ -15,3 +15,4 @@ createRoot(document.getElementById("root")!).render(
   </React.StrictMode>,
 );
 import "./styles/dashboard.css";
+import "./styles/editor.css";

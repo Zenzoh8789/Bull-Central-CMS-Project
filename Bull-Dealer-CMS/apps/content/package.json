@@ -1,1 +1,23 @@
-{"name":"@bull/content","version":"1.0.0","private":true,"main":"index.js","types":"index.d.ts"}
+{
+  "name": "@bull/content",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./news": {
+      "import": {
+        "types": "./news.d.mts",
+        "default": "./news.mjs"
+      },
+      "require": {
+        "types": "./news.d.ts",
+        "default": "./news.js"
+      }
+    }
+  }
+}

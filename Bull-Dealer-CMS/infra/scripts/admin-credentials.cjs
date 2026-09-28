@@ -15,16 +15,12 @@ const { hashPassword } = require("../../apps/api/dist/cms/auth");
   const db = await mysql.createConnection(process.env.DATABASE_URL);
   try {
     await db.beginTransaction();
-    const email = process.env.ADMIN_EMAIL;
-    const [rows] = await db.execute(
-      "SELECT id FROM cms_users WHERE role='SUPER_ADMIN' AND active=1" +
-        (email ? " AND email=?" : "") +
-        " FOR UPDATE",
-      email ? [email] : [],
-    );
+    const [admins] = await db.execute("SELECT id,username FROM cms_users WHERE role='SUPER_ADMIN' AND active=1 FOR UPDATE");
+    const matching = admins.filter(admin => admin.username === username);
+    const rows = matching.length ? matching : admins;
     if (rows.length !== 1)
       throw Error(
-        "Set ADMIN_EMAIL to select exactly one existing active super administrator.",
+        "Set ADMIN_USERNAME to an existing administrator username when multiple administrators exist.",
       );
     await db.execute(
       "UPDATE cms_users SET username=?, password_hash=? WHERE id=?",
@@ -37,7 +33,7 @@ const { hashPassword } = require("../../apps/api/dist/cms/auth");
     );
     await db.commit();
     console.log(
-      "Admin username/password updated. Previous sessions were signed out. Contact email was preserved.",
+      "Admin username/password updated. Previous sessions were signed out.",
     );
   } catch (e) {
     await db.rollback();

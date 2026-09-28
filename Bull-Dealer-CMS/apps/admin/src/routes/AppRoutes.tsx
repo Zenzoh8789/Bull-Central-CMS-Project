@@ -9,7 +9,6 @@ import { Publish } from "../pages/Publish";
 import { History } from "../pages/History";
 import { Media } from "../pages/Media";
 import { Enquiries } from "../pages/Enquiries";
-import { Users } from "../pages/Users";
 export function AppRoutes() {
   return (
     <Routes>
@@ -23,7 +22,6 @@ export function AppRoutes() {
         <Route path="history" element={<History />} />
         <Route path="media" element={<Media />} />
         <Route path="enquiries" element={<Enquiries />} />
-        <Route path="users" element={<Users />} />
         <Route
           path="*"
           element={

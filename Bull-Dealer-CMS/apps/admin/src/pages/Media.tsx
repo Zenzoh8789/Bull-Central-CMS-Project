@@ -51,11 +51,6 @@ export function Media() {
             )}
             <h3>{m.original_name}</h3>
             <small>{Math.ceil(m.size_bytes / 1024)} KB</small>
-            <input
-              readOnly
-              aria-label={"URL for " + m.original_name}
-              value={m.url}
-            />
             <a href={m.url} target="_blank" rel="noreferrer">
               Open file ↗
             </a>

@@ -3,6 +3,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Headers,
   Inject,
@@ -53,6 +54,12 @@ export class CmsController {
   }
   @Get("dealers") dealers(@Req() r: any) {
     return this.cms.dealers(r.actor);
+  }
+  @Delete("dealers/:id") deleteDealer(
+    @Req() r: any,
+    @Param("id", ParseIntPipe) id: number,
+  ) {
+    return this.cms.deleteDealer(r.actor, id);
   }
   @Post("dealers") createDealer(@Req() r: any, @Body() b: any) {
     return this.cms.saveDealer(r.actor, b);

@@ -1,106 +1,94 @@
-# BULL Dealer CMS 1.0.2 — Windows local development
+# BULL Dealer CMS — updated project
 
-Requires Node.js 22+ and a running MySQL 8.x server. The UI, CSS and BULL assets are unchanged.
+## Changes
 
-## 1. Configure MySQL
+- One main sidebar with all 20 content sections; duplicate inner navigation and common/dealer subtitles removed.
+- Improved forms, media previews, spacing, sticky save actions, sticky top header and responsive News grid/search.
+- All image fields use local file selection, including logos, favicon, SEO and product images. Downloads use a PDF picker. Files persist in local `MEDIA_DIR`, served through `/uploads/`.
+- Removed Cloudflare R2/AWS SDK storage and configuration. Docker preserves files in the `cms_uploads` volume.
+- Administrator **Save & publish** updates the selected scope. Editors save drafts for administrator approval. Existing group/dealer/override precedence remains enforced.
+- Fixed the mismatched News capability exports that disabled saving, and disabled save/navigation during uploads.
+- Website content refreshes every 10 seconds and on focus/reconnect. Home **View More** opens `/blog/:slug`; article **More News** opens `/blog`. There are two News pages: listing and article detail. Old `/news` links redirect to `/blog`.
+- Unique IDs for newly added products; protection for required contact/page-layout entries; actual dashboard dealer count; username/password-only administrator setup.
 
-Use your existing database for an upgrade. Do not delete it or overwrite existing dealer data.
-For a fresh install, open MySQL as an administrator (replace the executable path if needed):
+Navigation, social and Google Maps destinations remain editable links because these features need targets. Media URL text inputs are replaced by uploads. Existing remote images remain until replaced with a local upload; this update does not download them automatically.
 
-```powershell
-& 'C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe' -u root -p
+## Latest UI update
+
+- News banner image is editable; banner heading and description are fixed.
+- Branding edits only the Dealer Logo. The BULL brand logo is fixed.
+- Admin text uses 14, 15 and 16 px sizes and the header stays at the top while scrolling.
+- File pickers show the selected filename or saved image filename; media-library selection dropdowns are removed.
+- Main Banner Enabled and Autoplay controls are hidden; existing stored settings are retained.
+- Add item starts with blank fields and expands the new item for banners/statistics, retaining existing items.
+- Dealers have a trash action with confirmation. Deletion removes that dealer's domains, content and enquiries, and disables its users. Other dealers remain unchanged.
+- Users & Access menu and page are removed.
+- The duplicate All News page and unused news data module are removed. Blog detail uses image/text columns and related news cards.
+
+Latest browser checks confirmed Dealer Logo-only editing, absence of Users & Access, sticky header, computed 14/15/16 px text, and blank expanded Statistics/Main Banner items. No blank test item was published.
+
+## Local setup
+
+Default administrator: username `admin`, password `admin123`. No administrator email is required.
+
+Requires Node.js 22+ and MySQL 8.x. Create a MySQL database/user. For a fresh installation, copy `.env.example` to `.env`, and set `DATABASE_URL`, `ADMIN_USERNAME`, `ADMIN_PASSWORD` and `MEDIA_STORAGE=local`. URL-encode special characters in the database URL password.
+
+```sh
+npm ci
+npm run db:setup
+npm run dev
 ```
 
-Run these SQL statements inside MySQL, substituting your own password:
+Admin: `http://localhost:5174/admin/`. Website: `http://localhost:5173/`. API health: `http://localhost:3000/api/health`.
 
-```sql
-CREATE DATABASE bull_dealers CHARACTER SET utf8mb4;
-CREATE USER 'bull'@'localhost' IDENTIFIED BY 'chooseDatabasePassword';
-GRANT ALL PRIVILEGES ON bull_dealers.* TO 'bull'@'localhost';
-exit
+For upgrades, preserve your existing `.env`, database and uploads. Bootstrap preserves existing users/publications. Changing credentials in `.env` does not reset an existing account; use `npm run admin:credentials` only when intentionally resetting that account.
+
+## VPS deployment
+
+Set `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `MYSQL_PASSWORD` and `MYSQL_ROOT_PASSWORD` in `.env` to your real values, then run:
+
+```sh
+docker compose up -d --build
 ```
 
-From the extracted project root:
+The site is exposed on port 8080; admin is `/admin/`. Register the dealer domain in Admin → Dealers. Configure your VPS reverse proxy/TLS to this port and preserve the Host header. MySQL/API ports are bound to localhost. The API container runs migration/bootstrap automatically.
 
-```powershell
-Copy-Item .env.example .env
-notepad .env
-npm.cmd ci
-npm.cmd run db:setup
+For upgrades, back up MySQL and uploads, retain the same Compose project name and volumes, replace the source, and rebuild. Do not run `docker compose down -v`, which removes persistent data. Without Docker, configure an absolute writable `MEDIA_DIR` that survives releases and proxy `/api/` and `/uploads/` to the API; see `infra/nginx.conf`.
+
+## Verification performed
+
+Test environment: Windows, Node.js 24, isolated MySQL 8.0.46. Original ZIP and live database were not modified.
+
+- TypeScript checks and production builds for admin, API and website.
+- 21 API unit tests covering authentication, scopes, schemas, News capability detection and local media persistence/rollback.
+- 20 CMS integration scenarios with 130 dealers, including publication, conflicts, permissions, enquiries, media and account operations.
+- 12 News integration scenarios, including multipart image upload, API restart persistence, separate banner publication and administrator-only dealer deletion.
+- 20 sections × initial save and update: 40 saves verified against published content.
+- Browser: all 20 content editors opened with enabled save; real local PNG upload; article create/save/publish; View More → article → More News → listing (earlier browser run); existing article edit appeared on the already-open public listing.
+- Inspected admin layout and mobile News layout; no browser console errors in checked flows.
+
+Repeat checks:
+
+```sh
+npm run check
+npm run build
+npm test
 ```
 
-Skip Copy-Item when upgrading an existing configured .env. Set DATABASE_URL to your actual host, port, database, user and password. URL-encode password characters such as @, #, : and /. The example uses port 3306; use 3307 only if your own server actually listens there. Set ADMIN_USERNAME, ADMIN_EMAIL and ADMIN_PASSWORD (8+ characters). Do not use VITE_ variables for database credentials. Explicit PowerShell environment variables override .env; remove stale DATABASE_URL or DEMO_MODE values if needed.
+For integration tests, set `TEST_DATABASE_URL` to a disposable MySQL test server whose account can create/drop test databases, then run `npm run test:integration` and `npm run test:news`.
 
-`db:setup` builds the API, runs the repeatable migration and seeds the first administrator plus published Tara content. Existing administrators and publications are preserved. Updating ADMIN_PASSWORD in .env does not reset an existing account. For an existing account, set ADMIN_EMAIL to that account's email, choose ADMIN_USERNAME and ADMIN_PASSWORD, then run `npm.cmd run admin:credentials` explicitly.
+This is a locally tested source delivery. Live VPS deployment, TLS/domain setup and Docker execution were not performed. Verify host permissions and deployment on your VPS.
 
-## 2. Start all apps
+The ZIP excludes real `.env` credentials, node_modules, compiled builds, temporary QA data, old embedded ZIPs, unused static News data and ad-hoc credential-reset scripts. Run `npm ci` and build from source.
 
-```powershell
-npm.cmd run dev
+## Run each app separately
+
+Run these from the project root in three terminals after completing database setup:
+
+```sh
+npm run dev -w apps/api
+npm run dev -w apps/admin
+npm run dev -w apps/web
 ```
 
-Or use three PowerShell terminals, each in the extracted project root:
-
-```powershell
-# Terminal 1: API, port 3000
-npm.cmd run dev -w apps/api
-```
-```powershell
-# Terminal 2: admin, port 5174
-npm.cmd run dev -w apps/admin
-```
-```powershell
-# Terminal 3: dealer website, port 5173
-npm.cmd run dev -w apps/web
-```
-
-Open http://localhost:5174/admin/login and sign in with your configured username/password.
-Open http://localhost:5173/ for the dealer site.
-Health: http://localhost:3000/api/health.
-
-Both Vite apps proxy /api to 127.0.0.1:3000. Requests remain same-origin, so local CORS changes are unnecessary. Keep PORT=3000 with these proxy settings. Vite refuses occupied ports rather than silently choosing another port. Stop old development servers before starting these apps. The API loads the root .env even when started from its workspace. Database/schema failures stop API startup with an actionable error; demo mode is not a substitute for CMS setup.
-
-Localhost, 127.0.0.1 and [::1] resolve to the seeded bulltaraautohub.com dealer in development. Unknown domains still return 404; inactive dealers remain unavailable. The seeded dealer must remain active and retain its domain mapping. No catch-all tenant fallback was introduced.
-
-## 3. Check the installation
-
-```powershell
-Invoke-RestMethod http://localhost:3000/api/health
-Invoke-RestMethod http://localhost:5173/api/site
-npm.cmd run check
-npm.cmd test
-npm.cmd run build
-```
-
-The older docs/VERIFICATION.md and docs/TEST-RESULTS.json describe the previous package's machine. See docs/FIXES-20260922.md for this version's actual checks.
-
-## Docker deployment
-
-Configure the Docker MYSQL_PASSWORD, MYSQL_ROOT_PASSWORD and ADMIN_* entries in .env, then run `docker compose up --build -d`. Open http://localhost:8080/ and /admin/. The API now runs repeatable migrations before seeding, including on existing volumes. Never delete volumes to apply schema changes. Docker execution is separate from the tested Windows development workflow.
-
-## Optional regression checks
-
-With all three apps running and ADMIN_PASSWORD set to the current account password:
-
-```powershell
-npm.cmd run test:local
-```
-
-For the 130-dealer integration suite, use a MySQL test account allowed to create/drop disposable databases:
-
-```powershell
-$env:TEST_DATABASE_URL='mysql://TEST_USER:URL_ENCODED_PASSWORD@127.0.0.1:3306/mysql'
-npm.cmd run test:integration
-```
-
-The suite creates a uniquely named bull_cms_test_* database and removes only that database when finished. It uses port 3002 and does not reset the configured CMS database.
-
-## Requested local login (v1.0.2)
-
-The supplied .env.example sets username `admin` and password `admin123`. Fresh `db:setup` uses these values after copying the example to .env. Existing accounts are preserved. To change an existing account, keep DATABASE_URL and ADMIN_EMAIL set to the real database/account and run:
-
-```powershell
-$env:ADMIN_USERNAME="admin"
-$env:ADMIN_PASSWORD="admin123"
-npm.cmd run admin:credentials
-```
+Alternatively, `npm run dev` starts all three. Rebuild all three apps when updating this package so API and admin News capabilities stay in sync.

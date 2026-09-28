@@ -12,9 +12,9 @@ export function Header() {
   const open = useAppSelector((s) => s.ui.menuOpen);
   return (
     <header className="original-header">
-      {b.enabled && b.brandLogo && (
+      {(
         <Link to="/" className="bull-logo">
-          <img src={b.brandLogo} alt={b.brandAlt} />
+          <img src="/Asset/Images/bull-machine-logo.png" alt="BULL" />
         </Link>
       )}
       {n.enabled && (
@@ -44,7 +44,7 @@ export function Header() {
           </nav>
         </div>
       )}
-      {b.enabled && b.dealerLogo && (
+      {b.dealerLogo && (
         <Link className="dealer-logo" to="/about">
           <img src={b.dealerLogo} alt={b.dealerAlt} />
         </Link>

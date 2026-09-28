@@ -14,7 +14,8 @@
     "db:migrate": "node infra/scripts/migrate.cjs",
     "admin:credentials": "node infra/scripts/admin-credentials.cjs",
     "db:setup": "npm run build -w apps/api && npm run db:migrate && npm run setup:cms",
-    "test:local": "node infra/scripts/local-smoke.cjs"
+    "test:local": "node infra/scripts/local-smoke.cjs",
+    "test:news": "npm run build -w apps/api && node infra/scripts/test-news.cjs"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
@@ -23,7 +24,7 @@
   "overrides": {
     "multer": "^2.3.0"
   },
-  "version": "1.0.2",
+  "version": "1.0.3",
   "engines": {
     "node": ">=22.0.0"
   }

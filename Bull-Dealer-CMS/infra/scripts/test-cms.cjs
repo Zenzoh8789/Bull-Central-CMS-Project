@@ -124,7 +124,7 @@ const { hashPassword } = require("../../apps/api/dist/cms/auth");
       section,
       document,
       expectedRevision = 0,
-      token = superToken,
+      token = section === "news" ? editor : superToken,
       removeOverride = false,
     ) =>
       request(
@@ -179,7 +179,7 @@ const { hashPassword } = require("../../apps/api/dist/cms/auth");
       news.revision,
     );
     assert.notEqual((await site(2)).content.news.heading, "Selected update");
-    check("drafts do not change live sites");
+    check("editor news drafts do not change live sites");
     assert.equal(
       (await publish([news], { mode: "SELECTED", dealerIds: [2, 4] })).affected,
       2,
@@ -526,7 +526,7 @@ const { hashPassword } = require("../../apps/api/dist/cms/auth");
       JSON.stringify(
         {
           timestamp: new Date().toISOString(),
-          database: "MySQL 8.4.11",
+          database: (await db.query("SELECT VERSION() AS version"))[0][0].version,
           dealers: 130,
           passed: results,
         },

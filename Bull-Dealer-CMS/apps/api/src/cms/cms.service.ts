@@ -19,6 +19,7 @@ import {
   verifyPassword,
 } from "./auth";
 import { registry, resolveContent, validateSection } from "./content";
+import { normalizeNews } from "@bull/content/news";
 import type { PoolConnection } from "mysql2/promise";
 const object = (x: any) => (typeof x === "string" ? JSON.parse(x) : x);
 const number = (v: any) => {
@@ -51,7 +52,11 @@ export class CmsService {
   async login(body: any) {
     const identifier = text(body.username ?? body.email, 150).toLowerCase(),
       password = body.password;
-    if (typeof password !== "string" || !password.length || password.length > 200)
+    if (
+      typeof password !== "string" ||
+      !password.length ||
+      password.length > 200
+    )
       throw new BadRequestException("Invalid password field");
     const [rows]: any = await this.pool.execute(
       body.username
@@ -98,6 +103,50 @@ export class CmsService {
     );
     return rows.map((r: any) => ({ ...r, domains: object(r.domains) }));
   }
+  async deleteDealer(actor: Actor, id: number) {
+    requireSuper(actor);
+    const db = await this.pool.getConnection();
+    try {
+      await db.beginTransaction();
+      const [rows]: any = await db.execute(
+        "SELECT id,name FROM dealers WHERE id=? FOR UPDATE",
+        [id],
+      );
+      if (!rows.length) throw new NotFoundException("Dealer not found");
+      await db.execute(
+        "DELETE s FROM cms_sessions s JOIN cms_users u ON u.id=s.user_id WHERE u.dealer_id=?",
+        [id],
+      );
+      await db.execute(
+        "UPDATE cms_users SET active=0,dealer_id=NULL WHERE dealer_id=?",
+        [id],
+      );
+      for (const table of [
+        "dealer_domains",
+        "cms_group_members",
+        "cms_live",
+        "cms_media",
+        "enquiries",
+      ])
+        await db.execute("DELETE FROM " + table + " WHERE dealer_id=?", [id]);
+      await db.execute(
+        "DELETE FROM cms_drafts WHERE layer IN ('DEALER','OVERRIDE') AND owner_id=?",
+        [id],
+      );
+      await db.execute("DELETE FROM dealers WHERE id=?", [id]);
+      await db.execute(
+        "INSERT INTO cms_audit(actor_id,action,details) VALUES (?,?,?)",
+        [actor.id, "DELETE_DEALER", JSON.stringify(rows[0])],
+      );
+      await db.commit();
+      return { deleted: true };
+    } catch (error) {
+      await db.rollback();
+      throw error;
+    } finally {
+      db.release();
+    }
+  }
   async saveDealer(actor: Actor, body: any, id?: number) {
     requireSuper(actor);
     const name = text(body.name),
@@ -136,9 +185,9 @@ export class CmsService {
         await db.execute("DELETE FROM dealer_domains WHERE dealer_id=?", [id]);
       } else {
         const [rows]: any = await db.query(
-          "SELECT COALESCE(MAX(id),0)+1 AS nextId FROM dealers FOR UPDATE",
+          "SELECT GREATEST(COALESCE(MAX(id),0), COALESCE((SELECT MAX(CAST(JSON_UNQUOTE(JSON_EXTRACT(details,'$.id')) AS UNSIGNED)) FROM cms_audit WHERE action='DELETE_DEALER'),0))+1 AS nextId FROM dealers FOR UPDATE",
         );
-        id = rows[0].nextId;
+        id = Number(rows[0].nextId);
         await db.execute(
           "INSERT INTO dealers(id,name,location,address,about,active) VALUES (?,?,?,?,?,?)",
           [id, name, location, address, about, body.active],
@@ -220,7 +269,13 @@ export class CmsService {
         " ORDER BY updated_at DESC",
       actor.role === "DEALER_ADMIN" ? [actor.dealer_id] : [],
     );
-    return rows.map((r: any) => ({ ...r, document: object(r.document) }));
+    return rows.map((r: any) => ({
+      ...r,
+      document:
+        r.section_key === "news"
+          ? normalizeNews(object(r.document))
+          : object(r.document),
+    }));
   }
   async saveDraft(actor: Actor, body: any) {
     const { layer, section } = body;
@@ -235,7 +290,7 @@ export class CmsService {
     assertScope(actor, layer, owner);
     if (body.removeOverride && layer !== "OVERRIDE")
       throw new BadRequestException("Only explicit overrides can be removed");
-    validateSection(section, body.document);
+    body.document = validateSection(section, body.document);
     if (layer !== "COMMON") {
       const [rows]: any = await this.pool.execute(
         `SELECT id FROM ${layer === "GROUP" ? "cms_groups" : "dealers"} WHERE id=?`,
@@ -283,7 +338,36 @@ export class CmsService {
       "SELECT * FROM cms_drafts WHERE layer=? AND owner_id=? AND section_key=?",
       [layer, owner, section],
     );
-    return { ...rows[0], document: object(rows[0].document) };
+    let published = false;
+    if (actor.role !== "EDITOR") {
+      const target =
+        layer === "COMMON"
+          ? { mode: "ALL" }
+          : layer === "GROUP"
+            ? { mode: "GROUP", groupId: owner }
+            : { mode: "SINGLE", dealerIds: [owner] };
+      const request = {
+        draftIds: [rows[0].id],
+        revisions: { [rows[0].id]: rows[0].revision },
+        target,
+      };
+      try {
+        const preview = await this.preview(actor, request);
+        await this.publish(actor, {
+          ...request,
+          previewHash: preview.previewHash,
+        });
+        published = true;
+      } catch (error: any) {
+        return {
+          ...rows[0],
+          document: object(rows[0].document),
+          published: false,
+          publishError: error.message,
+        };
+      }
+    }
+    return { ...rows[0], document: object(rows[0].document), published };
   }
   async resolveDealer(actor: Actor, id: number) {
     if (actor.role === "DEALER_ADMIN" && id !== actor.dealer_id)
@@ -321,6 +405,9 @@ export class CmsService {
       assertScope(actor, d.layer, d.owner_id);
       if (body.revisions?.[d.id] !== d.revision)
         throw new ConflictException("Draft revision changed; preview again");
+      // Also migrate legacy drafts published directly from the approval screen.
+      if (d.section_key === "news" && !d.remove_override)
+        d.document = validateSection("news", object(d.document));
     }
     if (
       new Set(drafts.map((d: any) => d.layer + ":" + d.section_key)).size !==

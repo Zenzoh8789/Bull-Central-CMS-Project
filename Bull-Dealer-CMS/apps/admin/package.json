@@ -14,7 +14,8 @@
     "react-dom": "^19.1.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.18.4",
-    "lucide-react": "^0.468.0"
+    "lucide-react": "^0.468.0",
+    "@bull/content": "^1.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.1.0",

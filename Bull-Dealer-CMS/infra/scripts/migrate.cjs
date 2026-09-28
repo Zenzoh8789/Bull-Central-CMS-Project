@@ -41,6 +41,8 @@ const fs = require("fs"),
     const sql = fs.readFileSync("infra/migrations/003_central_cms.sql", "utf8");
     await db.query(sql.slice(0, sql.indexOf("ALTER TABLE enquiries")));
     const [userColumns] = await db.query("SHOW COLUMNS FROM cms_users");
+    if (userColumns.some(c => c.Field === "email" && c.Null === "NO"))
+      await db.query("ALTER TABLE cms_users MODIFY email VARCHAR(150) NULL");
     if (!userColumns.some((c) => c.Field === "username"))
       await db.query(
         "ALTER TABLE cms_users ADD COLUMN username VARCHAR(80) NULL UNIQUE",

@@ -1,0 +1,1 @@
+export const newsTemplate: Record<string,any>; export const newsCapabilities: { model: string; version: number; legacyUrl: boolean }; export function supportsNewsArticles(definition:any):boolean; export function normalizeNews(value:any):any;

@@ -74,7 +74,7 @@ export function Overview() {
         <div className="hero-copy">
           <p>POWERING PROGRESS TOGETHER</p>
           <h1>
-            <span>130 DEALERS</span>
+            <span>{q.data?.dealers ?? "—"} DEALERS</span>
             <br />
             WORLDWIDE
           </h1>

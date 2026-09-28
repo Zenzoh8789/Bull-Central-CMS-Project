@@ -1,3 +1,8 @@
+import {
+  newsTemplate,
+  newsCapabilities,
+  normalizeNews,
+} from "@bull/content/news";
 import defaults from "@bull/content";
 import { BadRequestException } from "@nestjs/common";
 export const sectionKeys = Object.keys(defaults);
@@ -18,11 +23,14 @@ export function registry() {
     label: key.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase()),
     preferredScope: dealerSections.includes(key) ? "DEALER" : "COMMON",
     defaultValue: defaults[key],
+    template: key === "news" ? newsTemplate : defaults[key],
+    ...(key === "news" ? { capabilities: newsCapabilities } : {}),
   }));
 }
 export function validateSection(key: string, value: unknown) {
   if (!sectionKeys.includes(key))
     throw new BadRequestException("Unknown CMS section");
+  if (key === "news") value = normalizeNews(value);
   const visit = (template: any, item: any, path: string, depth = 0) => {
     if (depth > 12)
       throw new BadRequestException("Content nesting is too deep");
@@ -99,8 +107,32 @@ export function validateSection(key: string, value: unknown) {
         throw new BadRequestException("Invalid YouTube video ID");
     }
   };
-  visit(defaults[key], value, key);
+  visit(key === "news" ? newsTemplate : defaults[key], value, key);
   const doc = value as any;
+  if (key === "news") {
+    const slugs = doc.items.map((a: any) => a.slug);
+    if (
+      new Set(slugs).size !== slugs.length ||
+      slugs.some(
+        (s: string) => !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s) || s.length > 150,
+      )
+    )
+      throw new BadRequestException("Invalid or duplicate article identifier");
+    if (
+      doc.items.some(
+        (a: any) =>
+          !a.title.trim() ||
+          !a.body.trim() ||
+          !a.image ||
+          !/^\d{4}-\d{2}-\d{2}$/.test(a.date) ||
+          !Number.isFinite(Date.parse(a.date)) ||
+          new Date(a.date).toISOString().slice(0, 10) !== a.date,
+      )
+    )
+      throw new BadRequestException(
+        "Each article needs an image, title, valid date and article text",
+      );
+  }
   if (key === "products") {
     if (
       doc.items.some(
@@ -164,5 +196,6 @@ export function resolveContent(rows: any[]) {
           : row.document;
       sources[row.section_key] = layer;
     }
+  result.news = normalizeNews(result.news);
   return { content: result, sources };
 }
