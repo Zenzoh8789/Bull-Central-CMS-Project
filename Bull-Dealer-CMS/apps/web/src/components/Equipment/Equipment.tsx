@@ -1,9 +1,10 @@
 import type React from "react";
 import { useEffect, useState } from "react";
-
+import { useVisibleAutoplay } from "../../hooks/useVisibleAutoplay";
 import type { Product } from "../../types/site";
 
 import "./Equipment.css";
+
 export function Equipment({
   id,
   title,
@@ -24,47 +25,46 @@ export function Equipment({
   const [selected, setSelected] = useState("");
   const [mobile, setMobile] = useState(false);
   const [paused, setPaused] = useState(false);
+
   useEffect(() => {
     const media = matchMedia("(max-width: 599px)");
     const sync = () => setMobile(media.matches);
+
     sync();
     media.addEventListener("change", sync);
+
     return () => media.removeEventListener("change", sync);
   }, []);
+
   const items = products.filter((p) => p.category === category);
-  useEffect(() => {
-    if (
-      !items.length ||
-      !mobile ||
-      paused ||
-      matchMedia("(prefers-reduced-motion: reduce)").matches
-    )
-      return;
-    const timer = setInterval(
-      () =>
-        setSelected(
-          (id) =>
-            items[
-              (Math.max(
-                0,
-                items.findIndex((p) => p.id === id),
-              ) +
-                1) %
-                items.length
-            ].id,
-        ),
-      5000,
-    );
-    return () => clearInterval(timer);
-  }, [products, category, mobile, paused]);
+
+  const sectionRef = useVisibleAutoplay(
+    () => {
+      setSelected((selectedId) => {
+        const index = Math.max(
+          0,
+          items.findIndex((p) => p.id === selectedId),
+        );
+
+        return items[(index + 1) % items.length].id;
+      });
+    },
+    5000,
+    items.length > 1 && mobile && !paused,
+  );
+
   const current = items.find((p) => p.id === selected) || items[0];
+
   return (
     <section
+      ref={sectionRef}
       id={id}
       className="equipment-section"
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget)) setPaused(false);
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+          setPaused(false);
+        }
       }}
     >
       <div className="equipment-heading content-width">
@@ -74,12 +74,15 @@ export function Equipment({
         </div>
         <p>{description}</p>
       </div>
+
       {current && (
         <>
           <div
             className="equipment-stage"
             style={{
-              backgroundImage: background ? `url("${background}")` : undefined,
+              backgroundImage: background
+                ? `url("${background}")`
+                : undefined,
             }}
           >
             <a
@@ -93,9 +96,11 @@ export function Equipment({
                 src={current.image}
                 alt={current.name}
                 loading="lazy"
+                decoding="async"
               />
             </a>
           </div>
+
           <div className="equipment-strip">
             <div
               className="equipment-options"
@@ -119,7 +124,12 @@ export function Equipment({
                     onFocus={() => setSelected(p.id)}
                     onClick={() => setSelected(p.id)}
                   >
-                    <img src={p.image} alt={p.name} loading="lazy" />
+                    <img
+                      src={p.image}
+                      alt={p.name}
+                      loading="lazy"
+                      decoding="async"
+                    />
                     <span>{p.name}</span>
                   </a>
                 </div>

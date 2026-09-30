@@ -10,40 +10,62 @@ export function ScrollRestoration() {
   useEffect(() => {
     dispatch(actions.closeMenu());
     dispatch(actions.closeEnquiry());
+
     if (!hash) {
       window.scrollTo(0, 0);
       return;
     }
+
     let id: string;
+
     try {
       id = decodeURIComponent(hash.slice(1));
     } catch {
       return;
     }
 
-    const scrollToSection = () => {
-      const section = document.getElementById(id);
-      if (!section) return false;
-      section.scrollIntoView();
-      return true;
-    };
-    // Product sections may arrive after their API request completes.
-    const observer = new MutationObserver(() => {
-      if (scrollToSection()) observer.disconnect();
-    });
-    const frame = requestAnimationFrame(() => {
-      if (!scrollToSection())
-        observer.observe(document.getElementById("main")!, {
-          childList: true,
-          subtree: true,
-        });
-    });
-    const timeout = window.setTimeout(() => observer.disconnect(), 15000);
-    return () => {
-      cancelAnimationFrame(frame);
-      clearTimeout(timeout);
+    if (!id) return;
+
+    let frame: number | undefined;
+    let timeout: number | undefined;
+
+    const stop = () => {
+      if (frame !== undefined) {
+        cancelAnimationFrame(frame);
+      }
+
+      frame = undefined;
+      window.clearTimeout(timeout);
       observer.disconnect();
     };
+
+    const scheduleScroll = () => {
+      if (frame !== undefined) return;
+
+      frame = requestAnimationFrame(() => {
+        frame = undefined;
+
+        const section = document.getElementById(id);
+
+        if (section) {
+          section.scrollIntoView();
+          stop();
+        }
+      });
+    };
+
+    const observer = new MutationObserver(scheduleScroll);
+
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+
+    scheduleScroll();
+    timeout = window.setTimeout(stop, 15000);
+
+    return stop;
   }, [pathname, hash, dispatch]);
+
   return null;
 }

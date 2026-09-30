@@ -1,7 +1,7 @@
 footer {
   background: #242424;
   color: #BDBDBD;
-  padding: 3.75rem 0rem 0rem;
+  padding: 2.5rem 0rem 0rem;
   font-size: 16px;
 }
 .footer-grid {
@@ -55,7 +55,7 @@ footer {
   margin-top: 12px;
 }
 .footer-bottom {
-  margin-top: 30px;
+  margin-top: 25px;
   border-top: 1px solid #343434;
   padding: 20px 13.7%;
   display: flex;
@@ -71,9 +71,6 @@ footer {
   object-fit: contain;
 }
 @media (min-width: 1700px) {
-  footer {
-    padding-top: 125px;
-  }
   .footer-grid h3,
   .footer-contact h2 {
        font-size: 0.87rem;
