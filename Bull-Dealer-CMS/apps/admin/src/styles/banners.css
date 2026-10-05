@@ -1,0 +1,145 @@
+.banner-manager {
+  min-width: 0;
+}
+.banner-table {
+  min-width: 700px;
+}
+.banner-thumbnails {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  max-width: 200px;
+}
+.banner-thumbnails img {
+  width: 75px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 5px;
+  background: #f7f7f7;
+}
+.banner-publish {
+  display: block;
+  max-width: 250px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.banner-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.banner-images,
+.banner-details {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.banner-upload {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  border: 1px dashed #d7bd58;
+  border-radius: 10px;
+  background: #fffbee;
+  text-align: center;
+}
+.banner-upload svg {
+  color: #d8a600;
+}
+.banner-upload small {
+  font-size: 13px;
+}
+.banner-upload input {
+  max-width: 100%;
+  font-size: 14px;
+}
+.banner-previews {
+  display: grid;
+  gap: 10px;
+}
+.banner-previews figure {
+  margin: 0;
+  position: relative;
+  background: #f5f5f5;
+  border: 1px solid #eee;
+  border-radius: 9px;
+  overflow: hidden;
+}
+.banner-previews img {
+  width: 100%;
+  height: 115px;
+  object-fit: contain;
+  display: block;
+}
+.banner-previews button {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  padding: 5px;
+  min-height: 28px;
+  background: #fff;
+}
+.banner-audience {
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  padding: 12px;
+  min-width: 0;
+}
+.banner-audience legend {
+  font-weight: 600;
+  padding: 0 5px;
+}
+.banner-state-list {
+  max-height: 225px;
+  overflow: auto;
+  border-top: 1px solid #eee;
+}
+.banner-state {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  margin: 0 !important;
+  padding: 8px 2px;
+  font-size: 15px !important;
+  font-weight: 400 !important;
+}
+.banner-state input {
+  width: 18px !important;
+  height: 18px;
+  flex: none;
+  margin: 0 !important;
+}
+.banner-selection {
+  font-size: 14px;
+  color: #666;
+  overflow-wrap: anywhere;
+  margin-bottom: 0;
+}
+.banner-details > label {
+  display: grid;
+  gap: 8px;
+}
+.banner-manager fieldset:disabled {
+  opacity: 1;
+}
+@media (max-width: 650px) {
+  .banner-form {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .banner-previews {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .banner-previews img {
+    height: 80px;
+  }
+  .banner-state-list {
+    max-height: 180px;
+  }
+}

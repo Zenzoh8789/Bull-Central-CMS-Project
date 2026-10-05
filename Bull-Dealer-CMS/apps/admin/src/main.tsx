@@ -14,5 +14,13 @@ createRoot(document.getElementById("root")!).render(
     </Provider>
   </React.StrictMode>,
 );
-import "./styles/dashboard.css";
+import "./styles/shell.css";
 import "./styles/editor.css";
+
+import "./styles/dashboard.css";
+import "./styles/login.css";
+import "./styles/scrollbars.css";
+
+import "./styles/theme.css";
+
+import "./styles/workspace.css";

@@ -7,3 +7,5 @@
   border: 0;
   padding: 8px 16px;
 }
+
+.equipment-title-lines { white-space: pre-line; }

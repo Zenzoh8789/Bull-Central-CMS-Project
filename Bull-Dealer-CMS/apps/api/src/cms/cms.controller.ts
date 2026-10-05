@@ -30,13 +30,21 @@ export class AuthController {
   @Post("login") login(@Body() body: any) {
     return this.cms.login(body);
   }
+  @Post("enter") @UseGuards(CmsAuthGuard) enter(
+    @Req() req: any,
+    @Body() body: any,
+    @Headers("authorization") auth: string,
+  ) {
+    return this.cms.enter(req.actor, auth.replace(/^Bearer /, ""), body);
+  }
   @Get("me") @UseGuards(CmsAuthGuard) me(@Req() req: any) {
     return req.actor;
   }
   @Post("logout") @UseGuards(CmsAuthGuard) logout(
     @Headers("authorization") auth: string,
+    @Req() req: any,
   ) {
-    return this.cms.logout(auth.replace(/^Bearer /, ""));
+    return this.cms.logout(auth.replace(/^Bearer /, ""), req.actor);
   }
 }
 @Controller("api/admin")
@@ -46,6 +54,28 @@ export class CmsController {
     @Inject(CmsService) private cms: CmsService,
     @Inject(MediaStorage) private storage: MediaStorage,
   ) {}
+  @Get("employees") employees(@Req() r: any) {
+    return this.cms.employees(r.actor);
+  }
+  @Post("employees") addEmployee(@Req() r: any, @Body() b: any) {
+    return this.cms.saveEmployee(r.actor, b);
+  }
+  @Put("employees/:id") editEmployee(
+    @Req() r: any,
+    @Param("id", ParseIntPipe) id: number,
+    @Body() b: any,
+  ) {
+    return this.cms.saveEmployee(r.actor, b, id);
+  }
+  @Delete("employees/:id") removeEmployee(
+    @Req() r: any,
+    @Param("id", ParseIntPipe) id: number,
+  ) {
+    return this.cms.removeEmployee(r.actor, id);
+  }
+  @Get("activity") activity(@Req() r: any) {
+    return this.cms.activity(r.actor);
+  }
   @Get("registry") registry() {
     return registry();
   }
@@ -84,11 +114,21 @@ export class CmsController {
   ) {
     return this.cms.saveGroup(r.actor, b, id);
   }
+  @Get("common/resolved") commonResolved(@Req() r: any) {
+    return this.cms.commonResolved(r.actor);
+  }
   @Get("drafts") drafts(@Req() r: any) {
     return this.cms.drafts(r.actor);
   }
   @Post("drafts") saveDraft(@Req() r: any, @Body() b: any) {
     return this.cms.saveDraft(r.actor, b);
+  }
+  @Delete("drafts/:id") deleteDraft(
+    @Req() r: any,
+    @Param("id", ParseIntPipe) id: number,
+    @Body() body: { expectedRevision: number },
+  ) {
+    return this.cms.deleteDraft(r.actor, id, body);
   }
   @Get("dealers/:id/resolved") resolved(
     @Req() r: any,
@@ -184,6 +224,10 @@ export class CmsController {
       await stored.discard().catch(() => undefined);
       throw e;
     }
+    await this.cms.audit(r.actor, "UPLOAD_MEDIA", {
+      name: basename(file.originalname),
+      url,
+    });
     return { url, mime };
   }
 }

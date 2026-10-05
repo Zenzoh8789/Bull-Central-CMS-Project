@@ -1,0 +1,107 @@
+.purpose-editor {
+  display: grid;
+  gap: 16px;
+}
+.editor-card {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #e3e8ed;
+  border-radius: 12px;
+  background: #fbfcfe;
+}
+.editor-card > h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  color: #243d52;
+}
+.editor-mode-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 1px solid #e3e8ed;
+  border-top: 0;
+}
+.editor-mode-tabs button {
+  font-size: 15px;
+  padding: 10px 16px;
+  background: #fff;
+  border-color: #e1e7ed;
+}
+.editor-mode-tabs button.selected {
+  background: #17354b;
+  border-color: #17354b;
+  color: #fff;
+}
+.purpose-contact .field-grid,
+.purpose-dealerContact .field-grid {
+  align-items: start;
+}
+.purpose-editor small {
+  font-size: 15px;
+  font-weight: 400;
+  color: #667b8d;
+}
+.purpose-editor input,
+.purpose-editor textarea {
+  font-weight: 400;
+}
+.section-card-meta,
+.editor-target,
+.save-state,
+.media-field > small,
+.media-field > span {
+  color: #607486;
+}
+@media (max-width: 650px) {
+  .editor-card {
+    padding: 16px;
+  }
+  .editor-mode-tabs {
+    padding: 12px;
+  }
+  .editor-mode-tabs button {
+    flex: 1 1 auto;
+  }
+}
+.news-editor {
+  gap: 20px;
+}
+.news-editor > label {
+  margin: 0;
+}
+.news-banner-card {
+  margin: 0;
+}
+.cms-dialog-body > .editor-mode-tabs {
+  margin-bottom: 22px;
+  border-radius: 10px;
+}
+.contact-banner-card .field-grid {
+  grid-template-columns: 1fr;
+}
+.contact-banner-card .media-field:has(.field-image) {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+}
+.contact-banner-card .media-field .field-image {
+  grid-column: 1;
+  grid-row: 1 / span 4;
+  max-width: 100%;
+  height: 180px;
+}
+.contact-banner-card .media-field:has(.field-image) > :not(.field-image) {
+  grid-column: 2;
+}
+@media (max-width: 650px) {
+  .contact-banner-card .media-field:has(.field-image) {
+    grid-template-columns: 1fr;
+  }
+  .contact-banner-card .media-field:has(.field-image) > :not(.field-image) {
+    grid-column: 1;
+  }
+  .contact-banner-card .media-field .field-image {
+    grid-row: auto;
+  }
+}

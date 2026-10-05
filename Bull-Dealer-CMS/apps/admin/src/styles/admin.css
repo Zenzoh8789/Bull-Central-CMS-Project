@@ -8,7 +8,7 @@ body {
   font-family: "Poppins", sans-serif;
   font-size: 15px;
   line-height: 1.5;
-  background: #f3f5f7;
+  background: #00000006;
   color: #20272f;
 }
 a {
@@ -29,9 +29,17 @@ button,
   padding: 10px 15px;
   cursor: pointer;
   text-decoration: none;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
 }
-button:hover,
+button:where(:hover):not(:disabled),
 .button:hover {
   background: #f0f2f4;
 }
@@ -40,8 +48,8 @@ button:disabled {
   cursor: not-allowed;
 }
 .primary {
-  background: #f8b816;
-  border-color: #f8b816;
+  background: #ffc400;
+  border-color: #ffc400;
   font-weight: 700;
 }
 .primary:hover {
@@ -72,15 +80,15 @@ textarea {
 label {
   display: block;
   margin-bottom: 12px;
+  font-weight: 600;
 }
 h1 {
-  font-size: 32px;
-  letter-spacing: -1px;
+  font-size: 16px;
   margin: 0 0 10px;
 }
 h2 {
-  font-size: 20px;
-  margin: 0 0 14px;
+  font-size: 16px;
+  margin: 0 0 15px;
 }
 h3 {
   font-size: 16px;
@@ -91,110 +99,6 @@ p {
 small {
   display: block;
   color: #6b7480;
-}
-.admin-shell {
-  display: grid;
-  grid-template-columns: 235px minmax(0, 1fr);
-  min-height: 100vh;
-}
-.admin-shell aside {
-  background: #20262c;
-  color: #fff;
-  padding: 30px 20px;
-  display: flex;
-  flex-direction: column;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-}
-.brand {
-  display: flex;
-  flex-direction: column;
-}
-.brand b {
-  color: #f4b414;
-  font-size: 42px;
-  font-weight: 900;
-  letter-spacing: 1px;
-  line-height: 1;
-}
-.brand span {
-  font-size: 11px;
-  letter-spacing: 2px;
-  margin-top: 10px;
-}
-.scope-caption {
-  color: #9aa4af;
-  font-size: 12px;
-  margin: 20px 0;
-}
-.admin-shell aside nav {
-  display: grid;
-  gap: 4px;
-}
-.admin-shell aside nav a {
-  text-decoration: none;
-  padding: 11px 12px;
-  color: #bfc6ce;
-  border-radius: 6px;
-}
-.admin-shell aside nav a.active {
-  background: #f4b414;
-  color: #222;
-  font-weight: 700;
-}
-.session {
-  margin-top: auto;
-  padding-top: 25px;
-}
-.session small {
-  color: #a7b0bb;
-  font-size: 11px;
-  margin-bottom: 12px;
-}
-.session button {
-  background: transparent;
-  color: #fff;
-  border-color: #59616a;
-}
-.admin-main > header {
-  background: white;
-  border-bottom: 1px solid #e1e5e9;
-  padding: 20px 35px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 15px;
-  color: #6b7580;
-}
-.admin-main > main {
-  padding: 38px;
-  max-width: 1600px;
-  margin: auto;
-}
-.eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2px;
-}
-.metrics {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin: 30px 0;
-}
-.metrics article {
-  background: #fff;
-  border: 1px solid #e1e5e9;
-  padding: 25px;
-  border-radius: 10px;
-  display: grid;
-}
-.metrics strong {
-  font-size: 34px;
-}
-.metrics span {
-  color: #68717c;
-  font-size: 13px;
 }
 .panel {
   background: #fff;
@@ -218,48 +122,10 @@ small {
   margin: 0;
 }
 .badge {
-  font-size: 12px;
+  font-size: 15px;
   padding: 7px 12px;
   background: #e8ecf1;
   border-radius: 20px;
-}
-.editor-layout {
-  display: grid;
-  grid-template-columns: 190px minmax(0, 1fr);
-  gap: 22px;
-}
-.editor-layout > .panel {
-  margin: 0;
-  min-width: 0;
-}
-.section-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.section-list button {
-  text-align: left;
-  background: transparent;
-  border: none;
-}
-.section-list button.selected {
-  background: #fff;
-  border-left: 3px solid #f0af00;
-}
-.section-list small {
-  font-size: 10px;
-}
-.sticky-actions {
-  position: sticky;
-  bottom: 0;
-  background: #fff;
-  padding: 18px 0 0;
-  display: flex;
-  gap: 15px;
-  align-items: center;
-}
-.sticky-actions span {
-  font-size: 13px;
 }
 fieldset {
   border: 0;
@@ -301,14 +167,14 @@ th {
   border-bottom: 1px solid #e6e9ec;
 }
 th {
-  font-size: 12px;
+  font-size: 15px;
   background: #f8f9fb;
 }
 td {
-  font-size: 13px;
+  font-size: 15px;
 }
 td button {
-  font-size: 12px;
+  font-size: 15px;
   margin: 3px;
 }
 .cards,
@@ -335,7 +201,7 @@ td button {
   background: #edf0f4;
   display: grid;
   place-items: center;
-  font-size: 32px;
+  font-size: 16px;
   font-weight: 700;
 }
 pre {
@@ -343,7 +209,7 @@ pre {
   overflow-wrap: anywhere;
   background: #f4f6f8;
   padding: 15px;
-  font-size: 12px;
+  font-size: 15px;
   max-height: 400px;
   overflow: auto;
 }
@@ -367,83 +233,23 @@ details details {
   background: #fff0f0;
   padding: 12px;
 }
-.login {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  background: #20262c;
-  padding: 25px;
-}
-.login form {
-  background: #fff;
-  border-radius: 12px;
-  padding: 45px;
-  width: min(470px, 100%);
-}
-.login h1 {
-  font-size: 27px;
-  margin-top: 35px;
-}
-.login .primary {
-  width: 100%;
-}
 :focus-visible {
   outline: 3px solid #286bb7;
   outline-offset: 3px;
 }
-@media (max-width: 1000px) {
-  .admin-shell {
-    grid-template-columns: 190px minmax(0, 1fr);
-  }
-  .admin-main > main {
-    padding: 25px;
-  }
-  .metrics {
-    grid-template-columns: 1fr 1fr;
-  }
-  .editor-layout {
-    grid-template-columns: 1fr;
-  }
-  .section-list {
-    flex-direction: row;
-    overflow: auto;
-  }
-  .section-list button {
-    white-space: nowrap;
-  }
-  .admin-main > header {
-    padding: 18px;
-  }
-}
 @media (max-width: 650px) {
-  .admin-shell {
-    grid-template-columns: 1fr;
-  }
-  .admin-shell aside {
-    height: auto;
-    position: static;
-    padding: 20px;
-  }
-  .admin-shell aside nav {
-    grid-template-columns: 1fr 1fr;
-  }
-  .session {
-    padding-top: 15px;
-  }
-  .admin-main > header {
-    flex-direction: column;
-    gap: 10px;
-  }
-  .admin-main > main {
-    padding: 20px;
-  }
   .panel {
     padding: 18px;
   }
   .recipient-list {
     columns: 1;
   }
-  .metrics {
-    gap: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button,
+  .button,
+  .sidebar nav a {
+    transition: none;
   }
 }

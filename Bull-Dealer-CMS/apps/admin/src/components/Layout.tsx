@@ -1,90 +1,128 @@
-import { useRef, useState } from "react";
-import {
-  Link,
-  Outlet,
-  Navigate,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { sectionLabel } from "./contentSections";
+import { contentSections } from "./contentSections";
+import { useEffect, useRef, useState } from "react";
+import { Link, Outlet, Navigate, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
-  Globe,
-  PanelTop,
-  Image,
-  Info,
-  Box,
-  Images,
-  Video,
-  Newspaper,
-  MapPin,
-  Share2,
-  CheckCircle,
   History,
-  Settings,
-  Search,
-  ExternalLink,
+  UserRound,
   Menu,
   X,
-  Layers,
-  Mail,
   LogOut,
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../store";
 import { signedOut } from "../store/authSlice";
-import { api, useLogoutMutation, useMeQuery } from "../services/api";
+import {
+  api,
+  useLogoutMutation,
+  useMeQuery,
+  useReadQuery,
+} from "../services/api";
 
+const commonSections = contentSections.filter(
+  (s) => !["branding", "seo", "about"].includes(s.key),
+);
 const links = [
   ["/", "Dashboard", LayoutDashboard],
   ["/dealers", "Dealers", Users],
-  ["/content?section=seo", "SEO", Globe],
-  ["/content?section=navigation", "Navigation", Menu],
-  ["/content?section=branding", "Dealer Logo", PanelTop],
-  ["/content?section=banners", "Main Banner", Image],
-  ["/content?section=statistics", "Statistics", LayoutDashboard],
-  ["/content?section=about", "About Us", Info],
-  ["/content?section=products", "Products", Box],
-  ["/content?section=equipment", "Equipment Sections", Layers],
-  ["/content?section=service", "Service", Settings],
-  ["/content?section=dealerContact", "Dealer Contact", MapPin],
-  ["/content?section=locations", "Locations", MapPin],
-  ["/content?section=whatsapp", "WhatsApp", Mail],
-  ["/content?section=pageLayout", "Page Layout", Layers],
-  ["/content?section=gallery", "Gallery", Images],
-  ["/content?section=downloads", "Downloads", Box],
-  ["/media", "Media Library", Images],
-  ["/content?section=testimonials", "Videos & Testimonials", Video],
-  ["/content?section=news", "News & Updates", Newspaper],
-  ["/content?section=contact", "Contact & Map", MapPin],
-  ["/content?section=social", "Social Links", Share2],
-  ["/content?section=footer", "Footer", PanelTop],
-  ["/groups", "Dealer Groups", Users],
-  ["/publish", "Publish Center", CheckCircle],
-  ["/enquiries", "Enquiries", Mail],
-  ["/history", "Logs & History", History],
+  ...commonSections.map(
+    (s) => ["/content?section=" + s.key, s.label, s.icon] as const,
+  ),
+  ["/history", "Logs & history", History],
 ] as const;
 export function Layout() {
   const { token, user } = useAppSelector((s) => s.auth);
   const dispatch = useAppDispatch();
   const [logout] = useLogoutMutation();
-  const me = useMeQuery(undefined, { skip: !token });
+  const me = useMeQuery(undefined, {
+    skip: !token,
+    refetchOnMountOrArgChange: true,
+    pollingInterval: 30000,
+  });
+  const dealerQuery = useReadQuery("dealers", { skip: !token });
+  const [dealerId, setDealerId] = useState<number>(user?.dealer_id || 0);
+  const [region, setRegion] = useState(""),
+    [district, setDistrict] = useState(""),
+    [locationMode, setLocationMode] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
+  const activePath =
+    location.pathname === "/content" &&
+    new URLSearchParams(location.search).get("section")
+      ? "/content?section=" +
+        new URLSearchParams(location.search).get("section")
+      : location.pathname;
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const profileButton = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const close = (event: PointerEvent) => {
+      if (!profileRef.current?.contains(event.target as Node))
+        setProfileOpen(false);
+    };
+    document.addEventListener("pointerdown", close);
+    return () => document.removeEventListener("pointerdown", close);
+  }, []);
+  useEffect(() => {
+    setProfileOpen(false);
+  }, [location.pathname, location.search]);
   const [editorState, setEditorState] = useState({ dirty: false, busy: false });
   const canLeave = () =>
     !editorState.busy &&
     (!editorState.dirty || window.confirm("Discard unsaved edits?"));
-  const searchRef = useRef<HTMLInputElement>(null);
+  const chooseDealer = (id: number) => {
+    if (canLeave()) setDealerId(id);
+  };
+  const setLocationFilter = (mode: boolean, state = "", area = "") => {
+    if (canLeave()) {
+      setLocationMode(mode);
+      setRegion(state);
+      setDistrict(area);
+      setDealerId(user?.dealer_id || 0);
+    }
+  };
+  const sectionKey = new URLSearchParams(location.search).get("section");
+  const pageTitle =
+    location.pathname === "/content"
+      ? "Content"
+      : location.pathname === "/dealers"
+        ? "Dealers"
+        : location.pathname === "/"
+          ? "Dashboard"
+          : location.pathname === "/history"
+            ? "Logs & history"
+            : location.pathname.slice(1).replace(/^./, (x) => x.toUpperCase());
   if (!token) return <Navigate to="/login" replace />;
   if (me.isLoading) return <p>Verifying session…</p>;
-  const navigation = links;
-  const matches = search.trim()
-    ? navigation.filter(([, label]) =>
-        label.toLowerCase().includes(search.toLowerCase()),
-      )
-    : [];
+  if (me.isError)
+    return (
+      <p className="error">
+        Unable to verify your session. Reload to try again.
+      </p>
+    );
+  const profile = me.data || user;
+  if (profile?.role === "SUPER_ADMIN" && !profile.cms_entered)
+    return <Navigate to="/choose-employee" replace />;
+  const navigation =
+    profile?.role === "SUPER_ADMIN"
+      ? [...links, ["/employees", "Employees", Users] as const]
+      : links;
+  const renderLink = ([path, label, Icon]: (typeof navigation)[number]) => (
+    <Link
+      key={path}
+      to={path}
+      onClick={(event) => {
+        if (!canLeave()) event.preventDefault();
+        else setOpen(false);
+      }}
+      aria-current={activePath === path ? "page" : undefined}
+      className={activePath === path ? "active" : ""}
+    >
+      <Icon size={24} />
+      <span>{label}</span>
+    </Link>
+  );
   return (
     <div className="admin-shell">
       <aside className={open ? "sidebar is-open" : "sidebar"}>
@@ -112,41 +150,18 @@ export function Layout() {
         >
           <X />
         </button>
-        <nav aria-label="Admin navigation">
-          {navigation.map(([path, label, Icon]) => (
-            <Link
-              key={path}
-              to={path}
-              onClick={(event) => {
-                if (!canLeave()) event.preventDefault();
-                else setOpen(false);
-              }}
-              aria-current={
-                location.pathname + location.search === path
-                  ? "page"
-                  : undefined
-              }
-              className={
-                location.pathname + location.search === path ? "active" : ""
-              }
-            >
-              <Icon size={19} />
-              <span>{label}</span>
-            </Link>
-          ))}
+        <nav aria-label="Admin navigation" className="sidebar-navigation">
+          <div className="sidebar-primary">
+            {navigation.slice(0, 2).map(renderLink)}
+          </div>
+          <p className="sidebar-section-heading">Common selection</p>
+          <div className="sidebar-common">
+            {navigation.slice(2, 2 + commonSections.length).map(renderLink)}
+          </div>
+          <div className="sidebar-bottom">
+            {navigation.slice(2 + commonSections.length).map(renderLink)}
+          </div>
         </nav>
-        <div className="session">
-          <button
-            onClick={async () => {
-              if (!canLeave()) return;
-              await logout();
-              dispatch(signedOut());
-              dispatch(api.util.resetApiState());
-            }}
-          >
-            <LogOut size={22} /> Sign out
-          </button>
-        </div>
       </aside>
       <div className="admin-main">
         <header>
@@ -157,64 +172,84 @@ export function Layout() {
           >
             <Menu />
           </button>
-          <div className="admin-search">
-            <Search size={20} />
-            <input
-              ref={searchRef}
-              aria-label="Search CMS modules"
-              placeholder="Search dealers, content, products, banners…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Escape") setSearch("");
-                if (e.key === "Enter" && matches[0]) {
-                  if (!canLeave()) return;
-                  navigate(matches[0][0]);
-                  setSearch("");
+          <div className="header-path">
+            <strong>{sectionKey ? sectionLabel(sectionKey) : pageTitle}</strong>
+          </div>
+          <div
+            className="profile-menu"
+            ref={profileRef}
+            onMouseEnter={() => setProfileOpen(true)}
+            onMouseLeave={() => {
+              if (!profileRef.current?.contains(document.activeElement))
+                setProfileOpen(false);
+            }}
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget))
+                setProfileOpen(false);
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                setProfileOpen(false);
+                profileButton.current?.focus();
+              }
+            }}
+          >
+            <button
+              ref={profileButton}
+              className="profile-avatar"
+              aria-label="Open profile"
+              aria-expanded={profileOpen}
+              aria-controls="profile-popover"
+              onClick={() => setProfileOpen(true)}
+              onKeyDown={(event) => {
+                if (event.key === "ArrowDown") {
+                  event.preventDefault();
+                  setProfileOpen(true);
                 }
               }}
-            />
-            {search && (
-              <div className="search-results">
-                {matches.length ? (
-                  matches.map(([path, label]) => (
-                    <Link
-                      key={path}
-                      to={path}
-                      onClick={(event) => {
-                        if (!canLeave()) event.preventDefault();
-                        else setSearch("");
-                      }}
-                    >
-                      {label}
-                    </Link>
-                  ))
-                ) : (
-                  <span>No matching modules</span>
-                )}
+            >
+              <UserRound size={21} aria-hidden="true" />
+            </button>
+            {profileOpen && (
+              <div className="profile-popover" id="profile-popover">
+                <p>
+                  Hi,{" "}
+                  <strong>
+                    {profile?.employee_name ||
+                      (profile?.role === "SUPER_ADMIN"
+                        ? "Admin"
+                        : profile?.name)}
+                  </strong>
+                </p>
+                <button
+                  className="logout-button"
+                  onClick={async () => {
+                    if (!canLeave()) return;
+                    await logout();
+                    dispatch(signedOut());
+                    dispatch(api.util.resetApiState());
+                  }}
+                >
+                  <LogOut size={17} aria-hidden="true" />
+                  Logout
+                </button>
               </div>
             )}
           </div>
-          <a
-            className="website-link"
-            href={
-              window.location.port === "5174"
-                ? window.location.protocol +
-                  "//" +
-                  window.location.hostname +
-                  ":5173"
-                : "/"
-            }
-            target="_blank"
-            rel="noreferrer"
-          >
-            <ExternalLink size={18} />
-            <span>Dealer website</span>
-          </a>
-          <span className="user-chip">ADMIN PANEL</span>
         </header>
         <main>
-          <Outlet context={{ setEditorState }} />
+          <Outlet
+            context={{
+              setEditorState,
+              dealers: dealerQuery.data || [],
+              dealerId,
+              chooseDealer,
+              region,
+              district,
+              locationMode,
+              setLocationFilter,
+            }}
+          />
         </main>
       </div>
     </div>

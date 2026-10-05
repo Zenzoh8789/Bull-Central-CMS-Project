@@ -1,0 +1,12 @@
+{
+  "baseSha256": "1D4059FBB097D2C7BACAB868849DE5D5673EB4F801510940A09CBEF8F736253C",
+  "environment": {"node":"24.19.0", "mysql":"8.4.11", "os":"Windows"},
+  "unitTests": {"passed":40,"failed":0},
+  "typeChecks":{"admin":"passed","website":"passed","api":"passed"},
+  "productionBuilds":{"admin":"passed","api":"passed","website":"passed"},
+  "cmsIntegrationChecks":21,
+  "newsIntegrationChecks":12,
+  "productionDatabaseModified":false,
+  "originalDraft400Reproduced":false,
+  "originalDraft400Limitation":"The original failing request/response was unavailable. Tested valid real browser saves return 201; malformed payloads correctly return 400."
+}

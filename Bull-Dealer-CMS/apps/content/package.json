@@ -6,8 +6,14 @@
   "types": "index.d.ts",
   "exports": {
     ".": {
-      "types": "./index.d.ts",
-      "default": "./index.js"
+      "import": {
+        "types": "./index.d.mts",
+        "default": "./index.mjs"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./index.js"
+      }
     },
     "./news": {
       "import": {
@@ -17,6 +23,39 @@
       "require": {
         "types": "./news.d.ts",
         "default": "./news.js"
+      }
+    },
+    "./editing": {
+      "import": {
+        "types": "./editing.d.mts",
+        "default": "./editing.mjs"
+      },
+      "require": {
+        "types": "./editing.d.ts",
+        "default": "./editing.js"
+      }
+    },
+    "./banners": {
+      "import": {
+        "types": "./banners.d.mts",
+        "default": "./banners.mjs"
+      },
+      "require": {
+        "types": "./banners.d.ts",
+        "default": "./banners.js"
+      }
+    },
+    "./cms": {
+      "types": "./cms.d.ts"
+    },
+    "./geography": {
+      "import": {
+        "types": "./geography.d.mts",
+        "default": "./geography.mjs"
+      },
+      "require": {
+        "types": "./geography.d.ts",
+        "default": "./geography.js"
       }
     }
   }

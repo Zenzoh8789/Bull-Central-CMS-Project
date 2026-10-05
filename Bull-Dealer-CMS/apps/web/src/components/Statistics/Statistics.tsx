@@ -5,7 +5,7 @@ export function Statistics() {
   if (!s.enabled) return null;
   return (
     <div className="statistics" aria-label="BULL statistics">
-      {s.items.map((v: any, i: number) => (
+      {s.items.slice(0, 5).map((v: any, i: number) => (
         <div className="stat" key={i}>
           <img src={v.image} alt="" />
           <div>

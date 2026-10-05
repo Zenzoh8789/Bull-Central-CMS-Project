@@ -11,11 +11,14 @@ const slice = createSlice({
       s.token = a.payload.token;
       s.user = a.payload.user;
     },
+    profileUpdated: (s, a) => {
+      s.user = a.payload;
+    },
     signedOut: (s) => {
       s.token = "";
       s.user = null;
     },
   },
 });
-export const { signedIn, signedOut } = slice.actions;
+export const { signedIn, signedOut, profileUpdated } = slice.actions;
 export default slice.reducer;

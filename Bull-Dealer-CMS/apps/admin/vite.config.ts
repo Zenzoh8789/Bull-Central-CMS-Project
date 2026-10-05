@@ -21,10 +21,10 @@ export default defineConfig({
     port: 5174,
     strictPort: true,
     proxy: {
-      "/api": "http://127.0.0.1:3000",
-      "/uploads": "http://127.0.0.1:3000",
-      "/Asset": "http://127.0.0.1:5173",
-      "/images": "http://127.0.0.1:5173",
+      "/api": process.env.API_TARGET || "http://127.0.0.1:3000",
+      "/uploads": process.env.API_TARGET || "http://127.0.0.1:3000",
+      "/Asset": process.env.WEB_TARGET || "http://127.0.0.1:5173",
+      "/images": process.env.WEB_TARGET || "http://127.0.0.1:5173",
     },
   },
 });

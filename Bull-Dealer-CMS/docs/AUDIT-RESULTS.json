@@ -1,0 +1,304 @@
+{
+  "timestamp": "2026-10-03T11:12:31.678Z",
+  "baseSha256": "1D4059FBB097D2C7BACAB868849DE5D5673EB4F801510940A09CBEF8F736253C",
+  "checks": [
+    "All public and admin GET endpoints, 401/403/404 boundaries, database-driven empty banner list",
+    "Common and dealer banner ownership stays separate through draft storage, publishing and public responses",
+    "Inactive banners do not render; dealer banner deletion is durable and does not resurrect common banners",
+    "Malformed draft payloads give actionable 400 responses; stale revisions give 409 and scope manipulation gives 403",
+    "Editor draft creation, explicit preview/publish, revision-checked draft deletion retain published content",
+    "Common banner deletion is durable in MySQL and public site output",
+    "Real Admin login, three multipart uploads, preview retention, grouped save, edit/view reload, status and immediate table refresh",
+    "Real Admin banner delete updates MySQL, removes the table row, and removes website slides through the existing refresh cycle",
+    "Rejected save rolls back table state, keeps selected images and permits a successful retry",
+    "Real dealer editor saves the correct scope, retains three images, edits without duplicates and deletes without changing Common",
+    "All existing Common CMS navigation modules load without API or runtime errors",
+    "Website routes open, and footer, dealer branding, product menu and product details follow published CMS data",
+    "Admin and Website open at desktop/mobile sizes with no browser runtime errors",
+    "Logout revokes the backend session"
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/enter",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/dashboard",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/registry",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/common/resolved",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/dealers",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/groups",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/drafts",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/history",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/users",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/enquiries",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/media",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/activity",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/employees",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/dealers/1/resolved",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/site",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/products",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/products/sd76",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/products/unknown",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/api/site",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/drafts",
+      "status": 401
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/dealers/1/resolved",
+      "status": 403
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/common/resolved",
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/drafts",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/drafts",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/drafts",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/site",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/site",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/drafts",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/site",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/drafts",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/site",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/drafts",
+      "status": 409
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/drafts",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/drafts",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/drafts",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/drafts",
+      "status": 400
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/drafts",
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/drafts",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/publish/preview",
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/publish/preview",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/publish",
+      "status": 201
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/admin/drafts/4",
+      "status": 409
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/admin/drafts/4",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/drafts",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/employees",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/site",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/site",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/drafts",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/drafts",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/drafts",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "status": 201
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/drafts",
+      "status": 401
+    }
+  ],
+  "browserErrors": [],
+  "success": true
+}

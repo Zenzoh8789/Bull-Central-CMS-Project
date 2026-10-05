@@ -1,0 +1,136 @@
+/* Brand tokens and shared interaction surfaces. */
+:root {
+  --ink: #242424;
+  --muted: #414141;
+  --yellow: #ffc400;
+  --navy: #242424;
+  --text-sm: 15px;
+  --text-md: 16px;
+  --text-lg: 20px;
+}
+body {
+  background: #00000006;
+  color: #242424;
+}
+button,
+.button {
+  font-weight: 600;
+  border-radius: 9px;
+  min-height: 44px;
+}
+button svg,
+.button svg {
+  width: 21px;
+  height: 21px;
+  flex-shrink: 0;
+  stroke-width: 2;
+}
+.primary {
+  background: #ffc400;
+  border-color: #ffc400;
+  color: #242424;
+  box-shadow: 0 3px 0 #00000012;
+}
+.primary:hover:not(:disabled) {
+  background: #f2bb00;
+  border-color: #f2bb00;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 12px #00000012;
+}
+.primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+.admin-shell .sidebar {
+  background: #242424;
+}
+.sidebar nav a {
+  font-size: 16px;
+  font-weight: 500;
+  min-height: 44px;
+}
+.sidebar nav a svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.sidebar nav a.active {
+  background: #ffc400;
+  color: #242424;
+  font-weight: 600;
+}
+.sidebar nav a:not(.active):hover {
+  background: #414141;
+  color: #fff;
+}
+.sidebar-section-heading {
+  color: #c5c5c5;
+  font-size: 15px;
+}
+.workspace-heading h1,
+.cms-dialog-heading h2,
+.section-editor-heading h2 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: normal;
+  color: #242424;
+}
+.editor-card > h3 {
+  color: #242424;
+  font-size: 18px;
+}
+.editor-mode-tabs button.selected {
+  background: #242424;
+  border-color: #242424;
+  color: #fff;
+}
+.sticky-actions {
+  border-top: 1px solid #e8e8e8;
+  box-shadow: 0 -8px 22px #00000006;
+  gap: 12px;
+}
+.sticky-actions > .primary {
+  min-width: 152px;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+.field input:focus,
+.field textarea:focus {
+  outline: 2px solid #ffc400;
+  outline-offset: 2px;
+}
+.metric-card .metric-icon {
+  background: #fff3c2;
+  color: #242424;
+}
+.metric-card strong {
+  font-size: 20px;
+}
+.metric-card:hover {
+  border-color: #ffc400;
+}
+.editor-card {
+  background: #00000006;
+  border-color: #e5e5e5;
+}
+.dealer-identity strong {
+  font-size: 17px;
+  color: #242424;
+}
+.dealer-monogram {
+  width: 44px;
+  height: 44px;
+  background: #fff3c2;
+  color: #242424;
+  border: 0;
+}
+.dealer-row-actions .edit-dealer-button {
+  background: #ffc400;
+  color: #242424;
+  border-color: #ffc400;
+  padding: 10px 16px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .primary:hover:not(:disabled) {
+    transform: none;
+  }
+}

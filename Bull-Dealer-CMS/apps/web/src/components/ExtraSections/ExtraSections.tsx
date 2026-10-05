@@ -6,9 +6,7 @@ export function Service() {
   return (
     <section id="customers" className="service-section">
       <h2 className="sr-only">{s.heading}</h2>
-      <a href={s.url}>
-        <img src={s.image} alt={s.alt} loading="lazy" />
-      </a>
+      <img src={s.image} alt={s.alt} loading="lazy" />
     </section>
   );
 }

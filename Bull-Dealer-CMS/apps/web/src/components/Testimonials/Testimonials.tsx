@@ -10,9 +10,6 @@ type OpenVideo = {
   description: string;
 };
 
-const TEST_DESCRIPTION =
-  "Powerful performance, excellent comfort and dependable productivity with BULL Super Smart.Powerful performance, excellent comfort and dependable productivity with BULL Super SmartPowerful performance, excellent comfort and dependable productivity with BULL Super Smart";
-
 export function Testimonials() {
   const { testimonials: t } = useContent();
 
@@ -30,9 +27,7 @@ export function Testimonials() {
   useEffect(() => {
     if (!count || video) return;
 
-    if (
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
 
@@ -83,18 +78,12 @@ export function Testimonials() {
         {/* CAROUSEL */}
         <div className="testimonial-strip">
           {t.items.map((item: any, i: number) => {
-            const {
-              image,
-              videoId: vid,
-              alt,
-              description,
-            } = item;
+            const { image, videoId: vid, alt, description } = item;
 
             const currentDescription =
-              typeof description === "string" &&
-              description.trim()
+              typeof description === "string" && description.trim()
                 ? description.trim()
-                : TEST_DESCRIPTION;
+                : "";
 
             /*
              * Calculate position relative to active card.
@@ -118,45 +107,16 @@ export function Testimonials() {
             /*
              * Card scale
              */
-            const scale =
-              absOffset === 0
-                ? 1
-                : absOffset === 1
-                  ? 0.78
-                  : 0.58;
 
             return (
               <button
                 type="button"
                 key={vid || i}
-                className={
-                  offset === 0
-                    ? "testimonial active"
-                    : "testimonial"
-                }
-                style={{
-                  transform: `translateX(calc(-50% + ${offset} * var(--slide-step))) scale(${scale})`,
-
-                  zIndex: 10 - absOffset,
-
-                  visibility:
-                    absOffset > 2
-                      ? "hidden"
-                      : "visible",
-
-                  pointerEvents:
-                    absOffset > 2
-                      ? "none"
-                      : "auto",
-                }}
+                className={offset === 0 ? "testimonial active" : "testimonial"}
+                data-position={offset}
                 tabIndex={offset === 0 ? 0 : -1}
-                aria-hidden={
-                  absOffset > 2 ? true : undefined
-                }
-                aria-label={
-                  alt ||
-                  `Play customer testimonial ${i + 1}`
-                }
+                aria-hidden={absOffset > 2 ? true : undefined}
+                aria-label={alt || `Play customer testimonial ${i + 1}`}
                 onClick={() => {
                   /*
                    * Clicking side card:
@@ -194,7 +154,8 @@ export function Testimonials() {
 
                 {/* DESCRIPTION */}
                 <div className="testimonial-description">
-                  <p>{currentDescription}</p>
+                  {item.title && <h3>{item.title}</h3>}
+                  {currentDescription && <p>{currentDescription}</p>}
                 </div>
               </button>
             );
@@ -219,11 +180,7 @@ export function Testimonials() {
             type="button"
             key={i}
             aria-label={`Customer video ${i + 1}`}
-            aria-current={
-              i === active % count
-                ? "true"
-                : undefined
-            }
+            aria-current={i === active % count ? "true" : undefined}
             onClick={() => move(i)}
           />
         ))}

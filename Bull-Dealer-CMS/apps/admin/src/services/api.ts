@@ -3,7 +3,7 @@ import { signedOut } from "../store/authSlice";
 const base = fetchBaseQuery({
   baseUrl: "/api",
   prepareHeaders: (h, { getState }) => {
-    const token = (getState() as any).auth.token;
+    const token = (getState() as { auth: { token: string } }).auth.token;
     if (token) h.set("Authorization", "Bearer " + token);
     return h;
   },
@@ -27,11 +27,15 @@ export const api = createApi({
         method,
         body,
       }),
-      invalidatesTags: (r, e, a) =>
+      invalidatesTags: (_result, e, a) =>
         e || a.path === "publish/preview" ? [] : ["CMS"],
     }),
     login: b.mutation<any, { username: string; password: string }>({
       query: (body) => ({ url: "/auth/login", method: "POST", body }),
+    }),
+    enter: b.mutation<any, { employeeId: number | null }>({
+      query: (body) => ({ url: "/auth/enter", method: "POST", body }),
+      invalidatesTags: ["CMS"],
     }),
     logout: b.mutation<any, void>({
       query: () => ({ url: "/auth/logout", method: "POST" }),
@@ -44,11 +48,20 @@ export const {
   useWriteMutation,
   useLoginMutation,
   useLogoutMutation,
+  useEnterMutation,
   useMeQuery,
 } = api;
-export function errorText(e: any) {
-  const m = e?.data?.message;
-  return Array.isArray(m)
-    ? m.join(". ")
-    : m || e?.error || "Request failed. Please try again.";
+export function errorText(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  if (error && typeof error === "object") {
+    const value = error as {
+      data?: { message?: string | string[] };
+      error?: string;
+    };
+    const message = value.data?.message;
+    if (Array.isArray(message)) return message.join(". ");
+    if (typeof message === "string") return message;
+    if (typeof value.error === "string") return value.error;
+  }
+  return "Request failed. Please try again.";
 }

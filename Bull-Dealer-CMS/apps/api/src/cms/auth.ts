@@ -19,13 +19,17 @@ export type Actor = {
   email: string;
   role: "SUPER_ADMIN" | "EDITOR" | "DEALER_ADMIN";
   dealer_id: number | null;
+  employee_id?: number | null;
+  employee_name?: string | null;
+  cms_entered?: number | boolean;
 };
 export function hashPassword(password: string) {
   const salt = randomBytes(16).toString("hex");
   return `${salt}:${scryptSync(password, salt, 64).toString("hex")}`;
 }
 export function verifyPassword(password: string, hash: string) {
-  if (typeof hash !== "string" || !/^[a-f0-9]{32}:[a-f0-9]{128}$/i.test(hash)) return false;
+  if (typeof hash !== "string" || !/^[a-f0-9]{32}:[a-f0-9]{128}$/i.test(hash))
+    return false;
   const [salt, key] = hash.split(":");
   const candidate = scryptSync(password, salt, 64);
   const stored = Buffer.from(key || "", "hex");
@@ -44,11 +48,21 @@ export class CmsAuthGuard implements CanActivate {
     if (!token || !this.repo.pool)
       throw new UnauthorizedException("Sign in to the CMS");
     const [rows]: any = await this.repo.pool.execute(
-      "SELECT u.id,u.name,u.email,u.role,u.dealer_id FROM cms_sessions s JOIN cms_users u ON u.id=s.user_id WHERE s.token_hash=? AND s.expires_at>UTC_TIMESTAMP() AND u.active=1",
+      "SELECT u.id,u.name,u.email,u.role,u.dealer_id,s.employee_id,e.name AS employee_name,IF(s.employee_id IS NULL,s.cms_entered,IF(e.active=1 AND e.removed=0,s.cms_entered,0)) AS cms_entered FROM cms_sessions s JOIN cms_users u ON u.id=s.user_id LEFT JOIN cms_employees e ON e.id=s.employee_id WHERE s.token_hash=? AND s.expires_at>UTC_TIMESTAMP() AND u.active=1",
       [digest(token)],
     );
     if (!rows.length) throw new UnauthorizedException("Session expired");
     req.actor = rows[0];
+    const path = req.originalUrl.split("?")[0];
+    if (
+      req.actor.role === "SUPER_ADMIN" &&
+      !req.actor.cms_entered &&
+      path.startsWith("/api/admin/") &&
+      !/^\/api\/admin\/employees(?:\/|$)/.test(path)
+    )
+      throw new ForbiddenException(
+        "Choose an employee or enter as admin first",
+      );
     return true;
   }
 }

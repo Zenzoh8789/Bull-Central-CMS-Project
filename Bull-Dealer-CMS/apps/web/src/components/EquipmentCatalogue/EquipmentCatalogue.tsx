@@ -6,11 +6,11 @@ export function EquipmentCatalogue() {
   if (!e.enabled || !p.enabled) return null;
   return (
     <>
-      {e.categories.map((c: any) => (
+      {(p.categories || e.categories).map((c: any) => (
         <Equipment
           key={c.id}
           id={c.id}
-          title={<span style={{ whiteSpace: "pre-line" }}>{c.heading}</span>}
+          title={<span className="equipment-title-lines">{c.heading}</span>}
           subtitle={c.subtitle}
           category={c.category}
           description={c.description}

@@ -57,7 +57,11 @@ export function Footer() {
             ? f.copyright
             : "© " + new Date().getFullYear() + " " + f.copyright}
         </span>
-        <img src={f.image} alt={f.imageAlt} loading="lazy" />
+        <img
+          src={f.image}
+          alt={f.imageAlt}
+          loading="lazy"
+        />
       </div>
     </footer>
   );

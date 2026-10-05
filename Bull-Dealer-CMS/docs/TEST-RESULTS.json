@@ -1,8 +1,9 @@
 {
-  "timestamp": "2026-09-24T15:08:14.622Z",
-  "database": "8.0.46",
+  "timestamp": "2026-10-03T10:57:45.852Z",
+  "database": "8.4.11",
   "dealers": 130,
   "passed": [
+    "employee selection, deactivation, retained audit identity and role restrictions",
     "authentication required",
     "20-section registry",
     "ALL publishes every section to 130 dealers atomically",

@@ -1,4 +1,4 @@
-require('../env.cjs');
+require("../env.cjs");
 const fs = require("fs"),
   mysql = require("mysql2/promise");
 (async () => {
@@ -38,10 +38,30 @@ const fs = require("fs"),
             "ALTER TABLE products ADD COLUMN " + name + " " + type,
           );
     }
+    const [dealerColumns] = await db.query("SHOW COLUMNS FROM dealers");
+    for (const name of ["state", "district"])
+      if (!dealerColumns.some((c) => c.Field === name))
+        await db.query(
+          "ALTER TABLE dealers ADD COLUMN " +
+            name +
+            " VARCHAR(100) NOT NULL DEFAULT ''",
+        );
     const sql = fs.readFileSync("infra/migrations/003_central_cms.sql", "utf8");
     await db.query(sql.slice(0, sql.indexOf("ALTER TABLE enquiries")));
+    await db.query(
+      fs.readFileSync("infra/migrations/004_employees.sql", "utf8"),
+    );
+    const [sessionColumns] = await db.query("SHOW COLUMNS FROM cms_sessions");
+    if (!sessionColumns.some((c) => c.Field === "employee_id"))
+      await db.query(
+        "ALTER TABLE cms_sessions ADD COLUMN employee_id INT NULL",
+      );
+    if (!sessionColumns.some((c) => c.Field === "cms_entered"))
+      await db.query(
+        "ALTER TABLE cms_sessions ADD COLUMN cms_entered BOOLEAN NOT NULL DEFAULT FALSE",
+      );
     const [userColumns] = await db.query("SHOW COLUMNS FROM cms_users");
-    if (userColumns.some(c => c.Field === "email" && c.Null === "NO"))
+    if (userColumns.some((c) => c.Field === "email" && c.Null === "NO"))
       await db.query("ALTER TABLE cms_users MODIFY email VARCHAR(150) NULL");
     if (!userColumns.some((c) => c.Field === "username"))
       await db.query(

@@ -57,8 +57,12 @@ const defaults = require('@bull/content');
     await db.query('USE ' + name);
     await db.query(fs.readFileSync('infra/init.sql', 'utf8'));
     await db.query(fs.readFileSync('infra/migrations/003_central_cms.sql', 'utf8'));
+    await db.query(fs.readFileSync('infra/migrations/004_employees.sql','utf8'));
+    await db.query("ALTER TABLE dealers ADD COLUMN state VARCHAR(100) NOT NULL DEFAULT '', ADD COLUMN district VARCHAR(100) NOT NULL DEFAULT ''");
+    await db.query('ALTER TABLE cms_sessions ADD COLUMN employee_id INT NULL, ADD COLUMN cms_entered BOOLEAN NOT NULL DEFAULT FALSE');
+
     for (const id of [2, 3]) {
-      await db.execute('INSERT INTO dealers VALUES (?,?,?,?,?,1)', [id, 'QA Dealer ' + id, 'Test', 'Test', 'Test']);
+      await db.execute('INSERT INTO dealers(id,name,location,address,about,active) VALUES (?,?,?,?,?,1)', [id, 'QA Dealer ' + id, 'Test', 'Test', 'Test']);
       await db.execute('INSERT INTO dealer_domains VALUES (?,?)', ['dealer' + id + '.test', id]);
     }
     const password = require('node:crypto').randomBytes(18).toString('hex');
@@ -74,6 +78,7 @@ const defaults = require('@bull/content');
     for (const role of ['SUPER_ADMIN', 'EDITOR', 'DEALER_ADMIN'])
       sessions[role] = await request('POST', 'auth/login', { username: role.toLowerCase(), password }, null, 201);
     const admin = sessions.SUPER_ADMIN.token, editor = sessions.EDITOR.token, dealer = sessions.DEALER_ADMIN.token;
+    await request('POST','auth/enter',{employeeId:null},admin,201);
     const site = id => request('GET', 'site', null, null, 200, id === 1 ? 'bulltaraautohub.com' : 'dealer' + id + '.test');
     const save = (layer, ownerId, document, revision, token = admin, removeOverride = false) => request('POST', 'admin/drafts', { layer, ownerId, section: 'news', document, expectedRevision: revision, removeOverride }, token, 201);
     const approve = async (draft, token = admin, target = { mode: 'ALL' }) => {

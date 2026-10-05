@@ -9,11 +9,6 @@ export function DealerAbout() {
         <div>
           <h2>{a.heading}</h2>
           <p>{a.text}</p>
-          <div className="read-more">
-            <a className="button yellow" href={a.buttonUrl}>
-              {a.buttonLabel}
-            </a>
-          </div>
         </div>
         {a.image && (
           <img

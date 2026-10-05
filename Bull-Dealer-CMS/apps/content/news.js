@@ -20,11 +20,11 @@ function normalizeNews(value) {
     items: value.items
       .filter(
         (x) =>
-          !sampleUrls.includes(x?.url) &&
+          (!sampleUrls.includes(x?.url) || (typeof x?.body === "string" && x.body.trim())) &&
           !(
             /^demo-news-[1-9]$/.test(x?.slug || "") &&
-            x?.title?.startsWith("Demo:") &&
-            x?.body?.includes("Demo content for layout preview only.")
+            (typeof x?.title === "string" && x.title.startsWith("Demo:")) &&
+            (typeof x?.body === "string" && x.body.includes("Demo content for layout preview only."))
           ),
       )
       .map((x, i) => {
@@ -34,7 +34,7 @@ function normalizeNews(value) {
           ...a,
           slug:
             a.slug ||
-            ((a.title || "article")
+            ((typeof a.title === "string" ? a.title : "article")
               .toLowerCase()
               .replace(/[^a-z0-9]+/g, "-")
               .replace(/^-|-$/g, "") || "article") +

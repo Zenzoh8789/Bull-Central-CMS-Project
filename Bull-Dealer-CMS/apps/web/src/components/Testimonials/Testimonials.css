@@ -14,7 +14,6 @@
   overflow: hidden;
 }
 
-
 /* =========================================================
    HEADING
 ========================================================= */
@@ -33,7 +32,6 @@
 
   color: #252525;
 }
-
 
 /* =========================================================
    CAROUSEL
@@ -55,7 +53,6 @@
   --slide-step: 330px;
 }
 
-
 /* =========================================================
    STRIP
 ========================================================= */
@@ -68,7 +65,6 @@
 
   overflow: hidden;
 }
-
 
 /* =========================================================
    CARD
@@ -129,10 +125,8 @@
 
   will-change: transform;
 
-  transition:
-    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
-
 
 /* =========================================================
    REMOVE BORDER / LINE ON ALL STATES
@@ -152,7 +146,6 @@
   background: transparent !important;
 }
 
-
 /*
  * Some global button CSS can create
  * ::before / ::after borders.
@@ -164,7 +157,6 @@
 
   display: none !important;
 }
-
 
 /* =========================================================
    IMAGE
@@ -211,17 +203,13 @@
   transition: transform 0.4s ease;
 }
 
-
 /* =========================================================
    IMAGE HOVER
 ========================================================= */
 
 .testimonial:hover .testimonial-image {
-  transform:
-    translateZ(0)
-    scale(1.012);
+  transform: translateZ(0) scale(1.012);
 }
-
 
 /* =========================================================
    YOUTUBE PLAY BUTTON
@@ -248,28 +236,20 @@
 
   box-shadow: none !important;
 
-  transform:
-    translate(-50%, -50%)
-    translateZ(0);
+  transform: translate(-50%, -50%) translateZ(0);
 
   pointer-events: none;
 
-  transition:
-    transform 0.25s ease;
+  transition: transform 0.25s ease;
 }
-
 
 /* =========================================================
    PLAY HOVER
 ========================================================= */
 
 .testimonial:hover .youtube-play {
-  transform:
-    translate(-50%, -50%)
-    translateZ(0)
-    scale(1.07);
+  transform: translate(-50%, -50%) translateZ(0) scale(1.07);
 }
-
 
 .testimonial-description {
   position: absolute;
@@ -296,6 +276,7 @@
 }
 
 .testimonial-description p {
+  white-space: pre-line;
   margin: 0;
   padding: 0;
 
@@ -321,42 +302,9 @@
   text-overflow: ellipsis;
 }
 
-
 /* =========================================================
    DESCRIPTION TEXT
 ========================================================= */
-
-.testimonial-description p {
-  position: relative;
-
-  z-index: 31;
-
-  width: 100%;
-
-  margin: 0 !important;
-  padding: 0 !important;
-
-  border: 0 !important;
-  outline: 0 !important;
-
-  font-family: "Poppins", sans-serif;
-
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.55;
-
-  text-align: left;
-
-  color: #ffffff !important;
-
-  opacity: 1 !important;
-  visibility: visible !important;
-
-  text-shadow:
-    0 2px 5px rgba(0, 0, 0, 0.95),
-    0 1px 2px rgba(0, 0, 0, 0.95);
-}
-
 
 /* =========================================================
    PREVIOUS / NEXT ARROWS
@@ -400,7 +348,6 @@
     background 0.2s ease;
 }
 
-
 /* =========================================================
    ARROW HOVER
 ========================================================= */
@@ -418,7 +365,6 @@
   box-shadow: none !important;
 }
 
-
 /* =========================================================
    ARROW POSITION
 ========================================================= */
@@ -430,7 +376,6 @@
 .carousel-arrow.next {
   right: 20px;
 }
-
 
 /* =========================================================
    DOTS
@@ -446,7 +391,6 @@
 
   margin-top: 6px;
 }
-
 
 /* =========================================================
    DOT BUTTON
@@ -478,19 +422,15 @@
     transform 0.2s ease;
 }
 
-
 /* =========================================================
    ACTIVE DOT
 ========================================================= */
 
-.testimonials
-  .carousel-dots
-  button[aria-current="true"] {
+.testimonials .carousel-dots button[aria-current="true"] {
   background: #585858;
 
   transform: scale(1.25);
 }
-
 
 /* =========================================================
    DESKTOP
@@ -498,7 +438,6 @@
 ========================================================= */
 
 @media (min-width: 1200px) {
-
   /*
    * IMPORTANT:
    *
@@ -521,14 +460,12 @@
   }
 }
 
-
 /* =========================================================
    VERY LARGE DESKTOP
    1700px+
 ========================================================= */
 
 @media (min-width: 1700px) {
-
   /*
    * Slightly wider spacing only.
    *
@@ -553,14 +490,12 @@
   }
 }
 
-
 /* =========================================================
    SMALL DESKTOP
    901 - 1199
 ========================================================= */
 
 @media (min-width: 901px) and (max-width: 1199px) {
-
   .testimonial-carousel {
     --slide-step: 290px;
   }
@@ -575,11 +510,7 @@
   }
 
   .testimonial-description {
-    padding:
-      130px
-      27px
-      31px
-      27px;
+    padding: 130px 27px 31px 27px;
   }
 
   .testimonial-description p {
@@ -591,14 +522,12 @@
   }
 }
 
-
 /* =========================================================
    TABLET
    600 - 900
 ========================================================= */
 
 @media (min-width: 600px) and (max-width: 900px) {
-
   .testimonial-carousel {
     --slide-step: 250px;
   }
@@ -613,11 +542,7 @@
   }
 
   .testimonial-description {
-    padding:
-      110px
-      24px
-      28px
-      24px;
+    padding: 110px 24px 28px 24px;
   }
 
   .testimonial-description p {
@@ -643,14 +568,12 @@
   }
 }
 
-
 /* =========================================================
    MOBILE
    BELOW 600
 ========================================================= */
 
 @media (max-width: 599px) {
-
   .testimonials {
     padding: 45px 0;
   }
@@ -685,11 +608,7 @@
   }
 
   .testimonial-description {
-    padding:
-      100px
-      23px
-      28px
-      23px;
+    padding: 100px 23px 28px 23px;
   }
 
   .testimonial-description p {
@@ -724,13 +643,11 @@
   }
 }
 
-
 /* =========================================================
    REDUCED MOTION
 ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-
   .testimonial,
   .testimonial-image,
   .youtube-play,
@@ -738,4 +655,46 @@
   .carousel-dots button {
     transition: none;
   }
+}
+.testimonial-description h3 {
+  margin: 0 0 8px;
+  font-size: 17px;
+  line-height: 1.4;
+  color: white;
+}
+
+/* Position is computed in React; presentation remains in CSS. */
+.testimonial[data-position] {
+  visibility: hidden;
+  pointer-events: none;
+}
+.testimonial[data-position="0"] {
+  transform: translateX(calc(-50% + 0 * var(--slide-step))) scale(1);
+  z-index: 10;
+  visibility: visible;
+  pointer-events: auto;
+}
+.testimonial[data-position="-1"] {
+  transform: translateX(calc(-50% + -1 * var(--slide-step))) scale(0.78);
+  z-index: 9;
+  visibility: visible;
+  pointer-events: auto;
+}
+.testimonial[data-position="1"] {
+  transform: translateX(calc(-50% + 1 * var(--slide-step))) scale(0.78);
+  z-index: 9;
+  visibility: visible;
+  pointer-events: auto;
+}
+.testimonial[data-position="-2"] {
+  transform: translateX(calc(-50% + -2 * var(--slide-step))) scale(0.58);
+  z-index: 8;
+  visibility: visible;
+  pointer-events: auto;
+}
+.testimonial[data-position="2"] {
+  transform: translateX(calc(-50% + 2 * var(--slide-step))) scale(0.58);
+  z-index: 8;
+  visibility: visible;
+  pointer-events: auto;
 }

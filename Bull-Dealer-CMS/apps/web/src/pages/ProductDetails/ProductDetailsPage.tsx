@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { useProductQuery } from "../../services/siteApi";
+import { useSiteQuery } from "../../services/siteApi";
 import { useAppDispatch } from "../../store/hooks";
 import { actions } from "../../store/uiSlice";
 
@@ -7,17 +7,12 @@ import { NotFoundPage } from "../NotFound/NotFoundPage";
 import "./ProductDetailsPage.css";
 export function ProductDetailsPage() {
   const { productId } = useParams();
-  const {
-    currentData: data,
-    isFetching,
-    isError,
-    error,
-    refetch,
-  } = useProductQuery(productId || "");
+  const { currentData: site, isFetching, isError, refetch } = useSiteQuery();
+  const data = site?.products.find((product) => product.id === productId);
   const dispatch = useAppDispatch();
   if (isFetching && !data)
     return <p className="route-page api-message">Loading equipment…</p>;
-  if (isError && (error as { status?: number })?.status !== 404)
+  if (isError)
     return (
       <div className="route-page api-message" role="alert">
         Equipment unavailable.{" "}

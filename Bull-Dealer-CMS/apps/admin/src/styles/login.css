@@ -1,0 +1,204 @@
+.login {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  padding: 32px 20px;
+  background: #eef2f6;
+}
+
+.login-frame {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  width: min(1100px, 100%);
+  min-height: 650px;
+  border-radius: 15px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 22px 65px #1026381c;
+  border: 1px solid #dfe6ed;
+}
+.login-visual {
+  position: relative;
+  min-height: 100%;
+  background: #242424;
+  overflow: hidden;
+}
+.login-visual > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 65% center;
+}
+.login-visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, #081d32f5, #10283b15 90%);
+}
+.login-visual > div {
+  position: absolute;
+  left: 36px;
+  right: 36px;
+  bottom: 42px;
+  z-index: 1;
+  color: white;
+}
+.login .login-frame > form {
+  width: 100%;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 48px;
+  align-self: center;
+  background: white;
+}
+.login-frame .brand {
+  align-items: flex-start;
+  margin-bottom: 40px;
+}
+.login-frame .brand .bull-logo {
+  width: auto;
+  height: 60px;
+  max-width: 200px;
+  object-fit: contain;
+  display: block;
+}
+
+.login-frame h1 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+.login-frame form > p {
+  margin-bottom: 28px;
+  font-size: 15px;
+}
+.login-frame input {
+  min-height: 48px;
+  border-radius: 8px;
+  background: #f9fbfd;
+}
+.login-frame label {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+.login-frame .primary {
+  min-height: 48px;
+  border-radius: 8px;
+  color: #102638;
+  font-size: 16px;
+}
+.employee-page {
+  background: linear-gradient(120deg, #102638, #193e59);
+}
+.employee-shell {
+  background: #f6f8fb;
+  border-color: #dee5ec;
+  box-shadow: 0 24px 70px #00182c38;
+}
+.employee-primary,
+.employee-avatar {
+  background: #ffc400;
+  color: #242424;
+  box-shadow: none;
+}
+.employee-primary:hover {
+  background: #f1c218;
+}
+.employee-option.selected {
+  background: #fffbed;
+  border-color: #e6b900;
+  box-shadow: 0 0 0 3px #ffdb351f;
+}
+.employee-option > svg {
+  color: #725b00;
+}
+.dealer-dialog {
+  width: min(820px, calc(100% - 32px));
+  max-height: calc(100dvh - 40px);
+  overflow: auto;
+  border: 1px solid #dce5ed;
+  border-radius: 18px;
+  padding: 28px;
+  color: #242424;
+  background: white;
+  box-shadow: 0 25px 90px #00182c55;
+}
+.dealer-dialog::backdrop {
+  background: #0d233a99;
+  backdrop-filter: blur(4px);
+}
+.dealer-dialog .dialog-heading {
+  align-items: flex-start;
+}
+.dealer-dialog .eyebrow {
+  margin-bottom: 6px;
+}
+.dealer-details {
+  margin: 0 0 24px;
+}
+.dealer-details > div {
+  padding: 12px 0;
+  border-bottom: 1px solid #e8eef3;
+}
+.dealer-details dt {
+  font-size: 15px;
+  color: #5c7082;
+  margin-bottom: 5px;
+}
+.dealer-details dd {
+  font-size: 15px;
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.dealer-dialog .primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.dealer-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.dealer-dialog textarea {
+  min-height: 80px;
+}
+.dealer-view {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+@media (max-width: 750px) {
+  .login-frame {
+    grid-template-columns: 1fr;
+    min-height: 0;
+    max-width: 500px;
+  }
+  .login-visual {
+    min-height: 200px;
+  }
+  .login-visual > div {
+    left: 24px;
+    right: 24px;
+    bottom: 24px;
+  }
+  .login .login-frame > form {
+    padding: 28px;
+  }
+  .login-frame .brand {
+    margin-bottom: 24px;
+  }
+  .login {
+    padding: 24px 16px;
+  }
+  .dealer-dialog {
+    padding: 20px;
+  }
+  .dealer-form-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}

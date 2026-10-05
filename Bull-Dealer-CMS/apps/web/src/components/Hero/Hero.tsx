@@ -1,15 +1,17 @@
+import { bannerSlides } from "@bull/content/banners";
 import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { useContent } from "../../services/useContent";
 import "./Hero.css";
 export function Hero() {
   const { banners: config, seo } = useContent();
-  const banners = config.items;
+  const banners = bannerSlides(config);
   const [slide, setSlide] = useState(0);
 
   useEffect(() => {
     if (
       !config.enabled ||
+      !config.autoplay ||
       banners.length < 2 ||
       matchMedia("(prefers-reduced-motion: reduce)").matches
     )
@@ -19,7 +21,8 @@ export function Hero() {
       config.interval,
     );
     return () => clearInterval(timer);
-  }, [slide, banners.length, config.interval, config.enabled]);
+  }, [slide, banners.length, config.interval, config.enabled, config.autoplay]);
+  useEffect(() => setSlide(0), [config]);
   if (!config.enabled || !banners.length) return null;
   return (
     <section
@@ -30,20 +33,13 @@ export function Hero() {
     >
       <h1 className="sr-only">{seo.title}</h1>
       <div className="banner-slides">
-        {banners[slide]?.url && (
-          <a
-            className="banner-link"
-            href={banners[slide].url}
-            aria-label={banners[slide].alt}
-          />
-        )}
         {banners.map((item: any, i: number) => (
           <img
             key={i}
-            className={i === slide ? "banner-image active" : "banner-image"}
+            className={i === slide % banners.length ? "banner-image active" : "banner-image"}
             src={item.image}
             alt={item.alt}
-            aria-hidden={i !== slide}
+            aria-hidden={i !== slide % banners.length}
             fetchPriority={i === 0 ? "high" : "auto"}
             loading={i === 0 ? "eager" : "lazy"}
           />

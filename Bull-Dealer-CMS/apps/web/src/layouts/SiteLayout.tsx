@@ -30,8 +30,20 @@ export function SiteLayout() {
       el.content = value;
     };
     meta("description", seo.description);
-    meta("og:title", seo.title, true);
-    meta("og:description", seo.description, true);
+    meta("keywords", seo.keywords || "");
+    meta("robots", seo.robots || "index, follow");
+    meta("author", seo.author || "");
+    meta("theme-color", seo.themeColor || "#fbb120");
+    meta("twitter:card", "summary_large_image");
+    meta("twitter:title", seo.socialTitle || seo.title);
+    meta("twitter:description", seo.socialDescription || seo.description);
+    meta("twitter:image", seo.socialImage);
+    meta("og:type", "website", true);
+    meta("og:url", seo.canonical || window.location.href, true);
+    meta("og:title", seo.socialTitle || seo.title, true);
+    meta("og:site_name", seo.siteName || "", true);
+    meta("og:locale", seo.locale || "en_IN", true);
+    meta("og:description", seo.socialDescription || seo.description, true);
     meta("og:image", seo.socialImage, true);
     for (const [rel, href] of [
       ["canonical", seo.canonical],

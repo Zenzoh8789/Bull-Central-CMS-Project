@@ -30,7 +30,7 @@ const { hashPassword } = require("../../apps/api/dist/cms/auth");
       actor = r.insertId;
     }
     const [existing] = await db.query(
-      "SELECT id FROM cms_publications LIMIT 1",
+      "SELECT id FROM cms_publications UNION ALL SELECT id FROM cms_drafts UNION ALL SELECT dealer_id AS id FROM cms_live LIMIT 1",
     );
     if (existing.length) {
       console.log("CMS already initialized; existing content kept.");

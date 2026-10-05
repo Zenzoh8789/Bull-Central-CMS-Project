@@ -5,7 +5,15 @@
     "description": "BULL construction equipment, local sales and service support.",
     "canonical": "",
     "socialImage": "/Asset/Images/Banner/super-smart-new-banner.webp",
-    "favicon": "/Asset/Images/favicon.ico"
+    "favicon": "/Asset/Images/favicon.ico",
+    "keywords": "",
+    "robots": "index, follow",
+    "author": "",
+    "themeColor": "#fbb120",
+    "socialTitle": "",
+    "socialDescription": "",
+    "siteName": "",
+    "locale": "en_IN"
   },
   "branding": {
     "enabled": true,
@@ -43,23 +51,7 @@
     "autoplay": true,
     "interval": 5000,
     "scrollLabel": "Scroll Down",
-    "items": [
-      {
-        "image": "/Asset/Images/Banner/super-smart-new-banner.webp",
-        "alt": "BULL SD76 Super Smart backhoe loader",
-        "url": ""
-      },
-      {
-        "image": "/Asset/Images/Banner/grandia-banner.webp",
-        "alt": "BULL Grandia",
-        "url": ""
-      },
-      {
-        "image": "/Asset/Images/Banner/plant.jpg",
-        "alt": "BULL manufacturing facility",
-        "url": ""
-      }
-    ]
+    "items": []
   },
   "statistics": {
     "enabled": true,
@@ -155,7 +147,24 @@
         "showInMenu": false,
         "menuOrder": 4
       }
-    ]
+    ],
+    "categories": [
+      {
+        "id": "construct",
+        "category": "Backhoe loaders",
+        "heading": "BACKHOE\nLOADERS",
+        "subtitle": "Construction Equipments",
+        "description": "Engineered for performance, our world-class backhoe loaders offer unmatched fuel efficiency, superior operator comfort, and advanced safety with ROPS & FOPS-certified cabins."
+      },
+      {
+        "id": "skid-steers",
+        "category": "Skid steers",
+        "heading": "SKID\nSTEERS",
+        "subtitle": "Construction Equipments",
+        "description": "Compact yet powerful, our joystick-controlled skid steers come equipped with smart features like a touchscreen display, rear camera, and intuitive controls—designed for maximum versatility on site."
+      }
+    ],
+    "menuHeading": "Our products"
   },
   "equipment": {
     "enabled": true,
@@ -191,32 +200,44 @@
       {
         "image": "/Asset/Images/customer/thumbnail1.jpg",
         "alt": "BULL customer testimonial 1",
-        "videoId": "m2VSTjDi0nA"
+        "videoId": "m2VSTjDi0nA",
+        "title": "",
+        "description": ""
       },
       {
         "image": "/Asset/Images/customer/thumbnai2.jpg",
         "alt": "BULL customer testimonial 2",
-        "videoId": "z1V7sK82iDc"
+        "videoId": "z1V7sK82iDc",
+        "title": "",
+        "description": ""
       },
       {
         "image": "/Asset/Images/customer/thumbnail3.jpg",
         "alt": "BULL customer testimonial 3",
-        "videoId": "GBsTrkKWsA4"
+        "videoId": "GBsTrkKWsA4",
+        "title": "",
+        "description": ""
       },
       {
         "image": "/Asset/Images/customer/thumbnail4.jpg",
         "alt": "BULL customer testimonial 4",
-        "videoId": "W61SVQl3wtE"
+        "videoId": "W61SVQl3wtE",
+        "title": "",
+        "description": ""
       },
       {
         "image": "/Asset/Images/customer/thumbnail5.jpg",
         "alt": "BULL customer testimonial 5",
-        "videoId": "fzi0q8BRVVU"
+        "videoId": "fzi0q8BRVVU",
+        "title": "",
+        "description": ""
       },
       {
         "image": "/Asset/Images/customer/thumbnail6.jpg",
         "alt": "BULL customer testimonial 6",
-        "videoId": "N7m2KzENATk"
+        "videoId": "N7m2KzENATk",
+        "title": "",
+        "description": ""
       }
     ]
   },

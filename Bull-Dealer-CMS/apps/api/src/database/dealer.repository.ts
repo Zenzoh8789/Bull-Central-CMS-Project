@@ -1,3 +1,4 @@
+import { bannerMatches } from "@bull/content/banners";
 import { resolveContent } from "../cms/content";
 import {
   BadRequestException,
@@ -27,18 +28,36 @@ export class Repository implements OnModuleDestroy, OnModuleInit {
   async onModuleInit() {
     if (!this.pool) return;
     try {
-      await this.pool.query("SELECT username,password_hash FROM cms_users LIMIT 0");
-      await this.pool.query("SELECT token_hash,expires_at FROM cms_sessions LIMIT 0");
+      await this.pool.query(
+        "SELECT username,password_hash FROM cms_users LIMIT 0",
+      );
+      await this.pool.query(
+        "SELECT token_hash,expires_at,employee_id,cms_entered FROM cms_sessions LIMIT 0",
+      );
       await this.pool.query("SELECT dealer_id,document FROM cms_live LIMIT 0");
-      await this.pool.query("SELECT domain,dealer_id FROM dealer_domains LIMIT 0");
-      await this.pool.query("SELECT address,district,status FROM enquiries LIMIT 0");
-      const [users]: any = await this.pool.query("SELECT id FROM cms_users WHERE role='SUPER_ADMIN' AND active=1 LIMIT 1");
-      if (!users.length) throw new Error("CMS administrator is missing. Run npm run setup:cms from the project root.");
+      await this.pool.query("SELECT state,district FROM dealers LIMIT 0");
+      await this.pool.query(
+        "SELECT domain,dealer_id FROM dealer_domains LIMIT 0",
+      );
+      await this.pool.query(
+        "SELECT address,district,status FROM enquiries LIMIT 0",
+      );
+      const [users]: any = await this.pool.query(
+        "SELECT id FROM cms_users WHERE role='SUPER_ADMIN' AND active=1 LIMIT 1",
+      );
+      if (!users.length)
+        throw new Error(
+          "CMS administrator is missing. Run npm run setup:cms from the project root.",
+        );
     } catch (error: any) {
       await this.pool.end();
-      throw new Error(error.code
-        ? "Database readiness failed (" + error.code + "). Check DATABASE_URL in the root .env, start MySQL, then run npm run db:migrate and npm run setup:cms from the project root."
-        : error.message);
+      throw new Error(
+        error.code
+          ? "Database readiness failed (" +
+              error.code +
+              "). Check DATABASE_URL in the root .env, start MySQL, then run npm run db:migrate and npm run setup:cms from the project root."
+          : error.message,
+      );
     }
   }
   async onModuleDestroy() {
@@ -66,7 +85,7 @@ export class Repository implements OnModuleDestroy, OnModuleInit {
     try {
       const lookup =
         localHosts.has(domain) && process.env.NODE_ENV !== "production"
-          ? "bulltaraautohub.com"
+          ? (process.env.LOCAL_DEALER_DOMAIN || domain)
           : domain;
       const [rows] = await this.pool!.execute<RowDataPacket[]>(
         "SELECT d.* FROM dealers d JOIN dealer_domains h ON h.dealer_id = d.id WHERE h.domain = ? AND d.active = 1",
@@ -78,6 +97,9 @@ export class Repository implements OnModuleDestroy, OnModuleInit {
         [rows[0].id],
       );
       const resolved = resolveContent(live);
+      resolved.content.banners.items = resolved.content.banners.items.filter(
+        (item: any) => bannerMatches(item, {state: rows[0].state, location: rows[0].location}),
+      );
       if (!resolved.sources.about) {
         resolved.content.about.heading = rows[0].name;
         resolved.content.about.text = rows[0].about;

@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useContent } from "../../services/useContent";
-import { useProductsQuery } from "../../services/siteApi";
+import { useSiteQuery } from "../../services/siteApi";
 import "./ProductsMenu.css";
 
 export function ProductsMenu({ mobile = false }: { mobile?: boolean }) {
-  const { navigation } = useContent();
+  const { navigation, products: productContent } = useContent();
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
@@ -15,9 +15,9 @@ export function ProductsMenu({ mobile = false }: { mobile?: boolean }) {
     undefined,
   );
   const location = useLocation();
-  const { data, isLoading, isError, refetch } = useProductsQuery();
-  const products = (data ?? [])
-    .filter((product) => Boolean(product.showInMenu))
+  const { data, isLoading, isError, refetch } = useSiteQuery();
+  const products = [...(data?.products ?? [])]
+    .filter((product) => product.showInMenu)
     .sort((a, b) => a.menuOrder - b.menuOrder);
   const panelId = mobile ? "mobile-products-panel" : "products-panel";
 
@@ -87,7 +87,7 @@ export function ProductsMenu({ mobile = false }: { mobile?: boolean }) {
           setOpen((value) => (!mobile && mouseClick ? true : !value));
         }}
       >
-        <span>{navigation.productsLabel}</span>
+        <span>{productContent.menuHeading || navigation.productsLabel}</span>
         <span className="products-menu-caret" aria-hidden="true" />
       </button>
       {/* Keep mounted so both opening and closing can transition. */}

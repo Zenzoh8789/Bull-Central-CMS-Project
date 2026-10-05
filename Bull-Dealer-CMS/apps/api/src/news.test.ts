@@ -59,6 +59,8 @@ for (const [layer, owner, target] of [
     const service: any = Object.create(CmsService.prototype);
     service.repo = {
       pool: {
+      getConnection() { return this; },
+      async beginTransaction() {}, async commit() {}, async rollback() {}, release() {},
         execute: async (sql: string) =>
           sql.startsWith("SELECT * FROM cms_drafts")
             ? [[{ id: 9, revision: 1, document: news }]]
@@ -94,6 +96,8 @@ test("editors cannot auto-publish news", async () => {
   const service: any = Object.create(CmsService.prototype);
   service.repo = {
     pool: {
+      getConnection() { return this; },
+      async beginTransaction() {}, async commit() {}, async rollback() {}, release() {},
       execute: async (sql: string) =>
         sql.startsWith("SELECT *")
           ? [[{ id: 9, revision: 1, document: news }]]
@@ -164,4 +168,11 @@ test("News capability detection matches the registry and rejects old schemas", a
     supportsNewsArticles({ key: "news", template: { items: [{ url: "" }] } }),
     false,
   );
+});
+
+test('customized articles retain real text even when their legacy URL matches a former sample',()=>{
+ const saved=validateSection('news',{...news,items:[{...article,url:'https://www.bullindia.com/bull-machines-unveils.php'}]});assert.deepEqual(saved.items,[article]);
+});
+test('malformed article titles produce validation errors instead of a normalizer TypeError',()=>{
+ assert.throws(()=>validateSection('news',{...news,items:[{...article,slug:undefined,title:42}]}),error=>(error as any).getStatus?.()===400);
 });

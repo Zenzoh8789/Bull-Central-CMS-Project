@@ -57,29 +57,11 @@ For upgrades, back up MySQL and uploads, retain the same Compose project name an
 
 ## Verification performed
 
-Test environment: Windows, Node.js 24, isolated MySQL 8.0.46. Original ZIP and live database were not modified.
+This delivery was audited from the latest approved ZIP only. See [the technical audit](docs/TECHNICAL-AUDIT.md), [API/browser results](docs/AUDIT-RESULTS.json), and [modified files](docs/MODIFIED-FILES.txt).
 
-- TypeScript checks and production builds for admin, API and website.
-- 21 API unit tests covering authentication, scopes, schemas, News capability detection and local media persistence/rollback.
-- 20 CMS integration scenarios with 130 dealers, including publication, conflicts, permissions, enquiries, media and account operations.
-- 12 News integration scenarios, including multipart image upload, API restart persistence, separate banner publication and administrator-only dealer deletion.
-- 20 sections × initial save and update: 40 saves verified against published content.
-- Browser: all 20 content editors opened with enabled save; real local PNG upload; article create/save/publish; View More → article → More News → listing (earlier browser run); existing article edit appeared on the already-open public listing.
-- Inspected admin layout and mobile News layout; no browser console errors in checked flows.
+40 unit tests, 21 CMS integration checks and 12 News integration checks passed. Admin and Website TypeScript checks and all three production builds passed locally on Windows / Node 24 / isolated MySQL 8.4.11. Production/VPS deployment was not tested. The original reported draft 400 payload was unavailable; valid tested saves return 201 and malformed requests correctly return 400.
 
-Repeat checks:
-
-```sh
-npm run check
-npm run build
-npm test
-```
-
-For integration tests, set `TEST_DATABASE_URL` to a disposable MySQL test server whose account can create/drop test databases, then run `npm run test:integration` and `npm run test:news`.
-
-This is a locally tested source delivery. Live VPS deployment, TLS/domain setup and Docker execution were not performed. Verify host permissions and deployment on your VPS.
-
-The ZIP excludes real `.env` credentials, node_modules, compiled builds, temporary QA data, old embedded ZIPs, unused static News data and ad-hoc credential-reset scripts. Run `npm ci` and build from source.
+Run `npm ci`, `npm test`, `npm run check`, and `npm run build`. Integration checks require `TEST_DATABASE_URL` pointing to a disposable test server. The delivery excludes credentials, dependencies and generated builds.
 
 ## Run each app separately
 

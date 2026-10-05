@@ -1,0 +1,49 @@
+.groups-page > .primary {
+  margin-bottom: 20px;
+}
+.group-management-card {
+  background: #fff;
+  border: 1px solid #e2e7ed;
+  border-radius: 12px;
+  padding: 24px;
+}
+.group-management-card h2 {
+  margin: 18px 0 6px;
+  font-size: 16px;
+}
+.group-management-card p {
+  margin: 0 0 20px;
+  font-size: 15px;
+  color: #81909d;
+}
+.group-management-card p strong {
+  font-size: 17px;
+  color: #243d51;
+  margin-right: 4px;
+}
+.group-content-link {
+  width: 100%;
+  justify-content: space-between;
+  font-size: 15px;
+  background: #fff7da;
+  border-color: #efdfa5;
+}
+.group-membership-button {
+  margin-top: 10px;
+  width: 100%;
+  font-size: 15px;
+  border-color: transparent;
+  color: #7a8995;
+}
+.groups-page .dealer-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+  border: 1px solid #e3e8ed;
+  border-radius: 8px;
+  padding: 14px;
+}
+.groups-page .dealer-picker label {
+  margin: 0;
+  font-size: 15px;
+}

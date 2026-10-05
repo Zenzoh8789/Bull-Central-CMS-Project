@@ -20,7 +20,7 @@ import {
 } from "./auth";
 import { registry, resolveContent, validateSection } from "./content";
 import { normalizeNews } from "@bull/content/news";
-import type { PoolConnection } from "mysql2/promise";
+import type { DraftSaveRequest } from "@bull/content/cms";
 const object = (x: any) => (typeof x === "string" ? JSON.parse(x) : x);
 const number = (v: any) => {
   if (!Number.isInteger(v) || v < 0)
@@ -46,8 +46,176 @@ export class CmsService {
   async audit(actor: Actor, action: string, details: any) {
     await this.pool.execute(
       "INSERT INTO cms_audit(actor_id,action,details) VALUES (?,?,?)",
-      [actor.id, action, JSON.stringify(details)],
+      [actor.id, action, JSON.stringify(this.auditDetails(actor, details))],
     );
+  }
+  auditDetails(actor: Actor, details: any) {
+    return {
+      ...details,
+      accountName: actor.name,
+      employeeId: actor.employee_id ?? null,
+      employeeName: actor.employee_name ?? null,
+    };
+  }
+  async employees(actor: Actor) {
+    requireSuper(actor);
+    const [rows] = await this.pool.query(
+      "SELECT id,name,department,active FROM cms_employees WHERE removed=0 ORDER BY name,id",
+    );
+    return rows;
+  }
+  async saveEmployee(actor: Actor, body: any, id?: number) {
+    requireSuper(actor);
+    const name = text(body.name, 100),
+      department = text(body.department, 100);
+    if (typeof body.active !== "boolean")
+      throw new BadRequestException("Choose an employee status");
+    const db = await this.pool.getConnection();
+    try {
+      await db.beginTransaction();
+      if (id) {
+        const [rows]: any = await db.execute(
+          "SELECT id FROM cms_employees WHERE id=? AND removed=0 FOR UPDATE",
+          [id],
+        );
+        if (!rows.length) throw new NotFoundException("Employee not found");
+        await db.execute(
+          "UPDATE cms_employees SET name=?,department=?,active=? WHERE id=?",
+          [name, department, body.active, id],
+        );
+        if (!body.active)
+          await db.execute(
+            "UPDATE cms_sessions SET employee_id=NULL,cms_entered=0 WHERE employee_id=?",
+            [id],
+          );
+      } else {
+        const [r]: any = await db.execute(
+          "INSERT INTO cms_employees(name,department,active) VALUES (?,?,?)",
+          [name, department, body.active],
+        );
+        id = r.insertId;
+      }
+      await db.execute(
+        "INSERT INTO cms_audit(actor_id,action,details) VALUES (?,?,?)",
+        [
+          actor.id,
+          body.active ? "SAVE_EMPLOYEE" : "DEACTIVATE_EMPLOYEE",
+          JSON.stringify(
+            this.auditDetails(actor, {
+              id,
+              name,
+              department,
+              active: body.active,
+            }),
+          ),
+        ],
+      );
+      await db.commit();
+      return { id };
+    } catch (e) {
+      await db.rollback();
+      throw e;
+    } finally {
+      db.release();
+    }
+  }
+  async removeEmployee(actor: Actor, id: number) {
+    requireSuper(actor);
+    const db = await this.pool.getConnection();
+    try {
+      await db.beginTransaction();
+      const [rows]: any = await db.execute(
+        "SELECT id,name FROM cms_employees WHERE id=? AND removed=0 FOR UPDATE",
+        [id],
+      );
+      if (!rows.length) throw new NotFoundException("Employee not found");
+      await db.execute(
+        "UPDATE cms_employees SET removed=1,active=0 WHERE id=?",
+        [id],
+      );
+      await db.execute(
+        "UPDATE cms_sessions SET employee_id=NULL,cms_entered=0 WHERE employee_id=?",
+        [id],
+      );
+      await db.execute(
+        "INSERT INTO cms_audit(actor_id,action,details) VALUES (?,?,?)",
+        [
+          actor.id,
+          "REMOVE_EMPLOYEE",
+          JSON.stringify(this.auditDetails(actor, rows[0])),
+        ],
+      );
+      await db.commit();
+      return { ok: true };
+    } catch (e) {
+      await db.rollback();
+      throw e;
+    } finally {
+      db.release();
+    }
+  }
+  async enter(actor: Actor, token: string, body: any) {
+    requireSuper(actor);
+    if (
+      body.employeeId !== null &&
+      (!Number.isInteger(body.employeeId) || body.employeeId < 1)
+    )
+      throw new BadRequestException("Choose an employee or enter as admin");
+    const db = await this.pool.getConnection();
+    try {
+      await db.beginTransaction();
+      const [sessions]: any = await db.execute(
+        "SELECT cms_entered FROM cms_sessions WHERE token_hash=? AND user_id=? AND expires_at>UTC_TIMESTAMP() FOR UPDATE",
+        [digest(token), actor.id],
+      );
+      if (!sessions.length) throw new UnauthorizedException("Session expired");
+      if (sessions[0].cms_entered)
+        throw new ConflictException(
+          "This session already has a profile. Log out to choose another employee.",
+        );
+      let employee: any = null;
+      if (body.employeeId !== null) {
+        const [rows]: any = await db.execute(
+          "SELECT id,name FROM cms_employees WHERE id=? AND active=1 AND removed=0 FOR UPDATE",
+          [body.employeeId],
+        );
+        if (!rows.length)
+          throw new BadRequestException("This employee is no longer active");
+        employee = rows[0];
+      }
+      const user = {
+        ...actor,
+        employee_id: employee?.id ?? null,
+        employee_name: employee?.name ?? null,
+        cms_entered: true,
+      };
+      const [result]: any = await db.execute(
+        "UPDATE cms_sessions SET employee_id=?,cms_entered=1 WHERE token_hash=? AND user_id=? AND expires_at>UTC_TIMESTAMP()",
+        [user.employee_id, digest(token), actor.id],
+      );
+      if (!result.affectedRows)
+        throw new UnauthorizedException("Session expired");
+      await db.execute(
+        "INSERT INTO cms_audit(actor_id,action,details) VALUES (?,?,?)",
+        [actor.id, "ENTER_CMS", JSON.stringify(this.auditDetails(user, {}))],
+      );
+      await db.commit();
+      return user;
+    } catch (e) {
+      await db.rollback();
+      throw e;
+    } finally {
+      db.release();
+    }
+  }
+  async activity(actor: Actor) {
+    const [rows]: any = await this.pool.execute(
+      "SELECT a.*,u.name AS account FROM cms_audit a LEFT JOIN cms_users u ON u.id=a.actor_id" +
+        (actor.role === "SUPER_ADMIN" ? "" : " WHERE a.actor_id=?") +
+        " ORDER BY a.id DESC LIMIT 500",
+      actor.role === "SUPER_ADMIN" ? [] : [actor.id],
+    );
+    return rows.map((row: any) => ({ ...row, details: object(row.details) }));
   }
   async login(body: any) {
     const identifier = text(body.username ?? body.email, 150).toLowerCase(),
@@ -72,9 +240,19 @@ export class CmsService {
       [digest(token), rows[0].id],
     );
     const { password_hash, ...user } = rows[0];
-    return { token, user };
+    await this.audit(user, "SIGN_IN", {});
+    return {
+      token,
+      user: {
+        ...user,
+        cms_entered: false,
+        employee_id: null,
+        employee_name: null,
+      },
+    };
   }
-  async logout(token: string) {
+  async logout(token: string, actor?: Actor) {
+    if (actor) await this.audit(actor, "SIGN_OUT", {});
     await this.pool.execute("DELETE FROM cms_sessions WHERE token_hash=?", [
       digest(token),
     ]);
@@ -136,7 +314,11 @@ export class CmsService {
       await db.execute("DELETE FROM dealers WHERE id=?", [id]);
       await db.execute(
         "INSERT INTO cms_audit(actor_id,action,details) VALUES (?,?,?)",
-        [actor.id, "DELETE_DEALER", JSON.stringify(rows[0])],
+        [
+          actor.id,
+          "DELETE_DEALER",
+          JSON.stringify(this.auditDetails(actor, rows[0])),
+        ],
       );
       await db.commit();
       return { deleted: true };
@@ -149,6 +331,10 @@ export class CmsService {
   }
   async saveDealer(actor: Actor, body: any, id?: number) {
     requireSuper(actor);
+    const optionalRegion = (value: any) =>
+      value == null || value === "" ? null : text(value, 100);
+    const state = optionalRegion(body.state),
+      district = optionalRegion(body.district);
     const name = text(body.name),
       location = text(body.location, 100),
       address = text(body.address, 2000),
@@ -177,8 +363,8 @@ export class CmsService {
       await db.beginTransaction();
       if (id) {
         const [result]: any = await db.execute(
-          "UPDATE dealers SET name=?,location=?,address=?,about=?,active=? WHERE id=?",
-          [name, location, address, about, body.active, id],
+          "UPDATE dealers SET name=?,location=?,address=?,about=?,active=?,state=COALESCE(?,state),district=COALESCE(?,district) WHERE id=?",
+          [name, location, address, about, body.active, state, district, id],
         );
         if (!result.affectedRows)
           throw new NotFoundException("Dealer not found");
@@ -189,8 +375,17 @@ export class CmsService {
         );
         id = Number(rows[0].nextId);
         await db.execute(
-          "INSERT INTO dealers(id,name,location,address,about,active) VALUES (?,?,?,?,?,?)",
-          [id, name, location, address, about, body.active],
+          "INSERT INTO dealers(id,name,location,address,about,active,state,district) VALUES (?,?,?,?,?,?,?,?)",
+          [
+            id,
+            name,
+            location,
+            address,
+            about,
+            body.active,
+            state || "",
+            district || "",
+          ],
         );
       }
       for (const domain of domains)
@@ -209,7 +404,15 @@ export class CmsService {
     } finally {
       db.release();
     }
-    await this.audit(actor, "SAVE_DEALER", { id });
+    await this.audit(actor, "SAVE_DEALER", {
+      id,
+      name,
+      location,
+      active: body.active,
+      domains,
+      address,
+      about,
+    });
     return { id };
   }
   async groups(actor: Actor) {
@@ -249,6 +452,16 @@ export class CmsService {
           "INSERT INTO cms_group_members(group_id,dealer_id) VALUES (?,?)",
           [id!, dealerId],
         );
+      await db.execute(
+        "INSERT INTO cms_audit(actor_id,action,details) VALUES (?,?,?)",
+        [
+          actor.id,
+          "SAVE_GROUP",
+          JSON.stringify(
+            this.auditDetails(actor, { id, name, dealerIds: ids }),
+          ),
+        ],
+      );
       await db.commit();
       return { id };
     } catch (e: any) {
@@ -259,6 +472,20 @@ export class CmsService {
     } finally {
       db.release();
     }
+  }
+  async commonResolved(actor: Actor) {
+    assertScope(actor, "COMMON", 0);
+    const [rows]: any = await this.pool.execute(
+      "SELECT * FROM cms_live WHERE layer='COMMON' ORDER BY publication_id DESC,dealer_id ASC",
+    );
+    const seen = new Set<string>();
+    return resolveContent(
+      rows.filter((row: any) => {
+        if (seen.has(row.section_key)) return false;
+        seen.add(row.section_key);
+        return true;
+      }),
+    );
   }
   async drafts(actor: Actor) {
     const [rows]: any = await this.pool.execute(
@@ -277,7 +504,25 @@ export class CmsService {
           : object(r.document),
     }));
   }
-  async saveDraft(actor: Actor, body: any) {
+  async saveDraft(actor: Actor, body: DraftSaveRequest) {
+    if (!body || typeof body !== "object" || Array.isArray(body))
+      throw new BadRequestException("Provide a draft request object");
+    if (typeof body.section !== "string")
+      throw new BadRequestException("section must be a CMS section key");
+    if (!Number.isSafeInteger(body.ownerId) || body.ownerId < 0)
+      throw new BadRequestException("ownerId must be a non-negative integer");
+    if (
+      !Number.isSafeInteger(body.expectedRevision) ||
+      body.expectedRevision < 0
+    )
+      throw new BadRequestException(
+        "expectedRevision must be a non-negative integer",
+      );
+    if (
+      body.removeOverride !== undefined &&
+      typeof body.removeOverride !== "boolean"
+    )
+      throw new BadRequestException("removeOverride must be boolean");
     const { layer, section } = body;
     const owner = number(body.ownerId),
       expected = number(body.expectedRevision);
@@ -298,9 +543,12 @@ export class CmsService {
       );
       if (!rows.length) throw new NotFoundException("Scope does not exist");
     }
+    const db = await this.pool.getConnection();
+    let rows: any[];
     try {
+      await db.beginTransaction();
       if (!expected) {
-        await this.pool.execute(
+        await db.execute(
           "INSERT INTO cms_drafts(layer,owner_id,section_key,document,updated_by,remove_override) VALUES (?,?,?,?,?,?)",
           [
             layer,
@@ -312,7 +560,7 @@ export class CmsService {
           ],
         );
       } else {
-        const [r]: any = await this.pool.execute(
+        const [r]: any = await db.execute(
           "UPDATE cms_drafts SET document=?,revision=revision+1,updated_by=?,remove_override=? WHERE layer=? AND owner_id=? AND section_key=? AND revision=?",
           [
             JSON.stringify(body.document),
@@ -327,17 +575,37 @@ export class CmsService {
         if (!r.affectedRows)
           throw new ConflictException("Draft changed. Reload before saving.");
       }
+      const [savedRows]: any = await db.execute(
+        "SELECT * FROM cms_drafts WHERE layer=? AND owner_id=? AND section_key=?",
+        [layer, owner, section],
+      );
+      rows = savedRows;
+      await db.execute(
+        "INSERT INTO cms_audit(actor_id,action,details) VALUES (?,?,?)",
+        [
+          actor.id,
+          "SAVE_DRAFT",
+          JSON.stringify(
+            this.auditDetails(actor, {
+              layer,
+              ownerId: owner,
+              section,
+              revision: rows[0].revision,
+            }),
+          ),
+        ],
+      );
+      await db.commit();
     } catch (e: any) {
+      await db.rollback();
       if (e.code === "ER_DUP_ENTRY")
         throw new ConflictException(
           "Draft already exists. Reload before saving.",
         );
       throw e;
+    } finally {
+      db.release();
     }
-    const [rows]: any = await this.pool.execute(
-      "SELECT * FROM cms_drafts WHERE layer=? AND owner_id=? AND section_key=?",
-      [layer, owner, section],
-    );
     let published = false;
     if (actor.role !== "EDITOR") {
       const target =
@@ -368,6 +636,48 @@ export class CmsService {
       }
     }
     return { ...rows[0], document: object(rows[0].document), published };
+  }
+  async deleteDraft(
+    actor: Actor,
+    id: number,
+    body: { expectedRevision: number },
+  ) {
+    const expected = number(body?.expectedRevision);
+    const db = await this.pool.getConnection();
+    try {
+      await db.beginTransaction();
+      const [rows]: any = await db.execute(
+        "SELECT * FROM cms_drafts WHERE id=? FOR UPDATE",
+        [id],
+      );
+      if (!rows.length) throw new NotFoundException("Draft not found");
+      assertScope(actor, rows[0].layer, rows[0].owner_id);
+      if (rows[0].revision !== expected)
+        throw new ConflictException("Draft changed. Reload before deleting.");
+      await db.execute("DELETE FROM cms_drafts WHERE id=?", [id]);
+      await db.execute(
+        "INSERT INTO cms_audit(actor_id,action,details) VALUES (?,?,?)",
+        [
+          actor.id,
+          "DELETE_DRAFT",
+          JSON.stringify(
+            this.auditDetails(actor, {
+              id,
+              layer: rows[0].layer,
+              ownerId: rows[0].owner_id,
+              section: rows[0].section_key,
+            }),
+          ),
+        ],
+      );
+      await db.commit();
+      return { deleted: true };
+    } catch (error) {
+      await db.rollback();
+      throw error;
+    } finally {
+      db.release();
+    }
   }
   async resolveDealer(actor: Actor, id: number) {
     if (actor.role === "DEALER_ADMIN" && id !== actor.dealer_id)
@@ -406,8 +716,8 @@ export class CmsService {
       if (body.revisions?.[d.id] !== d.revision)
         throw new ConflictException("Draft revision changed; preview again");
       // Also migrate legacy drafts published directly from the approval screen.
-      if (d.section_key === "news" && !d.remove_override)
-        d.document = validateSection("news", object(d.document));
+      if (!d.remove_override)
+        d.document = validateSection(d.section_key, object(d.document));
     }
     if (
       new Set(drafts.map((d: any) => d.layer + ":" + d.section_key)).size !==
@@ -572,10 +882,13 @@ export class CmsService {
         [
           actor.id,
           "PUBLISH",
-          JSON.stringify({
-            publicationId: r.insertId,
-            count: p.recipients.length,
-          }),
+          JSON.stringify(
+            this.auditDetails(actor, {
+              publicationId: r.insertId,
+              dealerIds: p.recipients.map((d: any) => d.id),
+              count: p.recipients.length,
+            }),
+          ),
         ],
       );
       await db.commit();
@@ -638,7 +951,11 @@ export class CmsService {
         await db.execute("DELETE FROM cms_sessions WHERE user_id=?", [id]);
       await db.execute(
         "INSERT INTO cms_audit(actor_id,action,details) VALUES (?,?,?)",
-        [actor.id, "USER_STATUS", JSON.stringify({ id, active: body.active })],
+        [
+          actor.id,
+          "USER_STATUS",
+          JSON.stringify(this.auditDetails(actor, { id, active: body.active })),
+        ],
       );
       await db.commit();
       return { ok: true };
@@ -653,7 +970,9 @@ export class CmsService {
     requireSuper(actor);
     if (!["SUPER_ADMIN", "EDITOR", "DEALER_ADMIN"].includes(body.role))
       throw new BadRequestException("Invalid role");
-    const password = text(body.password, 200);
+    const password = body.password;
+    if (typeof password !== "string" || password.length > 200)
+      throw new BadRequestException("Invalid password field");
     if (password.length < 12)
       throw new BadRequestException("Use at least 12 characters");
     const email = text(body.email, 150).toLowerCase();
@@ -678,6 +997,11 @@ export class CmsService {
           username,
         ],
       );
+      await this.audit(actor, "CREATE_USER", {
+        id: r.insertId,
+        name: body.name,
+        role: body.role,
+      });
       return { id: r.insertId };
     } catch (e: any) {
       if (["ER_DUP_ENTRY", "ER_NO_REFERENCED_ROW_2"].includes(e.code))
@@ -707,6 +1031,11 @@ export class CmsService {
         : [body.status, id],
     );
     if (!r.affectedRows) throw new NotFoundException("Enquiry not found");
+    await this.audit(actor, "UPDATE_ENQUIRY", {
+      id,
+      status: body.status,
+      dealerId: actor.dealer_id,
+    });
     return { ok: true };
   }
   async media(actor: Actor) {

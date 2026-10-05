@@ -1,18 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, ChevronRight, CalendarDays } from "lucide-react";
+import { ChevronRight, CalendarDays } from "lucide-react";
 import { normalizeNews } from "@bull/content/news";
-import { useSiteQuery } from "../../services/siteApi";
 import { useContent } from "../../services/useContent";
 
 import "./News.css";
 
 export function useNews() {
-  useSiteQuery(undefined, {
-    pollingInterval: 10000,
-    refetchOnMountOrArgChange: true,
-  });
-
   const { news } = useContent();
 
   return useMemo(() => {

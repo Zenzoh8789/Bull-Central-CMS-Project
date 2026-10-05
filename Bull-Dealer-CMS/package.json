@@ -15,7 +15,8 @@
     "admin:credentials": "node infra/scripts/admin-credentials.cjs",
     "db:setup": "npm run build -w apps/api && npm run db:migrate && npm run setup:cms",
     "test:local": "node infra/scripts/local-smoke.cjs",
-    "test:news": "npm run build -w apps/api && node infra/scripts/test-news.cjs"
+    "test:news": "npm run build -w apps/api && node infra/scripts/test-news.cjs",
+    "setup:admin": "node infra/scripts/setup-admin.cjs"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",

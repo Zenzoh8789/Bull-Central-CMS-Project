@@ -1,0 +1,150 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const assert = require('node:assert/strict');
+const { chromium } = require(process.env.BULL_PLAYWRIGHT_PATH || 'playwright');
+const defaults = require('../apps/content/defaults.json');
+const { newsTemplate, newsCapabilities, normalizeNews } = require('../apps/content/news.js');
+const baseURL = process.env.BULL_ADMIN_URL || 'http://127.0.0.1:5184';
+const output = path.resolve(__dirname, '../artifacts/admin-redesign');
+const actor = { id: 1, name: 'Admin', role: 'SUPER_ADMIN', cms_entered: true };
+const dealers = [
+  { id: 1, name: 'Southern Equipment', location: 'Tamil Nadu', address: 'Coimbatore', about: 'Construction equipment and service.', active: true, domains: ['southern.example.com'] },
+  { id: 2, name: 'Western Machinery', location: 'Maharashtra', address: 'Pune', about: 'Authorised BULL dealer.', active: true, domains: ['western.example.com'] },
+  { id: 3, name: 'Northstar Equipment', location: 'Delhi', address: 'New Delhi', about: 'Sales and service.', active: false, domains: ['northstar.example.com'] },
+];
+const registry = Object.entries(defaults).map(([key, value]) => ({ key, label: key, defaultValue: value, template: key === 'news' ? newsTemplate : value, ...(key === 'news' ? { capabilities: newsCapabilities } : {}) }));
+const groups = [{ id: 11, name: 'South region', dealerIds: [1] }, { id: 12, name: 'All regions', dealerIds: [1, 2, 3] }];
+let drafts = [], writes = [], failSave = false, delayUpload = false;
+(async () => {
+  fs.mkdirSync(output, { recursive: true });
+  const browser = await chromium.launch({ channel: 'msedge', headless: true });
+  const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, reducedMotion: 'reduce' });
+  const page = await context.newPage();
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await context.addInitScript(user => sessionStorage.setItem('bull-session', JSON.stringify({ token: 'local-ui-test', user })), actor);
+  await context.route('**/api/**', async route => {
+    const req = route.request();
+    const endpoint = new URL(req.url()).pathname;
+    const reply = (value, status = 200) => route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(value) });
+    if (endpoint === '/api/auth/me') return reply(actor);
+    if (endpoint.endsWith('/registry')) return reply(registry);
+    if (endpoint.endsWith('/dealers')) return reply(dealers);
+    if (endpoint.endsWith('/groups')) return reply(groups);
+    if (endpoint.endsWith('/media')) {
+      if (req.method() === 'POST') { if (delayUpload) await new Promise(r => setTimeout(r, 800)); return reply({ url: '/admin/brand/bull-machine-logo.webp' }); }
+      return reply([]);
+    }
+    if (/\/dealers\/\d+\/resolved$/.test(endpoint)) return reply({ dealer: dealers.find(d => endpoint.includes(`/${d.id}/`)), content: { ...defaults, news: normalizeNews(defaults.news) }, sources: {} });
+    if (endpoint.endsWith('/drafts')) {
+      if (req.method() === 'GET') return reply(drafts);
+      const body = req.postDataJSON(); writes.push(body);
+      if (failSave) return reply({ message: 'Draft changed. Reload before saving.' }, 409);
+      const saved = { id: drafts.length + 1, layer: body.layer, owner_id: body.ownerId, section_key: body.section, document: body.document, revision: body.expectedRevision + 1, remove_override: body.removeOverride, published: true };
+      drafts = [...drafts.filter(d => !(d.layer === saved.layer && d.owner_id === saved.owner_id && d.section_key === saved.section_key)), saved];
+      return reply(saved);
+    }
+    return reply({ message: 'Unexpected test request: ' + endpoint }, 404);
+  });
+  await context.route('**/Asset/**', async route => {
+    const relative = decodeURIComponent(new URL(route.request().url()).pathname).replace(/^\//, '');
+    const file = path.join(__dirname, '../apps/web/public', relative);
+    if (fs.existsSync(file)) return route.fulfill({ path: file });
+    return route.fulfill({ status: 404, body: '' });
+  });
+  try {
+    await page.goto(baseURL + '/admin/content');
+    await page.getByRole('heading', { name: 'Common selection' }).waitFor();
+    await page.locator('.section-card').first().waitFor();
+    assert.equal(await page.locator('.section-card').count(), registry.length);
+    await page.locator('.section-card-preview img').evaluateAll(images => Promise.all(images.map(img => img.decode().catch(() => {}))));
+    await page.screenshot({ path: path.join(output, 'common-selection.png'), fullPage: true });
+    await page.getByRole('button', { name: 'Dealer groups', exact: true }).click();
+    await page.getByRole('button', { name: 'All regions 3 dealers' }).click();
+    await page.locator('.section-card').filter({ hasText: 'Header' }).click();
+    await page.getByLabel('Home Label', { exact: true }).fill('Group home');
+    await page.getByRole('button', { name: 'Save & publish', exact: true }).click();
+    await page.getByText('Changes published.', { exact: true }).waitFor();
+    assert.equal(writes.at(-1).layer, 'GROUP'); assert.equal(writes.at(-1).ownerId, 12);
+    await page.getByRole('link', { name: 'Dealers', exact: true }).click();
+    await page.getByRole('button', { name: 'Edit Southern Equipment', exact: true }).click();
+    await page.getByRole('dialog').waitFor();
+    await page.getByLabel('Title', { exact: true }).fill('Southern dealer SEO');
+    page.once('dialog', dialog => dialog.dismiss());
+    await page.getByRole('button', { name: 'Banners', exact: true }).click();
+    assert.equal(await page.getByLabel('Title', { exact: true }).inputValue(), 'Southern dealer SEO');
+    await page.getByRole('button', { name: 'Save & publish', exact: true }).click();
+    await page.getByText('Changes published.', { exact: true }).waitFor();
+    assert.equal(writes.at(-1).layer, 'OVERRIDE'); assert.equal(writes.at(-1).ownerId, 1);
+    assert.equal(writes.at(-1).document.title, 'Southern dealer SEO');
+    await page.getByRole('button', { name: 'Banners', exact: true }).click();
+    await page.locator('.array-editor > details').first().waitFor();
+    assert.equal(await page.locator('.array-editor > details').count(), 3);
+    await page.locator('.item-thumbnail img').evaluateAll(images => Promise.all(images.map(img => img.decode().catch(() => {}))));
+    await page.screenshot({ path: path.join(output, 'dealer-popup.png') });
+    const cardBounds = await page.locator('.array-editor > details').first().evaluate(el => { const image = el.querySelector('.item-thumbnail').getBoundingClientRect(); const title = el.querySelector('.item-title').getBoundingClientRect(); return { imageBottom: image.bottom, titleTop: title.top }; });
+    assert.ok(cardBounds.imageBottom <= cardBounds.titleTop, 'Item title must remain below its thumbnail');
+    await page.locator('.array-editor > details > summary').first().click();
+    await page.getByLabel('Alt', { exact: true }).first().fill('Updated equipment image');
+    await page.getByRole('button', { name: 'Save & publish', exact: true }).click();
+    await page.getByText('Changes published.', { exact: true }).waitFor();
+    assert.equal(writes.at(-1).document.items[0].alt, 'Updated equipment image');
+    delayUpload = true;
+    await page.locator('input[type=file]').first().setInputFiles(path.join(__dirname, '../apps/admin/public/brand/bull-machine-logo.webp'));
+    await page.getByText('Uploading…', { exact: true }).first().waitFor();
+    assert.equal(await page.getByRole('button', { name: 'Save & publish', exact: true }).isDisabled(), true);
+    assert.equal(await page.getByRole('button', { name: 'Header', exact: true }).isDisabled(), true);
+    await page.getByText('Uploaded. Save changes to update the website.', { exact: true }).waitFor();
+    await page.getByRole('button', { name: 'Save & publish', exact: true }).click();
+    await page.getByText('Changes published.', { exact: true }).waitFor();
+    assert.equal(writes.at(-1).document.items[0].image, '/admin/brand/bull-machine-logo.webp');
+    await page.getByRole('button', { name: '+ Add item', exact: true }).click();
+    assert.equal(await page.locator('.array-editor > details').count(), 4);
+    await page.getByRole('button', { name: 'Remove', exact: true }).last().click();
+    assert.equal(await page.locator('.array-editor > details').count(), 3);
+    page.once('dialog', dialog => dialog.accept());
+    await page.getByRole('button', { name: 'Header', exact: true }).click();
+    await page.getByLabel('Home Label', { exact: true }).fill('Do not lose me');
+    failSave = true;
+    await page.getByRole('button', { name: 'Save & publish', exact: true }).click();
+    await page.getByRole('alert').getByText('Draft changed. Reload before saving.').waitFor();
+    assert.equal(await page.getByLabel('Home Label', { exact: true }).inputValue(), 'Do not lose me');
+    failSave = false;
+    page.once('dialog', dialog => dialog.dismiss());
+    await page.keyboard.press('Escape');
+    assert.equal(await page.getByRole('dialog').count(), 1);
+    page.once('dialog', dialog => dialog.accept());
+    await page.keyboard.press('Escape');
+    assert.equal(await page.getByRole('dialog').count(), 0);
+    assert.equal(await page.getByRole('button', { name: 'Edit Southern Equipment', exact: true }).evaluate(el => el === document.activeElement), true);
+    await page.getByRole('textbox', { name: 'Search dealers' }).fill('western');
+    assert.equal(await page.locator('.dealers-table tbody tr').count(), 1);
+    await page.getByRole('textbox', { name: 'Search dealers' }).fill('');
+    await page.screenshot({ path: path.join(output, 'dealers.png'), fullPage: true });
+    await page.getByRole('link', { name: 'Dealer groups', exact: true }).click();
+    await page.getByRole('link', { name: 'Edit content' }).first().click();
+    assert.equal(await page.locator('.scope-select select').inputValue(), '11');
+    await page.getByRole('button', { name: 'All dealers', exact: true }).click();
+    await page.locator('.section-card').filter({ hasText: 'Header' }).click();
+    await page.getByLabel('Home Label', { exact: true }).fill('Common home');
+    await page.getByRole('button', { name: 'Save & publish', exact: true }).click();
+    await page.getByText('Changes published.', { exact: true }).waitFor();
+    assert.equal(writes.at(-1).layer, 'COMMON'); assert.equal(writes.at(-1).ownerId, 0);
+    await page.getByRole('link', { name: 'Dealers', exact: true }).click();
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.getByRole('button', { name: 'Edit Southern Equipment', exact: true }).click();
+    await page.getByRole('button', { name: 'Products', exact: true }).click();
+    await page.locator('.array-editor > details').first().waitFor();
+    await page.screenshot({ path: path.join(output, 'dealer-mobile.png') });
+    const modalOverflow = await page.getByRole('dialog').evaluate(el => el.scrollWidth > el.clientWidth + 1);
+    assert.equal(modalOverflow, false, 'Dialog must not overflow horizontally');
+    await page.keyboard.press('Escape');
+    await page.goto(baseURL + '/admin/content');
+    await page.locator('.section-card').first().waitFor();
+    await page.screenshot({ path: path.join(output, 'common-mobile.png'), fullPage: true });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+    assert.deepEqual(errors, []);
+    fs.writeFileSync(path.join(output, 'verification.json'), JSON.stringify({ result: 'passed', checks: ['common cards', 'group owner payload', 'dealer override payload', 'unsaved tab guard', 'array edit/add/remove', 'failed save preserves edits', 'Escape discard guard', 'focus restoration', 'dealer search', '390px modal and page overflow', 'no runtime errors', 'upload disables saving/navigation', 'common owner payload', 'group card deep link'], screenshots: 5 }, null, 2));
+    console.log('PASS: admin UI smoke checks; screenshots saved in artifacts/admin-redesign.');
+  } finally { await browser.close(); }
+})().catch(error => { console.error(error); process.exitCode = 1; });

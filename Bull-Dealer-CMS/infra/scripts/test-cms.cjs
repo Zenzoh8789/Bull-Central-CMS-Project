@@ -29,8 +29,11 @@ const { hashPassword } = require("../../apps/api/dist/cms/auth");
     await db.query(
       fs.readFileSync("infra/migrations/003_central_cms.sql", "utf8"),
     );
+    await db.query(fs.readFileSync('infra/migrations/004_employees.sql','utf8'));
+    await db.query("ALTER TABLE dealers ADD COLUMN state VARCHAR(100) NOT NULL DEFAULT '', ADD COLUMN district VARCHAR(100) NOT NULL DEFAULT ''");
+    await db.query('ALTER TABLE cms_sessions ADD COLUMN employee_id INT NULL, ADD COLUMN cms_entered BOOLEAN NOT NULL DEFAULT FALSE');
     for (let id = 2; id <= 130; id++) {
-      await db.execute("INSERT INTO dealers VALUES (?,?,?,?,?,1)", [
+      await db.execute("INSERT INTO dealers(id,name,location,address,about,active) VALUES (?,?,?,?,?,1)", [
         id,
         "Dealer " + id,
         "Test region",
@@ -113,6 +116,20 @@ const { hashPassword } = require("../../apps/api/dist/cms/auth");
     const superToken = await login("super@test.local"),
       editor = await login("editor@test.local"),
       dealer = await login("dealer@test.local");
+    await request("GET", "admin/dealers", null, superToken, 403);
+    const employee = await request("POST", "admin/employees", {name:"Audit Tester",department:"QA",active:true}, superToken, 201);
+    await request("POST", "auth/enter", {employeeId:employee.id}, superToken, 201);
+    assert.equal((await request("GET","auth/me",null,superToken)).employee_name,"Audit Tester");
+    await request("PUT","admin/employees/"+employee.id,{name:"Audit Tester",department:"QA",active:false},superToken);
+    await request("GET","admin/dealers",null,superToken,403);
+    await request("POST","auth/enter",{employeeId:employee.id},superToken,400);
+    await request("POST","auth/enter",{employeeId:null},superToken,201);
+    await request("DELETE","admin/employees/"+employee.id,null,superToken);
+    const events = await request("GET","admin/activity",null,superToken);
+    assert.ok(events.some(e=>e.action==="ENTER_CMS" && e.details.employeeName==="Audit Tester"));
+    await request("GET","admin/employees",null,editor,403);
+    await request("POST","auth/enter",{employeeId:null},dealer,403);
+    check("employee selection, deactivation, retained audit identity and role restrictions");
     await request("GET", "admin/drafts", null, null, 401);
     check("authentication required");
     const registry = await request("GET", "admin/registry", null, superToken);

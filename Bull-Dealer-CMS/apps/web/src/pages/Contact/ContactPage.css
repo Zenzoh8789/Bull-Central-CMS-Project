@@ -1,46 +1,972 @@
-.contact-banner-image {
+/* =========================================================
+   PAGE
+========================================================= */
+
+.contact-page {
   width: 100%;
-  display: block;
+  margin: 0;
+  padding: 4.5rem 0 3rem;
+
+  background: #ffffff;
+  color: #222222;
+
+  overflow-x: hidden;
 }
+
+.contact-page *,
+.contact-page *::before,
+.contact-page *::after {
+  box-sizing: border-box;
+}
+
+.content-width {
+  width: min(1180px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+
+/* =========================================================
+   CONTACT BANNER
+   FULL IMAGE / NO CROP
+========================================================= */
+
+.contact-banner-wrap {
+  display: block;
+
+  width: 100%;
+
+  margin: 0;
+  padding: 0;
+
+  overflow: hidden;
+
+  line-height: 0;
+
+  background: #ffffff;
+}
+
+.contact-banner-image {
+  display: block;
+
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+
+  object-fit: contain;
+  object-position: center;
+}
+
+
+/* =========================================================
+   MAIN CONTACT
+========================================================= */
+
+.contact-main-section {
+  width: 100%;
+
+  padding: 55px 0 65px;
+
+  background: #ffffff;
+}
+
 .contact-page-content {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 65px;
-  padding: 50px 25px;
+
+  grid-template-columns:
+    minmax(0, 1.55fr)
+    minmax(300px, 0.75fr);
+
+  gap: 70px;
+
+  align-items: start;
 }
-.contact-page h1,
-.contact-page h2 {
-  margin: 0 0 20px;
-}
-.contact-identity {
-  padding: 35px;
-  text-align: center;
-}
-.contact-identity img {
-  max-width: 300px;
-  max-height: 120px;
-}
-.locations {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 35px;
-  padding: 25px 25px 70px;
-}
-.locations iframe {
+
+
+/* =========================================================
+   ENQUIRY
+========================================================= */
+
+.enquiry-column {
   width: 100%;
-  height: 250px;
-  border: 0;
+  min-width: 0;
 }
-.locations p {
+
+.section-heading {
+  margin-bottom: 28px;
+}
+
+.contact-page .section-heading h1 {
+  margin: 0 0 10px;
+
+  color: #050505;
+
+  font-size: 38px;
+  line-height: 1.15;
+  font-weight: 800;
+
+  text-transform: uppercase;
+}
+
+.section-intro {
+  margin: 0;
+
+  color: #333333;
+
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.enquiry-form-wrap,
+.enquiry-form-wrap form {
+  width: 100%;
+}
+
+.enquiry-form-wrap label {
+  color: #555555;
+  font-size: 15px;
+}
+
+.enquiry-form-wrap input:not([type="submit"]),
+.enquiry-form-wrap textarea,
+.enquiry-form-wrap select {
+  max-width: 100%;
+
+  border: 1px solid #bcbcbc;
+  border-radius: 0;
+
+  background: #ffffff;
+  color: #333333;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.enquiry-form-wrap input:not([type="submit"]):focus,
+.enquiry-form-wrap textarea:focus,
+.enquiry-form-wrap select:focus {
+  border-color: #ffb21c;
+
+  box-shadow:
+    0 0 0 2px rgba(255, 178, 28, 0.12);
+}
+
+.enquiry-form-wrap textarea {
+  min-height: 90px;
+
+  resize: vertical;
+}
+
+
+/* =========================================================
+   SUBMIT
+========================================================= */
+
+.enquiry-form-wrap button,
+.enquiry-form-wrap input[type="submit"] {
+  min-width: 210px;
+  min-height: 45px;
+
+  padding: 12px 30px;
+
+  border: 0;
+  border-radius: 0;
+
+  background: #ffb21c;
+  color: #000000;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: 1px;
+
+  cursor: pointer;
+}
+
+.enquiry-form-wrap button:hover,
+.enquiry-form-wrap input[type="submit"]:hover {
+  background: #efa000;
+}
+
+
+/* =========================================================
+   DEALER
+========================================================= */
+
+.contact-identity {
+  width: 100%;
+
+  padding: 30px 28px;
+
+  border: 1px solid #888888;
+
+  background: #ffffff;
+
+  text-align: left;
+}
+
+.dealer-logo-wrap {
+  margin-bottom: 24px;
+}
+
+.dealer-logo {
+  display: block;
+
+  width: auto;
+  height: auto;
+
+  max-width: 210px;
+  max-height: 85px;
+
+  object-fit: contain;
+}
+
+.contact-page .dealer-name {
+  margin: 0 0 15px;
+
+  color: #555555;
+
+  font-size: 27px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.dealer-caption {
+  margin: 0 0 15px;
+
+  color: #555555;
+
+  font-size: 20px;
+  line-height: 1.45;
+  font-weight: 600;
+}
+
+.dealer-address {
+  margin: 0 0 20px;
+
+  color: #666666;
+
+  font-size: 15px;
+  line-height: 1.7;
+
   overflow-wrap: anywhere;
 }
-@media (max-width: 760px) {
-  .contact-page-content,
-  .locations {
+
+
+/* =========================================================
+   DEALER CONTACT
+========================================================= */
+
+.dealer-contact-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-top: 20px;
+}
+
+.dealer-contact-list a {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  color: #555555;
+
+  font-size: 15px;
+  line-height: 1.5;
+
+  text-decoration: none;
+
+  overflow-wrap: anywhere;
+}
+
+.dealer-contact-list a:hover {
+  color: #e69a00;
+}
+
+.contact-icon {
+  color: #f5a900;
+}
+
+
+/* =========================================================
+   SOCIAL AREA
+========================================================= */
+
+.dealer-social {
+  margin-top: 28px;
+
+  padding-top: 22px;
+
+  border-top: 1px solid #eeeeee;
+}
+
+.contact-page .dealer-social h3 {
+  margin: 0 0 5px;
+
+  color: #111111;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.dealer-social > p {
+  margin: 0 0 18px;
+
+  color: #555555;
+
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   SOCIAL ICONS
+========================================================= */
+
+.social-links {
+  display: flex;
+
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 12px;
+
+  width: 100%;
+
+  margin-top: 18px;
+}
+
+.social-links a {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 50px;
+
+  width: 50px;
+  height: 50px;
+
+  padding: 0;
+
+  border: 1px solid #dddddd;
+
+  background: #ffffff;
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.social-links a svg {
+  display: block;
+
+  width: 22px;
+  height: 22px;
+}
+
+
+/* =========================================================
+   INSTAGRAM
+========================================================= */
+
+.social-link.social-instagram {
+  color: #e4405f;
+}
+
+.social-link.social-instagram:hover {
+  color: #ffffff;
+
+  background: #e4405f;
+
+  border-color: #e4405f;
+}
+
+
+/* =========================================================
+   FACEBOOK
+========================================================= */
+
+.social-link.social-facebook {
+  color: #1877f2;
+}
+
+.social-link.social-facebook:hover {
+  color: #ffffff;
+
+  background: #1877f2;
+
+  border-color: #1877f2;
+}
+
+
+/* =========================================================
+   YOUTUBE
+========================================================= */
+
+.social-link.social-youtube {
+  color: #ff0000;
+}
+
+.social-link.social-youtube:hover {
+  color: #ffffff;
+
+  background: #ff0000;
+
+  border-color: #ff0000;
+}
+
+
+.social-links a:hover {
+  transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   LOCATIONS
+========================================================= */
+
+.locations-section,
+.locations {
+  width: 100%;
+
+  margin: 0;
+  padding: 0;
+}
+
+
+/* =========================================================
+   LOCATION ROW
+========================================================= */
+
+.location-row {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.65fr)
+    minmax(300px, 0.8fr);
+
+  align-items: center;
+
+  gap: 28px;
+
+  width: 100%;
+
+  min-height: 500px;
+
+  padding:
+    60px
+    max(30px, calc((100% - 1320px) / 2));
+}
+
+
+/* =========================================================
+   DARK LOCATION
+========================================================= */
+
+.location-row-dark {
+  background: #666666;
+}
+
+
+/* =========================================================
+   WHITE LOCATION
+========================================================= */
+
+.location-row-white {
+  background: #ffffff;
+}
+
+
+/* =========================================================
+   MAP
+========================================================= */
+
+.location-map {
+  width: 100%;
+  min-width: 0;
+
+  overflow: hidden;
+
+  background: #eeeeee;
+}
+
+.location-map iframe {
+  display: block;
+
+  width: 100%;
+  height: 440px;
+
+  border: 0;
+}
+
+.map-placeholder {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 440px;
+
+  background: #eeeeee;
+
+  color: #555555;
+}
+
+
+/* =========================================================
+   LOCATION DETAILS
+========================================================= */
+
+.location-details {
+  width: 100%;
+  min-width: 0;
+}
+
+
+/* =========================================================
+   DARK LOCATION DETAILS
+========================================================= */
+
+.location-row-dark .location-highlight {
+  width: 100%;
+
+  padding: 25px;
+
+  background: #ffb21c;
+}
+
+.location-row-dark .location-label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #ffffff;
+
+  font-size: 18px;
+
+  text-transform: uppercase;
+}
+
+.contact-page
+.location-row-dark
+.location-highlight h2 {
+  margin: 0 0 10px;
+
+  color: #ffffff;
+
+  font-size: 27px;
+  line-height: 1.25;
+}
+
+.location-row-dark .location-address {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   WHITE LOCATION DETAILS
+========================================================= */
+
+.location-row-white .location-highlight {
+  width: 100%;
+
+  padding: 0;
+
+  background: transparent;
+}
+
+.location-row-white .location-label {
+  display: block;
+
+  margin: 0 0 8px;
+
+  color: #222222;
+
+  font-size: 18px;
+
+  text-transform: uppercase;
+}
+
+.contact-page
+.location-row-white
+.location-highlight h2 {
+  margin: 0 0 14px;
+
+  color: #111111;
+
+  font-size: 29px;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.location-row-white .location-address {
+  margin: 0;
+
+  color: #444444;
+
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+
+/* =========================================================
+   LOCATION CONTACT
+========================================================= */
+
+.location-contact {
+  padding: 14px 4px 0 25px;
+}
+
+.location-contact p {
+  margin: 5px 0;
+
+  font-size: 15px;
+  line-height: 1.5;
+
+  overflow-wrap: anywhere;
+}
+
+.location-contact a {
+  text-decoration: none;
+}
+
+
+/* DARK */
+
+.location-row-dark .location-contact p,
+.location-row-dark .location-contact strong,
+.location-row-dark .location-contact a {
+  color: #ffffff;
+}
+
+
+/* WHITE */
+
+.location-row-white .location-contact {
+  padding-left: 0;
+}
+
+.location-row-white .location-contact p,
+.location-row-white .location-contact strong,
+.location-row-white .location-contact a {
+  color: #444444;
+}
+
+
+/* =========================================================
+   LARGE DESKTOP
+========================================================= */
+
+@media (min-width: 1440px) {
+
+  .location-row {
+    padding-top: 65px;
+    padding-bottom: 65px;
+  }
+
+}
+
+
+/* =========================================================
+   LAPTOP
+========================================================= */
+
+@media (max-width: 1199px) {
+
+  .contact-page-content {
+    gap: 45px;
+  }
+
+  .location-row {
+    padding: 45px 30px;
+  }
+
+  .location-map iframe,
+  .map-placeholder {
+    height: 370px;
+  }
+
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 991px) {
+
+  .content-width {
+    width: calc(100% - 40px);
+  }
+
+  .contact-page-content {
+    grid-template-columns:
+      minmax(0, 1.25fr)
+      minmax(270px, 0.75fr);
+
+    gap: 30px;
+  }
+
+  .location-row {
+    grid-template-columns:
+      minmax(0, 1.35fr)
+      minmax(270px, 0.8fr);
+
+    gap: 24px;
+
+    min-height: 420px;
+
+    padding: 40px 25px;
+  }
+
+  .location-map iframe,
+  .map-placeholder {
+    height: 330px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 767px) {
+
+  .contact-page {
+    padding-top: 4rem;
+  }
+
+  .content-width {
+    width: calc(100% - 30px);
+  }
+
+
+  /* BANNER */
+
+  .contact-banner-wrap {
+    width: 100%;
+  }
+
+  .contact-banner-image {
+    width: 100%;
+    height: auto;
+
+    object-fit: contain;
+  }
+
+
+  /* CONTACT */
+
+  .contact-main-section {
+    padding: 35px 0 40px;
+  }
+
+  .contact-page-content {
     grid-template-columns: 1fr;
-    gap: 25px;
+
+    gap: 35px;
   }
+
+  .contact-page .section-heading h1 {
+    font-size: 29px;
+  }
+
+  .section-intro {
+    font-size: 16px;
+  }
+
+
+  /* DEALER */
+
   .contact-identity {
-    padding: 15px;
+    padding: 25px 20px;
   }
+
+  .dealer-logo {
+    max-width: 190px;
+  }
+
+
+  /* SOCIAL */
+
+  .social-links {
+    gap: 10px;
+  }
+
+  .social-links a {
+    flex-basis: 46px;
+
+    width: 46px;
+    height: 46px;
+  }
+
+  .social-links a svg {
+    width: 21px;
+    height: 21px;
+  }
+
+
+  /* LOCATIONS */
+
+  .location-row {
+    grid-template-columns: 1fr;
+
+    gap: 0;
+
+    min-height: 0;
+
+    padding: 35px 15px;
+  }
+
+  .location-map iframe,
+  .map-placeholder {
+    height: 300px;
+  }
+
+
+  /* DARK */
+
+  .location-row-dark .location-highlight {
+    padding: 22px 20px;
+  }
+
+  .location-row-dark .location-contact {
+    padding: 15px 20px 0;
+  }
+
+
+  /* WHITE */
+
+  .location-row-white .location-details {
+    padding: 25px 5px 0;
+  }
+
+  .location-row-white .location-contact {
+    padding: 15px 0 0;
+  }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 575px) {
+
+  .contact-page .section-heading h1 {
+    font-size: 25px;
+  }
+
+  .enquiry-form-wrap button,
+  .enquiry-form-wrap input[type="submit"] {
+    width: 100%;
+
+    min-width: 0;
+  }
+
+  .location-map iframe,
+  .map-placeholder {
+    height: 260px;
+  }
+
+  .contact-page
+  .location-row-white
+  .location-highlight h2 {
+    font-size: 24px;
+  }
+
+}
+
+
+/* =========================================================
+   EXTRA SMALL MOBILE
+========================================================= */
+
+@media (max-width: 400px) {
+
+  .content-width {
+    width: calc(100% - 24px);
+  }
+
+  .contact-identity {
+    padding: 20px 16px;
+  }
+
+  .social-links a {
+    flex-basis: 42px;
+
+    width: 42px;
+    height: 42px;
+  }
+
+  .social-links a svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  .location-row {
+    padding: 25px 12px;
+  }
+
+  .location-map iframe,
+  .map-placeholder {
+    height: 230px;
+  }
+
+  .location-row-dark .location-highlight {
+    padding: 20px 17px;
+  }
+
+  .contact-page
+  .location-row-dark
+  .location-highlight h2 {
+    font-size: 21px;
+  }
+
+  .contact-page
+  .location-row-white
+  .location-highlight h2 {
+    font-size: 22px;
+  }
+
+  .location-address,
+  .location-contact p {
+    font-size: 14px;
+  }
+
 }
