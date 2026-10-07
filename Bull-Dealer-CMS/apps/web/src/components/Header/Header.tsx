@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useContent } from "../../services/useContent";
 import { actions } from "../../store/uiSlice";
@@ -8,10 +8,21 @@ import { ProductsMenu } from "../ProductsMenu/ProductsMenu";
 import "./Header.css";
 export function Header() {
   const { branding: b, navigation: n } = useContent();
+  const location = useLocation();
+  const isActive = (url: string) => {
+    try {
+      const destination = new URL(url, window.location.origin);
+      const path = destination.pathname.replace(/\/+$/, "") || "/";
+      const current = location.pathname.replace(/\/+$/, "") || "/";
+      return destination.origin === window.location.origin &&
+        (path === "/" ? current === "/" : current === path || current.startsWith(path + "/"));
+    } catch { return false; }
+  };
+  const productsActive = /^\/products(?:\/|$)/.test(location.pathname);
   const dispatch = useAppDispatch();
   const open = useAppSelector((s) => s.ui.menuOpen);
   return (
-    <header className="original-header">
+    <header className={`original-header ${productsActive ? "products-page-active" : ""}`}>
       {(
         <Link to="/" className="bull-logo">
           <img src="/Asset/Images/bull-machine-logo.png" alt="BULL" />
@@ -25,6 +36,8 @@ export function Header() {
                 {i > 0 && <i />}
                 <a
                   href={l.url}
+                  className={isActive(l.url) ? "is-active" : undefined}
+                  aria-current={isActive(l.url) ? "page" : undefined}
                   target={/^https?:\/\//i.test(l.url) ? "_blank" : undefined}
                   rel={
                     /^https?:\/\//i.test(l.url)
@@ -38,9 +51,9 @@ export function Header() {
             ))}
           </nav>
           <nav className="primary-nav" aria-label="Main navigation">
-            <Link to="/">{n.homeLabel}</Link>
+            <Link to="/" className={`header-home ${isActive("/") ? "is-active" : ""}`} aria-current={isActive("/") ? "page" : undefined}>{n.homeLabel}</Link>
             <ProductsMenu />
-            <Link to="/contact">{n.contactLabel}</Link>
+            <Link to="/contact" className={`header-contact ${isActive("/contact") ? "is-active" : ""}`} aria-current={isActive("/contact") ? "page" : undefined}>{n.contactLabel}</Link>
           </nav>
         </div>
       )}
@@ -61,17 +74,19 @@ export function Header() {
           </button>
           {open && (
             <nav className="mobile-nav" aria-label="Mobile navigation">
-              <Link to="/" onClick={() => dispatch(actions.closeMenu())}>
+              <Link to="/" className={`header-home ${isActive("/") ? "is-active" : ""}`} aria-current={isActive("/") ? "page" : undefined} onClick={() => dispatch(actions.closeMenu())}>
                 {n.homeLabel}
               </Link>
               <ProductsMenu mobile />
-              <Link to="/contact" onClick={() => dispatch(actions.closeMenu())}>
+              <Link to="/contact" className={`header-contact ${isActive("/contact") ? "is-active" : ""}`} aria-current={isActive("/contact") ? "page" : undefined} onClick={() => dispatch(actions.closeMenu())}>
                 {n.contactLabel}
               </Link>
               {n.utilityLinks.map((l: any, i: number) => (
                 <a
                   key={i}
                   href={l.url}
+                  className={isActive(l.url) ? "is-active" : undefined}
+                  aria-current={isActive(l.url) ? "page" : undefined}
                   target={/^https?:\/\//i.test(l.url) ? "_blank" : undefined}
                   rel={
                     /^https?:\/\//i.test(l.url)

@@ -7,7 +7,6 @@ import {
   Video,
   Newspaper,
   MapPin,
-  LayoutPanelTop,
   Images,
   Settings,
 } from "lucide-react";
@@ -22,7 +21,6 @@ export const contentSections = [
   { key: "testimonials", label: "Videos & testimonials", icon: Video },
   { key: "news", label: "News & updates", icon: Newspaper },
   { key: "contact", label: "Contact", icon: MapPin },
-  { key: "footer", label: "Footer", icon: LayoutPanelTop },
 ] as const;
 export const sectionLabel = (key: string) =>
   contentSections.find((s) => s.key === key)?.label ||

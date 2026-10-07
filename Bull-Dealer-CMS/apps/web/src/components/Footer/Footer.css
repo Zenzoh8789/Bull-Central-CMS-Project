@@ -1,105 +1,225 @@
-footer {
-  background: #242424;
-  color: #BDBDBD;
-  padding: 2.5rem 0rem 0rem;
-  font-size: 16px;
+/* Screenshot layout; load Poppins through your application's font setup. */
+.site-footer {
+  width: 100%;
+  background: #232323;
+  color: #bdbdbd;
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 30px;
 }
-.footer-grid {
+.site-footer .footer-container {
+  width: calc(100% - 48px);
+  max-width: 1512px;
+  margin-inline: auto;
+}
+.site-footer .footer-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 35px;
-  max-width: 1500px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 56px 0 24px;
 }
-.footer-grid > div {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 5px;
+.site-footer .footer-column {
+  min-width: 0;
+  padding: 0 12px 0 60px;
+  text-align: left;
 }
-.footer-grid a {
-  line-height: 1.55;
-}
-.footer-grid > div:nth-child(-n + 2) > a {
-  color: #ffc400;
-}
-.footer-grid a:hover {
-  color: #fff;
-}
-.footer-grid h3,
-.footer-contact h2 {
-      font-size: 0.87rem;
+.site-footer .footer-heading,
+.site-footer .footer-contact-heading,
+.site-footer .footer-social-heading {
+  margin: 0;
+  font-size: 17px;
   font-weight: 400;
+  line-height: 30px;
   text-transform: uppercase;
+}
+.site-footer .footer-heading,
+.site-footer .footer-social-heading {
+  color: #bdbdbd;
+}
+.site-footer .footer-contact-heading {
+  color: #ffc107;
+}
+.site-footer .footer-link-list {
   margin: 0;
+  padding: 0;
+  list-style: none;
 }
-.footer-contact h2 {
-  color: #ffc400;
-}
-.footer-contact strong {
+.site-footer .footer-link-list a {
+  color: #ffc107;
+  font-size: 17px;
   font-weight: 400;
-  color: #606060;
+  line-height: 30px;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
 }
-.footer-contact p {
+.site-footer .footer-link-list a:hover {
+  color:#fff;
+  transform: scale(0.95);
+}
+.site-footer
+  .footer-grid
+  > .footer-column:nth-child(3):not(.footer-contact)
+  .footer-link-list
+  a {
+  color: #bdbdbd;
+  text-transform: uppercase;
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.site-footer
+.footer-grid
+> .footer-column:nth-child(3):not(.footer-contact)
+.footer-link-list
+a:hover {
+  color: #ffc107;
+  transform: scale(0.95);
+}
+.site-footer .footer-address {
+  margin: 0 0 18px;
+  color: #606060;
+  font-size: 17px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 30px;
+  overflow-wrap: anywhere;
+}
+.site-footer .footer-address span {
+  display: block;
+}
+.site-footer .footer-social {
   margin: 0;
+}
+.site-footer .footer-social-description {
+  margin: 0 0 16px;
   color: #606060;
-  line-height: 1.8;
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 30px;
 }
-.footer-contact h3 {
-  margin-top: 15px;
-}
-.footer-contact > span {
-  color: #606060;
-}
-.footer-contact > a[target] {
-  color: #ffc400;
-  margin-top: 12px;
-}
-.footer-bottom {
-  margin-top: 25px;
-  border-top: 1px solid #343434;
-  padding: 20px 13.7%;
+.site-footer .footer-social-links {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 25px;
-  color: #aaa;
-  font-size: 15px;
+  flex-wrap: wrap;
+  gap: 15px;
 }
-.footer-bottom img {
+.site-footer .footer-social-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: #ffb600;
+  text-decoration: none;
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+/* Preserve the 22px Lucide icons from your original React component. */
+.site-footer .footer-social-button svg {
+  display: block;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+}
+.site-footer .footer-social-button:hover {
+  color: #fff;
+  transform: scale(0.95);
+}
+.site-footer a:focus-visible {
+  outline: 2px solid #ffc107;
+  outline-offset: 4px;
+}
+.site-footer .footer-bottom {
+  border-top: 1px solid #343434;
+}
+.site-footer .footer-bottom-inner {
+  width: 85%;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 70px;
+  padding: 20px 0 12px;
+}
+.site-footer .footer-copyright {
+  color: #999;
+  font-size: 17px;
+  line-height: 26px;
+}
+.site-footer .footer-logo {
+  display: block;
   width: 126px;
-  max-height: 40px;
+  height: 26px;
+  flex-shrink: 0;
   object-fit: contain;
 }
-@media (min-width: 1700px) {
-  .footer-grid h3,
-  .footer-contact h2 {
-       font-size: 0.87rem;
+@media (max-width: 1400px) {
+  .site-footer .footer-column {
+    padding-left: 24px;
   }
-  .footer-bottom {
-    font-size: 17px;
+  .site-footer .footer-grid {
+    padding-top: 100px;
+  }
+  .site-footer .footer-heading,
+  .site-footer .footer-contact-heading,
+  .site-footer .footer-social-heading,
+  .site-footer .footer-link-list a,
+  .site-footer .footer-address,
+  .site-footer .footer-social-description,
+  .site-footer .footer-copyright {
+    font-size: 14px;
   }
 }
 @media (max-width: 900px) {
-  .footer-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 35px;
+  .site-footer .footer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+    padding: 48px 0 24px;
   }
-  footer {
-    padding-top: 55px;
+  .site-footer .footer-column {
+    padding: 0;
   }
-  .footer-bottom {
-    padding: 22px 9%;
+  .site-footer .footer-bottom-inner {
+    width: 100%;
   }
 }
-@media (max-width: 599px) {
-  .footer-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 28px 18px;
+@media (max-width: 600px) {
+  .site-footer .footer-container {
+    width: calc(100% - 32px);
   }
-  .footer-contact {
-    grid-column: 1/-1;
+  .site-footer .footer-grid {
+    gap: 24px 20px;
+    padding-top: 32px;
   }
-  .footer-bottom img {
+  .site-footer .footer-heading,
+  .site-footer .footer-contact-heading,
+  .site-footer .footer-social-heading,
+  .site-footer .footer-link-list a,
+  .site-footer .footer-address,
+  .site-footer .footer-social-description,
+  .site-footer .footer-copyright {
+    font-size: 13px;
+    line-height: 22px;
+  }
+  .site-footer .footer-social-links {
+    gap: 8px;
+  }
+  .site-footer .footer-bottom-inner {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-block: 16px;
+  }
+  .site-footer .footer-logo {
     width: 100px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-footer .footer-social-button {
+    transition: none;
   }
 }

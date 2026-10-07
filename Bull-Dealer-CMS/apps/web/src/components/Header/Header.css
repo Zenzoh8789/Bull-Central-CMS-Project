@@ -203,3 +203,36 @@
     transition: none !important;
   }
 }
+
+/* Header page, hover and keyboard focus states. */
+.original-header .utility-nav a:is(:hover, :focus-visible, .is-active),
+.original-header .mobile-nav > a:not(.header-contact):is(:hover, :focus-visible, .is-active),
+.original-header .primary-nav > .header-home:is(:hover, :focus-visible, .is-active) {
+  color: #fbb120;
+}
+.original-header .primary-nav > .header-home:is(:hover, :focus-visible, .is-active)::before {
+  opacity: 0;
+}
+.original-header .primary-nav > .header-contact:is(:hover, :focus-visible, .is-active),
+.original-header .primary-nav .products-menu-trigger:is(:hover, :focus-visible),
+.original-header.products-page-active .primary-nav .products-menu-trigger {
+  color: #111;
+}
+.original-header .primary-nav > .header-contact:is(:hover, :focus-visible, .is-active)::before,
+.original-header .primary-nav .products-menu-trigger:is(:hover, :focus-visible)::before,
+.original-header.products-page-active .primary-nav .products-menu-trigger::before {
+  background: #fbb120;
+  opacity: 1;
+}
+.original-header .mobile-nav > .header-contact:is(:hover, :focus-visible, .is-active),
+.original-header .mobile-nav .products-menu-trigger:is(:hover, :focus-visible),
+.original-header .mobile-nav .products-menu.is-open .products-menu-trigger,
+.original-header.products-page-active .mobile-nav .products-menu-trigger {
+  background: #fbb120;
+  color: #111;
+}
+.original-header.products-page-active .products-menu-caret,
+.original-header .products-menu-trigger:is(:hover, :focus-visible) .products-menu-caret,
+.original-header .products-menu.is-open .products-menu-caret {
+  border-top-color: #111;
+}
