@@ -27,7 +27,7 @@ const links = [
   ["/", "Dashboard", LayoutDashboard],
   ["/dealers", "Dealers", Users],
   ...commonSections.map(
-    (s) => ["/content?section=" + s.key, s.label, s.icon] as const,
+    (s) => ["/content?section=" + s.key, s.key === "contact" ? "Contact US" : s.label, s.icon] as const,
   ),
   ["/history", "Logs & history", History],
 ] as const;

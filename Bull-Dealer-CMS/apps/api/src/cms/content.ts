@@ -14,6 +14,9 @@ import { BadRequestException } from "@nestjs/common";
 
 export const sectionKeys = Object.keys(defaults);
 
+export const contactSections = ["dealerContact", "locations", "social"];
+const contactTemplate = { ...defaults.contact, bannerAlt: defaults.contact.bannerAlt || "Contact Us" };
+
 export const dealerSections = [
   "seo",
   "branding",
@@ -36,14 +39,14 @@ export function registry() {
 
     preferredScope: dealerSections.includes(key) ? "DEALER" : "COMMON",
 
-    defaultValue: defaults[key],
+    defaultValue: key === "contact" ? contactTemplate : key === "locations" ? { ...defaults.locations, items: [defaults.locations.items[0]] } : defaults[key],
 
     template:
       key === "news"
         ? newsTemplate
         : key === "banners"
           ? bannerValidationTemplate
-          : defaults[key],
+          : key === "contact" ? contactTemplate : defaults[key],
 
     ...(key === "news" ? { capabilities: newsCapabilities } : {}),
   }));
@@ -66,6 +69,8 @@ export function validateSection(key: string, value: unknown) {
     value = normalizeBanners(value);
   }
 
+  if (key === "contact" && value && typeof value === "object" && !Array.isArray(value))
+    value = { bannerAlt: "Contact Us", ...value };
   value = normalizeEditorSection(key, value);
 
   const visit = (template: any, item: any, path: string, depth = 0) => {
@@ -194,7 +199,7 @@ export function validateSection(key: string, value: unknown) {
       ? newsTemplate
       : key === "banners"
         ? bannerValidationTemplate
-        : defaults[key],
+        : key === "contact" ? contactTemplate : defaults[key],
     value,
     key,
   );
@@ -390,6 +395,8 @@ export function resolveContent(rows: any[]) {
 
   for (const layer of ranks) {
     for (const row of rows.filter((r) => r.layer === layer)) {
+      if (row.section_key === "contact" && layer !== "COMMON") continue;
+      if (contactSections.includes(row.section_key) && !["DEALER", "OVERRIDE"].includes(layer)) continue;
       result[row.section_key] =
         typeof row.document === "string"
           ? JSON.parse(row.document)
@@ -405,6 +412,9 @@ export function resolveContent(rows: any[]) {
     result.products.menuHeading = result.navigation.productsLabel;
   }
 
+  result.contact = { bannerAlt: "Contact Us", ...result.contact };
+  result.locations.items = result.locations.items.slice(0, 1);
+  result.social = normalizeEditorSection("social", result.social);
   result.news = normalizeNews(result.news);
 
   /**

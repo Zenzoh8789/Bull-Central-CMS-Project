@@ -17,15 +17,16 @@ export function Content() {
     (s) => s.key === params.get("section") && s.key !== "branding",
   )?.key;
   if (!section) return <Navigate to="/content?section=seo" replace />;
-  const canEdit = !ctx.locationMode || Boolean(ctx.dealerId);
+  const commonBanner = section === "contact";
+  const canEdit = commonBanner || !ctx.locationMode || Boolean(ctx.dealerId);
   return (
     <div className="content-workspace">
       {canEdit ? (
         <SectionWorkspace
           key={ctx.dealerId + ":" + section}
           section={section}
-          layer={ctx.dealerId ? "OVERRIDE" : "COMMON"}
-          owner={ctx.dealerId}
+          layer={commonBanner ? "COMMON" : ctx.dealerId ? "OVERRIDE" : "COMMON"}
+          owner={commonBanner ? 0 : ctx.dealerId}
           onStateChange={update}
         />
       ) : (

@@ -20,7 +20,7 @@ export const contentSections = [
   { key: "service", label: "Service", icon: Settings },
   { key: "testimonials", label: "Videos & testimonials", icon: Video },
   { key: "news", label: "News & updates", icon: Newspaper },
-  { key: "contact", label: "Contact", icon: MapPin },
+  { key: "contact", label: "Contact US", icon: MapPin },
 ] as const;
 export const sectionLabel = (key: string) =>
   contentSections.find((s) => s.key === key)?.label ||

@@ -250,6 +250,7 @@
   },
   "contact": {
     "enabled": true,
+    "bannerAlt": "Contact Us",
     "banner": "/Asset/Images/contact-us/contact-us-banner.jpg",
     "heading": "SEND ENQUIRY",
     "intro": "Please fill up the below rows and Submit your Enquiry.",
@@ -343,8 +344,20 @@
     "description": "We are socially Connected",
     "items": [
       {
-        "label": "BULL",
-        "url": "https://www.bullindia.com/"
+        "label": "Instagram",
+        "url": ""
+      },
+      {
+        "label": "Facebook",
+        "url": ""
+      },
+      {
+        "label": "YouTube",
+        "url": ""
+      },
+      {
+        "label": "LinkedIn",
+        "url": ""
       }
     ]
   },

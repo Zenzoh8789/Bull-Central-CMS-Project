@@ -12,6 +12,19 @@ function normalizeEditorSection(key, value, related = {}) {
     if (doc.menuHeading === undefined) doc.menuHeading = related.navigation?.productsLabel || defaults.navigation.productsLabel;
   }
   if (key === 'testimonials' && Array.isArray(doc.items)) doc.items = doc.items.map(item => item && typeof item === 'object' ? { title:'', description:'', ...item } : item);
+  if (key === 'social' && Array.isArray(doc.items)) {
+    const platforms = [
+      ['Instagram', /instagram|instagr\.am/i],
+      ['Facebook', /facebook|fb\.com|fb\.me/i],
+      ['YouTube', /youtube|youtu\.be/i],
+      ['LinkedIn', /linkedin/i],
+    ];
+    doc.items = platforms.map(([label, pattern]) => {
+      const matches = doc.items.filter(item => item && pattern.test(String(item.label || '') + ' ' + String(item.url || '')));
+      const saved = matches.find(item => typeof item.url === 'string' && item.url.trim()) || matches[0];
+      return { label, url: saved && typeof saved.url === 'string' ? saved.url : '' };
+    });
+  }
   return doc;
 }
 function youtubeId(input) {

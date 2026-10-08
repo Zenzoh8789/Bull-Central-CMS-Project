@@ -5,6 +5,8 @@ import {
   useState,
 } from "react";
 
+import defaults from "../../../../content/defaults.json";
+import { useSiteQuery } from "../../services/siteApi";
 import { useContent } from "../../services/useContent";
 import { EnquiryForm } from "../../components/EnquiryForm/EnquiryForm";
 
@@ -12,6 +14,7 @@ import {
   FaInstagram,
   FaFacebookF,
   FaYoutube,
+  FaLinkedinIn,
 } from "react-icons/fa";
 
 import "./ContactPage.css";
@@ -108,460 +111,93 @@ const GoogleMapEmbed = memo(function GoogleMapEmbed({
 ========================================================= */
 
 export function ContactPage() {
-  const {
-    contact: c,
-    dealerContact: d,
-    locations: l,
-    social: s,
-  } = useContent();
-
-
-  /* =========================================================
-     SOCIAL ICON
-  ========================================================= */
-
-  const getSocialIcon = (
-    label: string = "",
-    url: string = ""
-  ) => {
-    const value = `${label} ${url}`.toLowerCase();
-
-    if (
-      value.includes("instagram") ||
-      value.includes("instagr.am")
-    ) {
-      return <FaInstagram />;
-    }
-
-    if (
-      value.includes("facebook") ||
-      value.includes("fb.com") ||
-      value.includes("fb.me")
-    ) {
-      return <FaFacebookF />;
-    }
-
-    if (
-      value.includes("youtube") ||
-      value.includes("youtu.be")
-    ) {
-      return <FaYoutube />;
-    }
-
-    return null;
+  const { contact: c, dealerContact: d, locations: l, social: s, branding: b } = useContent();
+  const { data } = useSiteQuery();
+  const dealer = data?.dealer;
+  const savedLocation = data?.sources?.locations;
+  const first = l?.items?.[0] || {};
+  const location = savedLocation ? first : {
+    ...first, name: d.name || dealer?.name, address: d.address || dealer?.address,
+    phone: d.phone, email: d.email,
   };
-
-
-  /* =========================================================
-     SOCIAL NAME
-  ========================================================= */
-
-  const getSocialName = (
-    label: string = "",
-    url: string = ""
-  ) => {
-    const value = `${label} ${url}`.toLowerCase();
-
-    if (
-      value.includes("instagram") ||
-      value.includes("instagr.am")
-    ) {
-      return "Instagram";
-    }
-
-    if (
-      value.includes("facebook") ||
-      value.includes("fb.com") ||
-      value.includes("fb.me")
-    ) {
-      return "Facebook";
-    }
-
-    if (
-      value.includes("youtube") ||
-      value.includes("youtu.be")
-    ) {
-      return "YouTube";
-    }
-
-    return label || "Social Media";
-  };
-
-
+  const address = location.address || d.address || dealer?.address || "";
+  const mapUrl = location.mapUrl || (address ? `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed` : "");
+  const platforms = [
+    { name: "Instagram", pattern: /instagram|instagr\.am/i, Icon: FaInstagram },
+    { name: "Facebook", pattern: /facebook|fb\.com|fb\.me/i, Icon: FaFacebookF },
+    { name: "YouTube", pattern: /youtube|youtu\.be/i, Icon: FaYoutube },
+    { name: "LinkedIn", pattern: /linkedin/i, Icon: FaLinkedinIn },
+  ];
+  const socials = (Array.isArray(s?.items) ? s.items : []).flatMap((item: any) => {
+    const url = String(item.url || "");
+    const platform = platforms.find(p => p.pattern.test(`${item.label || ""} ${url}`));
+    return platform && /^https?:\/\//i.test(url) ? [{ ...platform, url }] : [];
+  });
   return (
     <section className="contact-page">
-
-      {/* =====================================================
-          CONTACT BANNER
-      ====================================================== */}
-
-      {c.enabled && c.banner && (
-        <div className="contact-banner-wrap">
-          <img
-            src={c.banner}
-            alt={c.heading || "Contact Us"}
-            className="contact-banner-image"
-          />
-        </div>
-      )}
-
-
-      {/* =====================================================
-          ENQUIRY + DEALER INFORMATION
-      ====================================================== */}
-
-      {(c.enabled || d.enabled) && (
-        <section className="contact-main-section">
-
-          <div className="content-width contact-page-content">
-
-            {/* =================================================
-                LEFT SIDE - ENQUIRY FORM
-            ================================================= */}
-
-            {c.enabled && (
-              <div className="enquiry-column">
-
-                <div className="section-heading">
-
-                  {c.heading && (
-                    <h1>
-                      {c.heading}
-                    </h1>
-                  )}
-
-                  {c.intro && (
-                    <p className="section-intro">
-                      {c.intro}
-                    </p>
-                  )}
-
-                </div>
-
-
-                <div className="enquiry-form-wrap">
-                  <EnquiryForm />
-                </div>
-
+      {c.enabled && c.banner && <div className="contact-banner-wrap">
+        <img src={c.banner} alt={c.bannerAlt ?? "Contact Us"} className="contact-banner-image" />
+      </div>}
+      {(c.enabled || d.enabled) && <section className="contact-main-section">
+        <div className="content-width contact-page-content">
+          {c.enabled && <div className="enquiry-column">
+            <div className="section-heading">
+              {c.heading && <h1>{c.heading}</h1>}
+              {c.intro && <p className="section-intro">{c.intro}</p>}
+            </div>
+            <div className="enquiry-form-wrap"><EnquiryForm /></div>
+          </div>}
+          {d.enabled && <aside className="contact-identity">
+            {b.dealerLogo && <div className="dealer-logo-wrap">
+              <img src={b.dealerLogo} alt={b.dealerAlt || d.name || dealer?.name || "Dealer"} className="dealer-logo" />
+            </div>}
+            <p className="dealer-caption">Authorized Dealer for BULL Construction Equipments</p>
+            {s?.enabled && <div className="dealer-social">
+              <h3>{s.heading || "Follow us"}</h3>
+              <p>{s.description || "We are socially Connected"}</p>
+              <div className="social-links">
+                {socials.map(({ name, Icon, url }: any, i: number) => <a key={name + i} href={url} target="_blank" rel="noopener noreferrer" aria-label={name} title={name} className={`social-link social-${name.toLowerCase()}`}><Icon /></a>)}
               </div>
-            )}
-
-
-            {/* =================================================
-                RIGHT SIDE - DEALER INFORMATION
-            ================================================= */}
-
-            {d.enabled && (
-              <aside className="contact-identity">
-
-                {/* DEALER LOGO */}
-
-                {d.logo && (
-                  <div className="dealer-logo-wrap">
-
-                    <img
-                      src={d.logo}
-                      alt={d.name || "Dealer"}
-                      className="dealer-logo"
-                    />
-
-                  </div>
-                )}
-
-
-                {/* DEALER NAME */}
-
-                {d.name && (
-                  <h2 className="dealer-name">
-                    {d.name}
-                  </h2>
-                )}
-
-
-                {/* CAPTION */}
-
-                {d.caption && (
-                  <p className="dealer-caption">
-                    {d.caption}
-                  </p>
-                )}
-
-
-                {/* ADDRESS */}
-
-                {d.address && (
-                  <p className="dealer-address">
-                    {d.address}
-                  </p>
-                )}
-
-
-                {/* =================================================
-                    PHONE + EMAIL
-                ================================================= */}
-
-                {(d.phone || d.email) && (
-                  <div className="dealer-contact-list">
-
-                    {d.phone && (
-                      <a href={`tel:${d.phone}`}>
-
-                        <span className="contact-icon">
-                          ☎
-                        </span>
-
-                        <span>
-                          {d.phone}
-                        </span>
-
-                      </a>
-                    )}
-
-
-                    {d.email && (
-                      <a href={`mailto:${d.email}`}>
-
-                        <span className="contact-icon">
-                          ✉
-                        </span>
-
-                        <span>
-                          {d.email}
-                        </span>
-
-                      </a>
-                    )}
-
-                  </div>
-                )}
-
-
-                {/* =================================================
-                    SOCIAL MEDIA
-                ================================================= */}
-
-                {s?.enabled && (
-                  <div className="dealer-social">
-
-                    {s.heading && (
-                      <h3>
-                        {s.heading}
-                      </h3>
-                    )}
-
-                    {s.description && (
-                      <p>
-                        {s.description}
-                      </p>
-                    )}
-
-
-                    <div className="social-links">
-
-                      {Array.isArray(s.items) &&
-                        s.items.map(
-                          (v: any, i: number) => {
-
-                            const label = String(
-                              v?.label ||
-                              v?.name ||
-                              v?.platform ||
-                              v?.title ||
-                              ""
-                            );
-
-                            const url = String(
-                              v?.url ||
-                              v?.link ||
-                              v?.href ||
-                              ""
-                            );
-
-                            const icon =
-                              getSocialIcon(
-                                label,
-                                url
-                              );
-
-                            if (!icon) {
-                              return null;
-                            }
-
-                            const socialName =
-                              getSocialName(
-                                label,
-                                url
-                              );
-
-                            return (
-                              <a
-                                key={`${socialName}-${i}`}
-                                href={url || "#"}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                aria-label={socialName}
-                                title={socialName}
-                                className={`social-link social-${socialName
-                                  .toLowerCase()
-                                  .replace(/\s+/g, "-")}`}
-                              >
-                                {icon}
-                              </a>
-                            );
-                          }
-                        )}
-
-                    </div>
-
-                  </div>
-                )}
-
-              </aside>
-            )}
-
+            </div>}
+          </aside>}
+        </div>
+      </section>}
+      {l?.enabled && location.enabled !== false && <section className="locations-section">
+        <div className="locations"><article className="location-row location-row-dark">
+          <GoogleMapEmbed mapUrl={mapUrl} title={location.name || d.name || dealer?.name || "Dealer location"} />
+          <div className="location-details">
+            <div className="location-highlight">
+              <span className="location-label">Dealer location</span>
+              {(location.name || d.name || dealer?.name) && <h2>{location.name || d.name || dealer?.name}</h2>}
+              {address && <p className="location-address">{address}</p>}
+            </div>
+            {(location.phone || d.phone || location.email || d.email) && <div className="location-contact">
+              {(location.phone || d.phone) && <p><strong>Phone :</strong>{" "}<a href={`tel:${location.phone || d.phone}`}>{location.phone || d.phone}</a></p>}
+              {(location.email || d.email) && <p><strong>E-mail :</strong>{" "}<a href={`mailto:${location.email || d.email}`}>{location.email || d.email}</a></p>}
+            </div>}
           </div>
-
-        </section>
-      )}
-
-
-      {/* =====================================================
-          OFFICE LOCATIONS
-      ====================================================== */}
-
-      {l?.enabled && (
-        <section className="locations-section">
-
-          <div className="locations">
-
-            {Array.isArray(l.items) &&
-              l.items
-                .filter(
-                  (v: any) =>
-                    v &&
-                    v.enabled !== false
-                )
-                .map(
-                  (v: any, i: number) => {
-
-                    const whiteLocation =
-                      i % 2 === 1;
-
-                    const locationTitle =
-                      v.title ||
-                      v.name ||
-                      "Office";
-
-                    return (
-                      <article
-                        key={
-                          v.id ||
-                          `${locationTitle}-${i}`
-                        }
-                        className={`location-row ${
-                          whiteLocation
-                            ? "location-row-white"
-                            : "location-row-dark"
-                        }`}
-                      >
-
-                        {/* =========================
-                            GOOGLE MAP
-                        ========================== */}
-
-                        <GoogleMapEmbed
-                          mapUrl={v.mapUrl}
-                          title={locationTitle}
-                        />
-
-
-                        {/* =========================
-                            LOCATION DETAILS
-                        ========================== */}
-
-                        <div className="location-details">
-
-                          <div className="location-highlight">
-
-                            {v.title && (
-                              <span className="location-label">
-                                {v.title}
-                              </span>
-                            )}
-
-
-                            {v.name && (
-                              <h2>
-                                {v.name}
-                              </h2>
-                            )}
-
-
-                            {v.address && (
-                              <p className="location-address">
-                                {v.address}
-                              </p>
-                            )}
-
-                          </div>
-
-
-                          {/* =========================
-                              PHONE + EMAIL
-                          ========================== */}
-
-                          {(v.phone ||
-                            v.email) && (
-                            <div className="location-contact">
-
-                              {v.phone && (
-                                <p>
-
-                                  <strong>
-                                    Phone :
-                                  </strong>{" "}
-
-                                  <a
-                                    href={`tel:${v.phone}`}
-                                  >
-                                    {v.phone}
-                                  </a>
-
-                                </p>
-                              )}
-
-
-                              {v.email && (
-                                <p>
-
-                                  <strong>
-                                    E-mail :
-                                  </strong>{" "}
-
-                                  <a
-                                    href={`mailto:${v.email}`}
-                                  >
-                                    {v.email}
-                                  </a>
-
-                                </p>
-                              )}
-
-                            </div>
-                          )}
-
-                        </div>
-
-                      </article>
-                    );
-                  }
-                )}
-
-          </div>
-
-        </section>
-      )}
-
+        </article></div>
+      </section>}
+      <section className="locations-section" aria-label="BULL office locations">
+        <div className="locations">
+          {defaults.locations.items.slice(1).map((office, index) => (
+            <article key={office.title} className={`location-row ${index % 2 === 0 ? "location-row-white" : "location-row-dark"}`}>
+              <GoogleMapEmbed mapUrl={office.mapUrl} title={office.title} />
+              <div className="location-details">
+                <div className="location-highlight">
+                  <span className="location-label">{office.title}</span>
+                  <h2>{office.name}</h2>
+                  <p className="location-address">{office.address}</p>
+                </div>
+                <div className="location-contact">
+                  <p><strong>Phone :</strong>{" "}<a href={`tel:${office.phone}`}>{office.phone}</a></p>
+                  <p><strong>E-mail :</strong>{" "}<a href={`mailto:${office.email}`}>{office.email}</a></p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
     </section>
   );
 }

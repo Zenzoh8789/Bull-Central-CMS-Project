@@ -74,6 +74,18 @@ export function SectionEditor({
             source,
             resolved.currentData?.content,
           );
+    if (section === "contact" && initial && initial.bannerAlt === undefined)
+      initial.bannerAlt = "Contact Us";
+    if (section === "social" && variant === "social" && initial) initial.enabled = true;
+    if (section === "locations" && variant === "location" && initial) {
+      const dealer = resolved.currentData?.content?.dealerContact;
+      const first = initial.items?.[0] || definition.defaultValue.items[0];
+      const custom = draft || resolved.currentData?.sources?.locations;
+      initial.items = [{ ...first,
+        title: "Dealer location",
+        ...(!custom && dealer ? { name: dealer.name, address: dealer.address, phone: dealer.phone, email: dealer.email } : {}),
+      }];
+    }
     docRef.current = initial;
     setDoc(initial);
     setRevision(draft?.revision || 0);
@@ -94,6 +106,7 @@ export function SectionEditor({
     common.isError,
     layer,
     section,
+    variant,
   ]);
 
   useEffect(() => {

@@ -9,6 +9,7 @@ export function MediaField({
   id,
   media = [],
   document = false,
+  allowRemove = true,
 }: {
   value: string;
   onChange: (v: string) => void;
@@ -17,6 +18,7 @@ export function MediaField({
   id: string;
   media?: any[];
   document?: boolean;
+  allowRemove?: boolean;
 }) {
   const [upload, { isLoading }] = useWriteMutation();
   const [message, setMessage] = useState("");
@@ -134,7 +136,7 @@ export function MediaField({
         </>
       )}
       <small>{document ? "PDF" : "PNG, JPEG or WebP"} · Maximum 10 MB</small>
-      {value && (
+      {value && allowRemove && (
         <button
           type="button"
           disabled={isLoading}

@@ -18,7 +18,7 @@ import {
   requireSuper,
   verifyPassword,
 } from "./auth";
-import { registry, resolveContent, validateSection } from "./content";
+import { contactSections, registry, resolveContent, validateSection } from "./content";
 import { normalizeNews } from "@bull/content/news";
 import type { DraftSaveRequest } from "@bull/content/cms";
 const object = (x: any) => (typeof x === "string" ? JSON.parse(x) : x);
@@ -524,6 +524,10 @@ export class CmsService {
     )
       throw new BadRequestException("removeOverride must be boolean");
     const { layer, section } = body;
+    if (section === "contact" && layer !== "COMMON")
+      throw new BadRequestException("Contact page banner can only be edited in Common selection");
+    if (contactSections.includes(section) && !["DEALER", "OVERRIDE"].includes(layer))
+      throw new BadRequestException("Contact content can only be edited for a dealer");
     const owner = number(body.ownerId),
       expected = number(body.expectedRevision);
     if (
@@ -713,6 +717,10 @@ export class CmsService {
       throw new NotFoundException("Draft not found");
     for (const d of drafts) {
       assertScope(actor, d.layer, d.owner_id);
+      if (d.section_key === "contact" && d.layer !== "COMMON")
+        throw new BadRequestException("Contact page banner can only be published from Common selection");
+      if (contactSections.includes(d.section_key) && !["DEALER", "OVERRIDE"].includes(d.layer))
+        throw new BadRequestException("Contact content can only be published for a dealer");
       if (body.revisions?.[d.id] !== d.revision)
         throw new ConflictException("Draft revision changed; preview again");
       // Also migrate legacy drafts published directly from the approval screen.

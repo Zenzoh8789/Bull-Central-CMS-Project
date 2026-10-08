@@ -45,6 +45,7 @@ export function Fields({
   value = value ?? structuredClone(template);
   if (Array.isArray(template)) {
     const fixedItems =
+      (path === "social.items" && variant === "contact-social") ||
       path === "contact.fields" ||
       path === "pageLayout.sections" ||
       path === "statistics.items";
@@ -72,7 +73,7 @@ export function Fields({
           <strong>
             {title(path.split(".").pop() || "Items")} ({value.length})
           </strong>
-          {!fixedItems && (
+          {!fixedItems && variant !== "contact-social" && (
             <button
               type="button"
               disabled={busy || value.length >= 150}
@@ -400,7 +401,7 @@ export function Fields({
             <input
               id={id}
               type={name === "date" ? "date" : "text"}
-              readOnly={/^contact\.fields\.\d+\.name$|^pageLayout\.sections\.\d+\.key$/.test(
+              readOnly={(variant === "contact-social" && /^social\.items\.\d+\.label$/.test(path)) || /^contact\.fields\.\d+\.name$|^pageLayout\.sections\.\d+\.key$/.test(
                 path,
               )}
               value={value}

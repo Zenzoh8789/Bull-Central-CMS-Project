@@ -23,10 +23,10 @@ export function SectionWorkspace({
             { key: "contact", label: "Contact us", section: "dealerContact" },
             { key: "social", label: "Follow us", section: "social" },
           ]
-        : section === "contact"
+        : section === "contact" && props.layer !== "COMMON"
           ? [
-              { key: "form", label: "Enquiry form", section: "contact" },
-              { key: "locations", label: "Locations", section: "locations" },
+              { key: "social", label: "Follow us", section: "social" },
+              { key: "location", label: "Dealer location", section: "locations" },
             ]
           : [];
   const [selected, setSelected] = useState(options[0]?.key || "");

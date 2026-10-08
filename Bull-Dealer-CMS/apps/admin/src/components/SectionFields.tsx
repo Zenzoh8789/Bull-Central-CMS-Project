@@ -1,3 +1,4 @@
+import { ContactSettings } from "./ContactSettings";
 import { BannerEditor } from "./BannerEditor";
 import { Fields } from "./Fields";
 import "../styles/section-fields.css";
@@ -86,41 +87,8 @@ export function SectionFields({
       </div>
     );
   }
-  if (section === "contact") {
-    const blocks = [
-      ["Page banner", ["banner"]],
-      [
-        "Enquiry form",
-        ["heading", "intro", "submitLabel", "successMessage", "consentLabel"],
-      ],
-      ["Form fields", ["fields"]],
-    ] as const;
-    return (
-      <div className="purpose-editor">
-        {blocks.map(([label, keys]) => (
-          <section
-            className={
-              label === "Page banner"
-                ? "editor-card contact-banner-card"
-                : "editor-card"
-            }
-            key={label}
-          >
-            <h3>{label}</h3>
-            <Fields
-              {...shared}
-              path="contact"
-              value={value}
-              template={Object.fromEntries(
-                keys.map((key) => [key, template[key]]),
-              )}
-              onChange={onChange}
-            />
-          </section>
-        ))}
-      </div>
-    );
-  }
+  if (section === "contact" || ["social", "location"].includes(variant || ""))
+    return <ContactSettings section={section} value={value} template={template} media={media} onChange={onChange} onUploadingChange={onUploadingChange} />;
   return (
     <div className={`purpose-editor purpose-${section}`}>
       <Fields

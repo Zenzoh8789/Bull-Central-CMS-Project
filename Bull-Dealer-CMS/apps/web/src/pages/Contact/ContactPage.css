@@ -970,3 +970,11 @@
   }
 
 }
+/* Scope dealer branding to this contact page. */
+.contact-page .contact-identity .dealer-logo {
+  display: block; width: 100%; max-width: 210px; height: auto; margin: 0; object-fit: contain;
+}
+.contact-page .dealer-name, .contact-page .dealer-caption { overflow-wrap: anywhere; }
+.contact-page .social-link.social-linkedin { color: #0a66c2; }
+.contact-page .social-link.social-linkedin:hover { color: #fff; background: #0a66c2; border-color: #0a66c2; }
+.contact-page .social-links a:focus-visible { outline: 2px solid #ffb21c; outline-offset: 3px; }
