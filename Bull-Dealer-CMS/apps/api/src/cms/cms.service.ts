@@ -524,6 +524,8 @@ export class CmsService {
     )
       throw new BadRequestException("removeOverride must be boolean");
     const { layer, section } = body;
+    if (section === "products" && layer !== "COMMON")
+      throw new BadRequestException("Products can only be edited in Common selection");
     if (section === "contact" && layer !== "COMMON")
       throw new BadRequestException("Contact page banner can only be edited in Common selection");
     if (contactSections.includes(section) && !["DEALER", "OVERRIDE"].includes(layer))
@@ -717,6 +719,8 @@ export class CmsService {
       throw new NotFoundException("Draft not found");
     for (const d of drafts) {
       assertScope(actor, d.layer, d.owner_id);
+      if (d.section_key === "products" && d.layer !== "COMMON")
+        throw new BadRequestException("Products can only be published from Common selection");
       if (d.section_key === "contact" && d.layer !== "COMMON")
         throw new BadRequestException("Contact page banner can only be published from Common selection");
       if (contactSections.includes(d.section_key) && !["DEALER", "OVERRIDE"].includes(d.layer))

@@ -1,3 +1,4 @@
+import { useVisibleAutoplay } from "../../hooks/useVisibleAutoplay";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight, CalendarDays } from "lucide-react";
@@ -70,13 +71,22 @@ export function News() {
   const [size, setSize] = useState(3);
   const [reduced, setReduced] = useState(false);
 
-  const looping = n.items.length > 1 && !reduced;
+  const looping = false;
+  const [active, setActive] = useState(0);
+  const lastManual = useRef(0);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const swiped = useRef(false);
+  const maxSlide = Math.max(0, n.items.length - size);
+  const select = (index: number) => { lastManual.current = Date.now(); setActive((index + maxSlide + 1) % (maxSlide + 1)); };
+  const sectionRef = useVisibleAutoplay(() => {
+    if (!focused.current && Date.now() - lastManual.current >= 5000) setActive((index) => (index + 1) % (maxSlide + 1));
+  }, 5000, n.enabled && maxSlide > 0 && !reduced);
 
   // Restart the carousel when the article order changes.
   const itemOrder = JSON.stringify(n.items.map((a: any) => a.slug));
 
   useEffect(() => {
-    const mobileMedia = window.matchMedia("(max-width: 599px)");
+    const mobileMedia = window.matchMedia("(max-width: 1000px)");
     const motionMedia = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     );
@@ -101,146 +111,36 @@ export function News() {
     };
   }, []);
 
+  useEffect(() => { setActive(0); }, [itemOrder, size]);
   useEffect(() => {
     const el = rail.current;
-
-    if (!el || !n.enabled || !looping) return;
-
-    let frame: number | undefined;
-    let timer: ReturnType<typeof setInterval> | undefined;
-    let step = 0;
-    let cardWidth = 0;
-    let visible = false;
-    let disposed = false;
-
-    const cancelAnimation = () => {
-      if (frame !== undefined) {
-        cancelAnimationFrame(frame);
-        frame = undefined;
-      }
-    };
-
-    const stop = () => {
-      if (timer !== undefined) {
-        clearInterval(timer);
-        timer = undefined;
-      }
-
-      cancelAnimation();
-
-      // Restore the last completed slide after an interruption.
-      el.scrollLeft = step * cardWidth;
-    };
-
-    const measure = () => {
+    if (!el) return;
+    const scroll = () => {
       const first = el.children[0] as HTMLElement | undefined;
       const second = el.children[1] as HTMLElement | undefined;
-
-      if (!first || !second) return;
-
-      const width = second.offsetLeft - first.offsetLeft;
-
-      if (width > 0 && width !== cardWidth) {
-        cancelAnimation();
-        cardWidth = width;
-        el.scrollLeft = step * cardWidth;
-      }
+      const step = first && second ? second.offsetLeft - first.offsetLeft : el.clientWidth;
+      el.scrollTo({ left: Math.min(active, maxSlide) * step, behavior: reduced ? "auto" : "smooth" });
     };
-
-    const advance = () => {
-      if (
-        disposed ||
-        !visible ||
-        document.hidden ||
-        focused.current ||
-        cardWidth <= 0 ||
-        frame !== undefined
-      ) {
-        return;
-      }
-
-      const from = step * cardWidth;
-      const target = (step + 1) * cardWidth;
-      let started: number | undefined;
-
-      const animate = (now: number) => {
-        frame = undefined;
-
-        if (
-          disposed ||
-          !visible ||
-          document.hidden ||
-          focused.current
-        ) {
-          el.scrollLeft = step * cardWidth;
-          return;
-        }
-
-        started ??= now;
-
-        const progress = Math.min(1, (now - started) / 250);
-        const eased = (1 - Math.cos(Math.PI * progress)) / 2;
-
-        el.scrollLeft = from + (target - from) * eased;
-
-        if (progress < 1) {
-          frame = requestAnimationFrame(animate);
-        } else {
-          step = (step + 1) % n.items.length;
-
-          if (step === 0) {
-            el.scrollLeft = 0;
-          }
-        }
-      };
-
-      frame = requestAnimationFrame(animate);
-    };
-
-    const sync = () => {
-      stop();
-
-      if (!disposed && visible && !document.hidden) {
-        timer = setInterval(advance, 5000);
-      }
-    };
-
-    el.scrollLeft = 0;
-    measure();
-
-    const resizeObserver = new ResizeObserver(measure);
-    resizeObserver.observe(el);
-
-    const visibilityObserver = new IntersectionObserver(
-      ([entry]) => {
-        visible = entry.isIntersecting;
-        sync();
-      },
-    );
-
-    visibilityObserver.observe(el);
-    document.addEventListener("visibilitychange", sync);
-
-    return () => {
-      disposed = true;
-      stop();
-      resizeObserver.disconnect();
-      visibilityObserver.disconnect();
-      document.removeEventListener("visibilitychange", sync);
-    };
-  }, [n.enabled, n.items.length, itemOrder, looping, size]);
+    scroll();
+    const observer = new ResizeObserver(scroll);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [active, maxSlide, reduced, size]);
 
   if (!n.enabled) return null;
 
   return (
-    <section id="news" className="news" aria-label={n.heading}>
+    <section ref={sectionRef} id="news" className="news" aria-label={n.heading}>
       <h2>{n.heading}</h2>
 
       <div className="news-wrap">
         <div
           className="news-carousel"
+          onTouchStart={(event) => { const p = event.touches[0]; touchStart.current = { x: p.clientX, y: p.clientY }; swiped.current = false; lastManual.current = Date.now(); }}
+          onTouchEnd={(event) => { const start = touchStart.current; touchStart.current = null; if (!start) return; const p = event.changedTouches[0]; const dx = p.clientX - start.x; const dy = p.clientY - start.y; if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) { swiped.current = true; select(active + (dx < 0 ? 1 : -1)); } }}
+          onClickCapture={(event) => { if (swiped.current) { event.preventDefault(); event.stopPropagation(); swiped.current = false; } }}
           onFocusCapture={() => {
-            focused.current = true;
+            focused.current = (document.activeElement as HTMLElement | null)?.matches(":focus-visible") || false;
           }}
           onBlurCapture={(e) => {
             if (!e.currentTarget.contains(e.relatedTarget)) {
@@ -301,6 +201,9 @@ export function News() {
           </div>
         </div>
 
+        {maxSlide > 0 && <nav className="news-slide-dots" aria-label="News slides">
+          {Array.from({ length: maxSlide + 1 }, (_, index) => <button type="button" key={index} aria-label={"Show news slide " + (index + 1)} aria-current={active === index ? "true" : undefined} onClick={() => select(index)}><span aria-hidden="true" /></button>)}
+        </nav>}
         {!n.items.length && (
           <p>No news or updates yet. Check back soon.</p>
         )}

@@ -108,11 +108,7 @@
   width: 100%;
   object-fit: contain;
 }
-.products-menu-card:hover {
-  text-decoration: underline;
-  text-decoration-color: #fbb120;
-  text-underline-offset: 5px;
-}
+.products-menu-card, .products-menu-card:hover { text-decoration: none; }
 .products-menu-status {
   text-align: center;
   font-size: 14px;
@@ -185,3 +181,91 @@
     transition: none !important;
   }
 }
+
+/* Desktop product carousel: keep cards in one row with room for controls. */
+.products-menu-carousel {
+  position: relative;
+  width: min(1440px, 94vw);
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 38px;
+}
+.products-menu-grid {
+  display: flex;
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.products-menu-grid::-webkit-scrollbar {
+  display: none;
+}
+.products-menu-card {
+  flex: 0 0 25%;
+  min-width: 0;
+}
+.products-menu-card:nth-child(4n) {
+  border-right: 1px solid #dedede;
+}
+.products-menu-card:last-child {
+  border-right: 0;
+}
+.products-menu-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 54px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #aaa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    background 180ms ease;
+}
+.products-menu-arrow.previous {
+  left: 0;
+}
+.products-menu-arrow.next {
+  right: 0;
+}
+.products-menu-arrow:hover {
+  color: #111;
+  background: #fbb12033;
+}
+.products-menu-arrow:focus-visible {
+  outline: 2px solid #fbb120;
+  outline-offset: 2px;
+}
+@media (max-width: 1000px) {
+  .products-menu-mobile .products-menu-carousel {
+    width: 100%;
+    padding: 0;
+  }
+  .products-menu-mobile .products-menu-grid {
+    overflow-x: visible;
+  }
+  .products-menu-mobile .products-menu-card {
+    flex: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .products-menu-arrow {
+    transition: none;
+  }
+}
+
+
+/* Transparent arrow controls with desktop icon motion. */
+.products-menu-arrow, .products-menu-arrow:hover, .products-menu-arrow:focus, .products-menu-arrow:active { background: transparent !important; box-shadow: none; }
+.products-menu-arrow svg { transition: transform 240ms ease; }
+@media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
+ .products-menu-arrow.previous:not(:disabled):hover svg { transform: translateX(-3px) scale(1.08); }
+ .products-menu-arrow.next:not(:disabled):hover svg { transform: translateX(3px) scale(1.08); }
+}
+@media (prefers-reduced-motion: reduce) { .products-menu-arrow svg { transition: none; transform: none !important; } }

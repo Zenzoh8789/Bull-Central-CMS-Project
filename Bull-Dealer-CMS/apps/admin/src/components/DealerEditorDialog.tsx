@@ -67,7 +67,7 @@ export function DealerEditorDialog({
           aria-label="Dealer website sections"
         >
           {contentSections
-            .filter((s) => registry.data?.some((r: any) => r.key === s.key))
+            .filter((s) => s.key !== "products" && registry.data?.some((r: any) => r.key === s.key))
             .map((s) => (
               <button
                 key={s.key}

@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { ProductLaunchName } from "../ProductLaunch/ProductLaunchName";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useContent } from "../../services/useContent";
 import { useSiteQuery } from "../../services/siteApi";
@@ -11,14 +13,38 @@ export function ProductsMenu({ mobile = false }: { mobile?: boolean }) {
   const panel = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const pointerType = useRef("");
+  const track = useRef<HTMLDivElement>(null);
+  const lastInteraction = useRef(0);
+  const [scrollable, setScrollable] = useState(false);
+  const slide = useCallback((direction: number) => {
+    const element = track.current;
+    if (!element) return;
+    const card = element.querySelector<HTMLElement>(".products-menu-card");
+    const step = card?.getBoundingClientRect().width || element.clientWidth;
+    const end = element.scrollWidth - element.clientWidth;
+    const target =
+      direction > 0
+        ? element.scrollLeft >= end - 2
+          ? 0
+          : Math.min(end, element.scrollLeft + step)
+        : element.scrollLeft <= 2
+          ? end
+          : Math.max(0, element.scrollLeft - step);
+    element.scrollTo({
+      left: target,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+    });
+  }, []);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
   const location = useLocation();
   const { data, isLoading, isError, refetch } = useSiteQuery();
   const products = [...(data?.products ?? [])]
-    .filter((product) => product.showInMenu)
-    .sort((a, b) => a.menuOrder - b.menuOrder);
+    .filter((product) => ["Backhoe loaders", "Skid steers"].includes(product.category))
+    .sort((a, b) => Number(b.category === "Backhoe loaders" && Boolean(b.newStyle)) - Number(a.category === "Backhoe loaders" && Boolean(a.newStyle)) || a.menuOrder - b.menuOrder);
   const panelId = mobile ? "mobile-products-panel" : "products-panel";
 
   const close = () => {
@@ -43,6 +69,40 @@ export function ProductsMenu({ mobile = false }: { mobile?: boolean }) {
     return () => document.removeEventListener("pointerdown", closeOutside);
   }, [open]);
 
+  useEffect(() => {
+    const element = track.current;
+    if (!element || mobile) return;
+    const measure = () =>
+      setScrollable(element.scrollWidth > element.clientWidth + 2);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [mobile, products.length, open]);
+
+  useEffect(() => {
+    if (
+      !open ||
+      mobile ||
+      !scrollable ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
+    const timer = setInterval(() => {
+      const element = track.current;
+      if (
+        !element ||
+        document.hidden ||
+        element.contains(document.activeElement) ||
+        element.querySelector(".products-menu-card:hover") ||
+        Date.now() - lastInteraction.current < 4000
+      )
+        return;
+      slide(1);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [open, mobile, scrollable, slide]);
+
   return (
     <div
       ref={root}
@@ -55,8 +115,8 @@ export function ProductsMenu({ mobile = false }: { mobile?: boolean }) {
         if (!mobile && event.pointerType === "mouse") {
           clearTimeout(closeTimer.current);
           closeTimer.current = setTimeout(() => {
-            if (!panel.current?.contains(document.activeElement))
-              setOpen(false);
+            if (panel.current?.contains(document.activeElement)) trigger.current?.focus({ preventScroll: true });
+            setOpen(false);
           }, 180);
         }
       }}
@@ -113,30 +173,72 @@ export function ProductsMenu({ mobile = false }: { mobile?: boolean }) {
         ) : products.length === 0 ? (
           <p className="products-menu-status">No products are available yet.</p>
         ) : (
-          <div className="products-menu-grid">
-            {products.map((product) => {
-              const external = /^https?:\/\//i.test(product.url?.trim() ?? "");
-              return (
-                <a
-                  key={product.id}
-                  className="products-menu-card"
-                  href={
-                    external
-                      ? product.url.trim()
-                      : `/products/${encodeURIComponent(product.id)}`
-                  }
-                  target={external ? "_blank" : undefined}
-                  rel={external ? "noopener noreferrer" : undefined}
-                  onClick={() => {
-                    trigger.current?.focus();
-                    close();
-                  }}
-                >
-                  <img src={product.menuImage || product.image} alt="" />
-                  <span>{product.menuLabel || product.name}</span>
-                </a>
-              );
-            })}
+          <div className="products-menu-carousel">
+            {!mobile && scrollable && (
+              <button
+                type="button"
+                className="products-menu-arrow previous"
+                aria-label="Previous products"
+                aria-controls={panelId + "-track"}
+                onClick={() => {
+                  lastInteraction.current = Date.now();
+                  slide(-1);
+                }}
+              >
+                <ChevronLeft aria-hidden="true" size={30} strokeWidth={1.5} />
+              </button>
+            )}
+            <div
+              ref={track}
+              id={panelId + "-track"}
+              className="products-menu-grid"
+              onWheel={() => {
+                lastInteraction.current = Date.now();
+              }}
+              onTouchStart={() => {
+                lastInteraction.current = Date.now();
+              }}
+            >
+              {products.map((product) => {
+                const external = /^https?:\/\//i.test(
+                  product.url?.trim() ?? "",
+                );
+                return (
+                  <a
+                    key={product.id}
+                    className="products-menu-card"
+                    href={
+                      external
+                        ? product.url.trim()
+                        : `/products/${encodeURIComponent(product.id)}`
+                    }
+                    target={external ? "_blank" : undefined}
+                    rel={external ? "noopener noreferrer" : undefined}
+                    onClick={() => {
+                      trigger.current?.focus();
+                      close();
+                    }}
+                  >
+                    <img src={product.image} alt="" />
+                    {product.category === "Backhoe loaders" && product.newStyle ? <div className="product-launch-copy"><b className="product-new-badge">NEW</b><ProductLaunchName name={product.name} />{product.productModel && <small className="product-launch-model">{product.productModel}</small>}</div> : <span>{product.name}</span>}
+                  </a>
+                );
+              })}
+            </div>
+            {!mobile && scrollable && (
+              <button
+                type="button"
+                className="products-menu-arrow next"
+                aria-label="Next products"
+                aria-controls={panelId + "-track"}
+                onClick={() => {
+                  lastInteraction.current = Date.now();
+                  slide(1);
+                }}
+              >
+                <ChevronRight aria-hidden="true" size={30} strokeWidth={1.5} />
+              </button>
+            )}
           </div>
         )}
       </div>

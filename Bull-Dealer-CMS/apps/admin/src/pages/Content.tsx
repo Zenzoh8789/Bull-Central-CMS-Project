@@ -17,8 +17,8 @@ export function Content() {
     (s) => s.key === params.get("section") && s.key !== "branding",
   )?.key;
   if (!section) return <Navigate to="/content?section=seo" replace />;
-  const commonBanner = section === "contact";
-  const canEdit = commonBanner || !ctx.locationMode || Boolean(ctx.dealerId);
+  const commonBanner = section === "contact" || section === "products";
+  const canEdit = section === "deliveryMedia" ? Boolean(ctx.dealerId) : commonBanner || !ctx.locationMode || Boolean(ctx.dealerId);
   return (
     <div className="content-workspace">
       {canEdit ? (

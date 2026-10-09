@@ -698,3 +698,18 @@
   visibility: visible;
   pointer-events: auto;
 }
+
+@media (max-width: 1000px), (hover: none) {
+  .testimonial-carousel { touch-action: pan-y; }
+  .testimonial:hover .testimonial-image { transform: none; }
+  .testimonial:hover .youtube-play { transform: translate(-50%, -50%); }
+}
+
+/* Transparent arrow controls with desktop icon motion. */
+.testimonials .carousel-arrow, .testimonials .carousel-arrow:hover, .testimonials .carousel-arrow:focus, .testimonials .carousel-arrow:active { background: transparent !important; box-shadow: none; }
+.testimonials .carousel-arrow svg { transition: transform 240ms ease; }
+@media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
+ .testimonials .carousel-arrow.previous:not(:disabled):hover svg { transform: translateX(-3px) scale(1.08); }
+ .testimonials .carousel-arrow.next:not(:disabled):hover svg { transform: translateX(3px) scale(1.08); }
+}
+@media (prefers-reduced-motion: reduce) { .testimonials .carousel-arrow svg { transition: none; transform: none !important; } }

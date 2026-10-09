@@ -45,6 +45,14 @@ services:
       MEDIA_DIR: /app/uploads
       MEDIA_STORAGE: local
 
+      # Contact enquiry email
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_FROM: ${SMTP_FROM:-}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+
       # Database
       DATABASE_URL: mysql://bull:${MYSQL_PASSWORD}@mysql:3306/bull_dealers
 

@@ -14,7 +14,6 @@ export function SectionWorkspace({
   const options =
     section === "products"
       ? [
-          { key: "menu", label: "Our products menu", section: "products" },
           { key: "backhoe", label: "Backhoe catalogue", section: "products" },
           { key: "skid", label: "Skid steer catalogue", section: "products" },
         ]

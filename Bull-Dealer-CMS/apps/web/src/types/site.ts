@@ -1,4 +1,6 @@
 export type Product = {
+  newStyle?: boolean;
+  productModel?: string;
   menuLabel: string;
   menuImage: string;
   showInMenu: number | boolean;

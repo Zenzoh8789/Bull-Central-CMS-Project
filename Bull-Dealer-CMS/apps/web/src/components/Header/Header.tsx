@@ -9,6 +9,10 @@ import "./Header.css";
 export function Header() {
   const { branding: b, navigation: n } = useContent();
   const location = useLocation();
+  const utilityLinks = n.utilityLinks
+    .filter((link: any) => !/^delivery gallery$/i.test(link.label.trim()))
+    .map((link: any) => /^media$/i.test(link.label.trim()) || /bullindia\.com\/media\.php(?:[?#]|$)/i.test(link.url)
+      ? { ...link, label: "Media", url: "/delivery-media" } : link);
   const isActive = (url: string) => {
     try {
       const destination = new URL(url, window.location.origin);
@@ -21,6 +25,19 @@ export function Header() {
   const productsActive = /^\/products(?:\/|$)/.test(location.pathname);
   const dispatch = useAppDispatch();
   const open = useAppSelector((s) => s.ui.menuOpen);
+  const utilityLink = (link: any, mobile = false) => {
+    const props = {
+      className: isActive(link.url) ? "is-active" : undefined,
+      "aria-current": isActive(link.url) ? "page" as const : undefined,
+      onClick: mobile ? () => dispatch(actions.closeMenu()) : undefined,
+    };
+    try {
+      const destination = new URL(link.url, window.location.origin);
+      if (destination.origin === window.location.origin)
+        return <Link to={destination.pathname + destination.search + destination.hash} {...props}>{link.label}</Link>;
+    } catch { /* Keep malformed or external destinations as ordinary links. */ }
+    return <a href={link.url} {...props} target={/^https?:\/\//i.test(link.url) ? "_blank" : undefined} rel={/^https?:\/\//i.test(link.url) ? "noopener noreferrer" : undefined}>{link.label}</a>;
+  };
   return (
     <header className={`original-header ${productsActive ? "products-page-active" : ""}`}>
       {(
@@ -31,27 +48,15 @@ export function Header() {
       {n.enabled && (
         <div className="header-centre">
           <nav className="utility-nav" aria-label="Company navigation">
-            {n.utilityLinks.map((l: any, i: number) => (
+            {utilityLinks.map((l: any, i: number) => (
               <Fragment key={i}>
                 {i > 0 && <i />}
-                <a
-                  href={l.url}
-                  className={isActive(l.url) ? "is-active" : undefined}
-                  aria-current={isActive(l.url) ? "page" : undefined}
-                  target={/^https?:\/\//i.test(l.url) ? "_blank" : undefined}
-                  rel={
-                    /^https?:\/\//i.test(l.url)
-                      ? "noopener noreferrer"
-                      : undefined
-                  }
-                >
-                  {l.label}
-                </a>
+                {utilityLink(l)}
               </Fragment>
             ))}
           </nav>
           <nav className="primary-nav" aria-label="Main navigation">
-            <Link to="/" className={`header-home ${isActive("/") ? "is-active" : ""}`} aria-current={isActive("/") ? "page" : undefined}>{n.homeLabel}</Link>
+            <Link to="/" className="header-home" aria-current={isActive("/") ? "page" : undefined}>{n.homeLabel}</Link>
             <ProductsMenu />
             <Link to="/contact" className={`header-contact ${isActive("/contact") ? "is-active" : ""}`} aria-current={isActive("/contact") ? "page" : undefined}>{n.contactLabel}</Link>
           </nav>
@@ -74,28 +79,15 @@ export function Header() {
           </button>
           {open && (
             <nav className="mobile-nav" aria-label="Mobile navigation">
-              <Link to="/" className={`header-home ${isActive("/") ? "is-active" : ""}`} aria-current={isActive("/") ? "page" : undefined} onClick={() => dispatch(actions.closeMenu())}>
+              <Link to="/" className="header-home" aria-current={isActive("/") ? "page" : undefined} onClick={() => dispatch(actions.closeMenu())}>
                 {n.homeLabel}
               </Link>
               <ProductsMenu mobile />
               <Link to="/contact" className={`header-contact ${isActive("/contact") ? "is-active" : ""}`} aria-current={isActive("/contact") ? "page" : undefined} onClick={() => dispatch(actions.closeMenu())}>
                 {n.contactLabel}
               </Link>
-              {n.utilityLinks.map((l: any, i: number) => (
-                <a
-                  key={i}
-                  href={l.url}
-                  className={isActive(l.url) ? "is-active" : undefined}
-                  aria-current={isActive(l.url) ? "page" : undefined}
-                  target={/^https?:\/\//i.test(l.url) ? "_blank" : undefined}
-                  rel={
-                    /^https?:\/\//i.test(l.url)
-                      ? "noopener noreferrer"
-                      : undefined
-                  }
-                >
-                  {l.label}
-                </a>
+              {utilityLinks.map((l: any, i: number) => (
+                <Fragment key={i}>{utilityLink(l, true)}</Fragment>
               ))}
             </nav>
           )}

@@ -14,7 +14,8 @@ import { BadRequestException } from "@nestjs/common";
 
 export const sectionKeys = Object.keys(defaults);
 
-export const contactSections = ["dealerContact", "locations", "social"];
+export const contactSections = ["dealerContact", "locations", "social", "deliveryMedia"];
+const deliveryMediaTemplate = { ...defaults.deliveryMedia, items: [{"type":"photo","title":"","district":"","state":"","image":"","alt":"","videoId":""}] };
 const contactTemplate = { ...defaults.contact, bannerAlt: defaults.contact.bannerAlt || "Contact Us" };
 
 export const dealerSections = [
@@ -27,9 +28,11 @@ export const dealerSections = [
   "whatsapp",
   "pageLayout",
   "gallery",
+  "deliveryMedia",
 ];
 
 const bannerValidationTemplate = bannerTemplate;
+const productValidationTemplate = normalizeEditorSection("products", defaults.products);
 
 export function registry() {
   return sectionKeys.map((key) => ({
@@ -46,7 +49,7 @@ export function registry() {
         ? newsTemplate
         : key === "banners"
           ? bannerValidationTemplate
-          : key === "contact" ? contactTemplate : defaults[key],
+          : key === "deliveryMedia" ? deliveryMediaTemplate : key === "contact" ? contactTemplate : key === "products" ? productValidationTemplate : defaults[key],
 
     ...(key === "news" ? { capabilities: newsCapabilities } : {}),
   }));
@@ -188,7 +191,7 @@ export function validateSection(key: string, value: unknown) {
         }
       }
 
-      if (field === "videoId" && !/^[A-Za-z0-9_-]{11}$/.test(item)) {
+      if (field === "videoId" && !(key === "deliveryMedia" && item === "") && !/^[A-Za-z0-9_-]{11}$/.test(item)) {
         throw new BadRequestException("Invalid YouTube video ID");
       }
     }
@@ -199,12 +202,19 @@ export function validateSection(key: string, value: unknown) {
       ? newsTemplate
       : key === "banners"
         ? bannerValidationTemplate
-        : key === "contact" ? contactTemplate : defaults[key],
+        : key === "deliveryMedia" ? deliveryMediaTemplate : key === "contact" ? contactTemplate : key === "products" ? productValidationTemplate : defaults[key],
     value,
     key,
   );
 
   const doc = value as any;
+  if (key === "deliveryMedia") {
+    for (const item of doc.items) {
+      if (!["photo", "video"].includes(item.type) || !item.title.trim() || !item.district.trim() || !item.state.trim() || (item.type === "photo" ? !item.image : !/^[A-Za-z0-9_-]{11}$/.test(item.videoId)))
+        throw new BadRequestException("Each delivery needs a title, sale district, state and a photo or valid YouTube video");
+      item.district = item.district.trim(); item.state = item.state.trim();
+    }
+  }
 
   /**
    * NEWS
@@ -249,6 +259,10 @@ export function validateSection(key: string, value: unknown) {
    * PRODUCTS
    */
   if (key === "products") {
+    if (doc.items.some((item: any) => item.newStyle && item.category !== "Backhoe loaders"))
+      throw new BadRequestException("New product style is available only for Backhoe loaders");
+    if (doc.items.some((item: any) => item.productModel.length > 100))
+      throw new BadRequestException("Product model must be at most 100 characters");
     if (
       doc.categories.length !== 2 ||
       doc.categories.some(
@@ -395,7 +409,7 @@ export function resolveContent(rows: any[]) {
 
   for (const layer of ranks) {
     for (const row of rows.filter((r) => r.layer === layer)) {
-      if (row.section_key === "contact" && layer !== "COMMON") continue;
+      if (["contact", "products"].includes(row.section_key) && layer !== "COMMON") continue;
       if (contactSections.includes(row.section_key) && !["DEALER", "OVERRIDE"].includes(layer)) continue;
       result[row.section_key] =
         typeof row.document === "string"

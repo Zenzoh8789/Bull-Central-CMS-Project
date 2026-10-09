@@ -1,0 +1,25 @@
+/* Optional Backhoe launch presentation, enabled per product in the CMS. */
+.product-launch-copy { width: 100%; text-align: left; }
+.product-new-badge { display: inline-block; background: #ed0000; color: #fff; padding: 2px 5px; font-size: 13px; font-style: normal; line-height: 1.2; }
+.equipment-option .machine-select .product-launch-name, .products-menu-card .product-launch-name { display: block; font-size: clamp(18px, 1.3vw, 24px); font-style: italic; font-weight: 800; line-height: 1.15; margin: 5px 0 3px; text-transform: uppercase; }
+.product-launch-model { display: block; font-size: 14px; font-weight: 700; font-style: italic; text-transform: uppercase; line-height: 1.3; }
+@media (max-width: 1024px) { .equipment-option .product-launch-copy { width: min(320px, 100%); margin-inline: auto; } }
+
+.product-launch-name, .product-launch-model { font-style: italic; letter-spacing: 1px; text-transform: uppercase; }
+.product-launch-name.supersmart { position: relative; width: fit-content; max-width: 100%; }
+.product-launch-name.supersmart::after { content: ""; position: absolute; left: 50%; transform: translateX(-50%); bottom: 0; width: 50px; height: 21px; top: 92%; background: #e10600; clip-path: polygon(58% 0, 100% 1%, 100% 3%, 0 33%); pointer-events: none; }
+.product-launch-name .x-red { color: #e10600; font-weight: 900; }
+.product-launch-name span.x-red { display: inline; margin: 0; font: inherit; font-weight: 900; color: #e10600; }
+.product-launch-copy .product-launch-name, .product-launch-copy .product-launch-model, .product-launch-copy .x-red { font-style: italic; font-synthesis: style; }
+
+/* Compact launch copy beneath the image on phones and tablets. */
+@media (max-width: 1024px) {
+  .equipment-option .product-launch-copy { width: fit-content; max-width: 100%; margin-inline: auto; text-align: left; }
+  .equipment-option .machine-select .product-launch-name { width: auto; text-align: center; margin: 5px 0 3px; }
+  .equipment-option .product-launch-model { text-align: center; }
+}
+@media (max-width: 767.98px) {
+  .equipment-option .machine-select .product-launch-name { font-size: 14px; font-weight: 700; line-height: 1.3; }
+  .equipment-option .product-launch-model { font-size: 14px; line-height: 1.3; }
+  .equipment-option .product-new-badge { font-size: 12px; padding: 2px 4px; }
+}

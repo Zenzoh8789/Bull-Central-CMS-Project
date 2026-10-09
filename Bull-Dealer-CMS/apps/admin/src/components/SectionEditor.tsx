@@ -1,3 +1,5 @@
+import { MediaDealerStateContext } from "./MediaDealerStateContext";
+import { dealerState } from "../utils/dealerState";
 import { ItemSaveContext } from "./ItemSaveContext";
 import { normalizeEditorSection } from "@bull/content/editing";
 import { SectionFields } from "./SectionFields";
@@ -36,6 +38,8 @@ export function SectionEditor({
   const resolved = useReadQuery(`dealers/${owner}/resolved`, {
     skip: !owner || !dealerScope,
   });
+  const dealer = resolved.currentData?.dealer;
+  const mediaState = dealer?.state?.trim() || (dealer ? dealerState(dealer.location) : "");
   const common = useReadQuery("common/resolved", { skip: layer !== "COMMON" });
   const [write, { isLoading }] = useSaveDraftMutation();
   const [doc, setDoc] = useState<any>(null);
@@ -199,6 +203,7 @@ export function SectionEditor({
               Update the API and reload.
             </p>
           )}
+          <MediaDealerStateContext.Provider value={mediaState}>
           <ItemSaveContext.Provider value={persist}>
             <fieldset
               disabled={
@@ -227,6 +232,7 @@ export function SectionEditor({
               )}
             </fieldset>
           </ItemSaveContext.Provider>
+          </MediaDealerStateContext.Provider>
           {!readOnly && (
             <div className="sticky-actions">
               <span

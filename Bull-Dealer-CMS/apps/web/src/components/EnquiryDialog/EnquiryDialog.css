@@ -2,7 +2,7 @@ dialog {
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 38px;
-  max-width: 540px;
+ 
   width: calc(100% - 32px);
   box-shadow: 0 35px 100px #0004;
   max-height: 90dvh;

@@ -8,6 +8,7 @@ function normalizeEditorSection(key, value, related = {}) {
   if (key === 'seo') for (const name of ['keywords', 'robots', 'author', 'themeColor', 'socialTitle', 'socialDescription', 'siteName', 'locale']) if (doc[name] === undefined) doc[name] = defaults.seo[name];
   if (key === 'statistics' && Array.isArray(doc.items)) doc.items = Array.from({length:5}, (_,i) => doc.items[i] ?? structuredClone(defaults.statistics.items[i]));
   if (key === 'products') {
+    if (Array.isArray(doc.items)) doc.items = doc.items.map(item => item && typeof item === 'object' && !Array.isArray(item) ? { alt: '', menuAlt: '', newStyle: false, productModel: '', ...item } : item);
     if (doc.categories === undefined) doc.categories = structuredClone(related.equipment?.categories || defaults.equipment.categories);
     if (doc.menuHeading === undefined) doc.menuHeading = related.navigation?.productsLabel || defaults.navigation.productsLabel;
   }

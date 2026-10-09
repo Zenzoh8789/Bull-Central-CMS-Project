@@ -238,7 +238,7 @@
   animation: machine-appear 0.4s ease;
 }
 .equipment-options {
-  background: #00000006;
+  background: transparent;
 }
 .equipment-option {
   background: #f0f0f0;
@@ -254,7 +254,7 @@
     opacity: 1;
   }
 }
-@media (max-width: 599px) {
+@media (max-width: 1024px) {
   .equipment-stage {
     display: none;
   }
@@ -291,15 +291,136 @@
 .equipment-pagination {
   display: none;
 }
-@media (min-width: 600px) {
+@media (min-width: 1025px) {
   .machine-select img {
     object-fit: cover;
   }
 }
-@media (max-width: 599px) {
+@media (max-width: 1024px) {
   .equipment-pagination {
     display: flex;
     margin-top: 0;
     padding-bottom: 18px;
   }
+}
+
+/* Catalogue hover and overflow carousel, shared by Backhoe and Skid steer. */
+.equipment-carousel { position: relative; width: min(1440px, 94%); margin: auto; padding: 0 38px; }
+.equipment-carousel .equipment-options { width: 100%; max-width: none; }
+.equipment-option { position: relative; transition: background-color 280ms ease, color 280ms ease, box-shadow 280ms ease; padding-top: 16px; padding-bottom: 20px; }
+.equipment-option::after { content: ""; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 8px solid #333; opacity: 0; transition: opacity 280ms ease; }
+.equipment-option:is(:hover, :focus-within) { background: #808080; color: #fff; box-shadow: inset 0 -4px #333; }
+.equipment-option:is(:hover, :focus-within)::after { opacity: 1; }
+.machine-select img { max-width: 100%; object-fit: contain; transition: transform 280ms ease; }
+.machine-select:hover img { transform: scale(1.035); }
+.equipment-option .machine-select:hover span { color: inherit; }
+.equipment-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 54px; border: 0; padding: 0; background: transparent; color: #aaa; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: color 200ms ease, background-color 200ms ease; }
+.equipment-arrow.previous { left: 0; }
+.equipment-arrow.next { right: 0; }
+.equipment-arrow:hover { color: #111; background: #fbb12033; }
+.equipment-arrow:focus-visible { outline: 2px solid #fbb120; }
+@media (min-width: 1025px) {
+  .has-carousel .equipment-options { overflow-x: auto; justify-content: flex-start; scrollbar-width: none; overscroll-behavior-x: contain; }
+  .has-carousel .equipment-options::-webkit-scrollbar { display: none; }
+  .has-carousel .equipment-option { flex: 0 0 25%; min-width: 0; }
+}
+@media (max-width: 1024px) { .equipment-carousel { width: 100%; } }
+@media (prefers-reduced-motion: reduce) { .equipment-option, .equipment-option::after, .machine-select img, .equipment-arrow { transition: none; } }
+
+@media (max-width: 1024px) {
+  .equipment-pagination { justify-content: center; flex-wrap: wrap; gap: 0; padding: 0 12px 12px; }
+  .equipment-pagination button { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 0; background: transparent; cursor: pointer; }
+  .equipment-page-dot { width: 8px; height: 8px; border-radius: 50%; background: #d2d8d5; transition: background-color 220ms ease, transform 220ms ease; }
+  .equipment-pagination button.active .equipment-page-dot { background: #81968e; transform: scale(1.05); }
+  .equipment-pagination button:focus-visible { outline: 2px solid #fbb120; border-radius: 50%; }
+}
+@media (prefers-reduced-motion: reduce) { .equipment-page-dot { transition: none; } }
+
+@media (max-width: 1024px), (hover: none) {
+  .equipment-option:is(:hover, :focus-within) { background: #f0f0f0; color: inherit; box-shadow: none; }
+  .equipment-option:is(:hover, :focus-within)::after { opacity: 0; }
+  .machine-select:hover img { transform: none; }
+  .equipment-arrow:hover { color: #aaa; background: transparent; }
+}
+@media (max-width: 1024px) {
+  .equipment-options { touch-action: pan-y; }
+  .equipment-option.selected { animation: machine-appear 350ms ease; }
+}
+@media (prefers-reduced-motion: reduce) { .equipment-option.selected { animation: none; } }
+
+
+/* Adapted from Arnnchive.zip: Asset/CSS/style.css and respon.css. */
+.equipment-heading { grid-template-columns: 5fr 7fr; width: min(1210px, 91.666%); padding: 100px 0 40px; }
+.equipment-heading h2 { font-size: 41.92px; font-weight: 700; line-height: 1.2; margin-bottom: 8px; }
+.equipment-heading h3 { font-size: 21.92px; }
+.equipment-heading > p { font-size: 20.8px; line-height: 30px; padding-left: 30.4px; }
+.equipment-stage { height: 425px; }
+.machine-select span { font-size: 20.8px; font-weight: 500; }
+@media (min-width: 1700px) { .equipment-heading { width: min(1512px, 91.666%); } }
+@media (max-width: 1024px) {
+ .equipment-heading { grid-template-columns: 1fr; gap: 12px; padding: 84px 0 28px; }
+ .equipment-heading > div { text-align: center; padding: 0; }
+ .equipment-heading h2 { font-size: 35px; }
+ .equipment-heading h3 { font-size: 19.18px; }
+ .equipment-title-lines { white-space: normal; }
+ .equipment-heading > p { border: 0; padding: 0; font-size: 18.2px; line-height: 26px; text-align: justify; }
+ .equipment-carousel { padding: 0 28px; }
+ .machine-select img { height: 230px; }
+ .machine-select span { font-size: 18.2px; margin: 10px 0; }
+}
+@media (max-width: 770px) { .equipment-heading { padding: 59.5px 0 28px; width: calc(100% - 30px); } .equipment-heading h2 { font-size: 30.8px; } .equipment-heading > p { font-size: 16.8px; line-height: 24px; } }
+@media (max-width: 600px) { .equipment-heading { padding: 49px 0 14px; } .equipment-heading h2 { font-size: 23.8px; font-weight: 600; } .equipment-heading > p { font-size: 14px; line-height: 19px; } }
+@media (max-width: 500px) { .equipment-heading { gap: 8px; } .equipment-heading h2 { font-size: 22.4px; margin-bottom: 4.2px; } .equipment-heading h3 { font-size: 12.6px; } .equipment-heading > p { line-height: 18px; } .machine-select img { height: 144px; } .machine-select span { font-size: 18.2px; margin: 0; } .equipment-option { padding-top: 8px; padding-bottom: 8px; } }
+
+/* Large-screen catalogue strip matching the supplied screenshot. */
+@media (min-width: 1025px) {
+  .equipment-carousel { width: min(1516px, 94%); padding: 0 38px; }
+  .equipment-carousel .equipment-options { padding: 0; align-items: stretch; }
+  .equipment-option { flex: 1 0 0; max-width: none; min-width: 0; height: 275px; padding: 22px 20px 28px; display: flex; align-items: center; justify-content: center; }
+  .has-carousel .equipment-option { flex: 0 0 25%; }
+  .equipment-option .machine-select { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .equipment-option .machine-select img { width: 100%; max-width: 320px; height: 168px; object-fit: contain; }
+  .equipment-option .machine-select span { font-weight: 700; line-height: 1.3; margin: 0; }
+  .equipment-arrow:disabled { cursor: default; opacity: .55; background: transparent; }
+}
+@media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
+  .equipment-option:is(:hover, :focus-within) { background: #808080; color: #fff; box-shadow: inset 0 -4px #333; }
+  .equipment-option:is(:hover, :focus-within)::after { opacity: 1; }
+}
+@media (max-width: 1024px) { .equipment-arrow:disabled { display: none; } }
+
+
+/* Keep catalogue products visible across all tablet and phone widths. */
+@media (max-width: 1024px) {
+  .equipment-arrow { display: none; }
+  .equipment-carousel { padding-inline: 12px; }
+  .equipment-options { display: block; background: transparent; }
+  .equipment-pagination { display: flex; }
+}
+@media (min-width: 768px) and (max-width: 998px) {
+  .equipment-heading { grid-template-columns: 1fr 1fr; align-items: center; gap: 24px; }
+}
+@media (max-width: 767.98px) {
+  .equipment-heading { grid-template-columns: 1fr; }
+}
+
+/* Transparent arrow controls with desktop icon motion. */
+.equipment-arrow, .equipment-arrow:hover, .equipment-arrow:focus, .equipment-arrow:active { background: transparent !important; box-shadow: none; }
+.equipment-arrow svg { transition: transform 240ms ease; }
+@media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
+ .equipment-arrow.previous:not(:disabled):hover svg { transform: translateX(-3px) scale(1.08); }
+ .equipment-arrow.next:not(:disabled):hover svg { transform: translateX(3px) scale(1.08); }
+}
+@media (prefers-reduced-motion: reduce) { .equipment-arrow svg { transition: none; transform: none !important; } }
+
+
+/* Compact mobile cards and keep pagination close to the product copy. */
+@media (max-width: 767.98px) {
+  .equipment-carousel .equipment-options { padding: 8px 0 0; }
+  .equipment-option { padding: 0 9px 4px; }
+  .equipment-option .machine-select img { display: block; height: 144px; margin: 0 auto 8px; }
+  .equipment-option .machine-select span { min-height: 0; }
+  .equipment-option .machine-select .product-launch-name { margin: 5px 0 3px; }
+  .equipment-pagination { margin: 0; padding: 0 12px 6px; }
+  .equipment-pagination button { width: 24px; height: 28px; }
 }

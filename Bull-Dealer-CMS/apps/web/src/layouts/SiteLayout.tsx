@@ -1,3 +1,4 @@
+import { SectionNavigation } from "../components/SectionNavigation/SectionNavigation";
 import { useEffect } from "react";
 import { useSiteQuery } from "../services/siteApi";
 import { Outlet } from "react-router-dom";
@@ -88,6 +89,7 @@ export function SiteLayout() {
       </main>
       <Footer />
       <WhatsAppLink />
+      <SectionNavigation />
       {enquiryOpen && <EnquiryDialog />}
     </>
   );

@@ -539,5 +539,10 @@
         "description": "Contact the dealership for the latest brochure."
       }
     ]
+  },
+  "deliveryMedia": {
+    "heading": "Delivery media gallery",
+    "description": "Customer handovers, photos and videos",
+    "items": []
   }
 }

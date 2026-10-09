@@ -1,60 +1,63 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useContent } from "../../services/useContent";
 import "./SectionNavigation.css";
+
 export function SectionNavigation() {
-  const content = useContent();
-  const sections: [string, string][] = content.pageLayout.navigation
-    .filter((n: any) => {
-      const map: Record<string, string> = {
-        banner: "banners",
-        innovation: "about",
-        construct: "equipment",
-        "skid-steers": "equipment",
-        customers: "service",
-        customer: "testimonials",
-        news: "news",
-        contact: "footer",
-      };
-      const key = map[n.id];
-      return (
-        !key ||
-        (content[key]?.enabled &&
-          content.pageLayout.sections.find((s: any) => s.key === key)
-            ?.visible !== false)
-      );
-    })
-    .map((n: any) => [n.id, n.label]);
-  const [activeSection, setActiveSection] = useState("banner");
+  const { pageLayout } = useContent();
+  const { pathname } = useLocation();
+  const [positions, setPositions] = useState<number[]>([0]);
+  const [active, setActive] = useState(0);
+
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        if (visible[0]) setActiveSection(visible[0].target.id);
-      },
-      { rootMargin: "-15% 0px -45% 0px", threshold: 0 },
-    );
-    sections.forEach(([id]) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-    return () => observer.disconnect();
-  }, [content]);
-  if (!content.pageLayout.enabled) return null;
+    let frame = 0;
+    let stops = [0];
+    const updateActive = () => {
+      const y = window.scrollY;
+      let closest = 0;
+      stops.forEach((stop, index) => {
+        if (Math.abs(stop - y) < Math.abs(stops[closest] - y)) closest = index;
+      });
+      setActive(closest);
+    };
+    const measure = () => {
+      const height = window.innerHeight;
+      const header = document.querySelector("header")?.getBoundingClientRect().height || 0;
+      const step = Math.max(1, height - header);
+      const end = Math.max(0, document.documentElement.scrollHeight - height);
+      const count = Math.ceil(end / step);
+      stops = Array.from({ length: count + 1 }, (_, index) => Math.min(index * step, end));
+      setPositions(stops);
+      updateActive();
+    };
+    const schedule = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(measure);
+    };
+    const observer = new ResizeObserver(schedule);
+    observer.observe(document.body);
+    observer.observe(document.documentElement);
+    window.addEventListener("resize", schedule);
+    window.addEventListener("scroll", updateActive, { passive: true });
+    measure();
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener("resize", schedule);
+      window.removeEventListener("scroll", updateActive);
+    };
+  }, [pathname]);
+
+  if (!pageLayout.enabled || positions.length < 2) return null;
   return (
-    <nav className="section-dots" aria-label="Page sections">
-      {sections.map(([id, label], i) => (
-        <a
-          href={"#" + id}
-          key={id}
-          className={"dot " + (activeSection === id ? "active" : "")}
-          aria-label={label}
-          aria-current={activeSection === id ? "location" : undefined}
-          title={label}
-        >
-          {i + 1}
-        </a>
+    <nav className="section-dots" aria-label="Page scroll navigation">
+      {positions.map((top, index) => (
+        <button type="button" key={index} className={"dot " + (active === index ? "active" : "")}
+          aria-label={"Scroll to page " + (index + 1)} aria-current={active === index ? "location" : undefined}
+          title={"Page " + (index + 1)}
+          onClick={() => window.scrollTo({ top, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" })}>
+          {index + 1}
+        </button>
       ))}
     </nav>
   );

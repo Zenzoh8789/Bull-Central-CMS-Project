@@ -4,7 +4,7 @@ import { DealerAbout } from "../../components/DealerAbout/DealerAbout";
 import { EquipmentCatalogue } from "../../components/EquipmentCatalogue/EquipmentCatalogue";
 import { Testimonials } from "../../components/Testimonials/Testimonials";
 import { News } from "../../components/News/News";
-import { SectionNavigation } from "../../components/SectionNavigation/SectionNavigation";
+
 import { useContent } from "../../services/useContent";
 import {
   Service,
@@ -35,7 +35,7 @@ export function HomePage() {
       };
   return (
     <>
-      <SectionNavigation />
+      
       {p.sections
         .filter((s: any) => s.visible)
         .map((s: any) => (

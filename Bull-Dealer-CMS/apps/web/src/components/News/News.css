@@ -346,3 +346,25 @@
     flex-basis: 100%;
   }
 }
+
+.news-slide-dots { display: flex; justify-content: center; flex-wrap: wrap; padding-top: 14px; }
+.news-slide-dots button { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.news-slide-dots span { width: 8px; height: 8px; border-radius: 50%; background: #d2d8d5; transition: background-color 200ms ease; }
+.news-slide-dots button[aria-current="true"] span { background: #81968e; }
+.news-slide-dots button:focus-visible { outline: 2px solid #fbb120; border-radius: 50%; }
+.news .news-rail { overflow-x: hidden; }
+@media (max-width: 1000px) {
+  .news .news-home-card { flex-basis: 100%; }
+  .news-carousel { touch-action: pan-y; }
+  .news a:hover { text-decoration: none; }
+  .news .view-more:hover { background: #ffbd00; color: #111; transform: none; }
+}
+
+/* Transparent arrow controls with desktop icon motion. */
+.news-carousel-controls button, .news-carousel-controls button:hover, .news-carousel-controls button:focus, .news-carousel-controls button:active { background: transparent !important; box-shadow: none; }
+.news-carousel-controls button svg { transition: transform 240ms ease; }
+@media (min-width: 1025px) and (hover: hover) and (pointer: fine) {
+ .news-carousel-controls button.previous:not(:disabled):hover svg { transform: translateX(-3px) scale(1.08); }
+ .news-carousel-controls button.next:not(:disabled):hover svg { transform: translateX(3px) scale(1.08); }
+}
+@media (prefers-reduced-motion: reduce) { .news-carousel-controls button svg { transition: none; transform: none !important; } }

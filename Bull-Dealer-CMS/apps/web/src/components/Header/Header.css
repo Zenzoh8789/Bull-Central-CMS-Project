@@ -236,3 +236,31 @@
 .original-header .products-menu.is-open .products-menu-caret {
   border-top-color: #111;
 }
+
+
+/* Adapted from the archive header: 74px desktop, 60px compact header. */
+:root { --header-height: 74px; }
+.bull-logo img, .dealer-logo img { transition: transform 400ms ease; }
+@media (min-width: 1001px) and (hover: hover) and (pointer: fine) { .bull-logo:hover img, .dealer-logo:hover img { transform: translateX(4.8px); } }
+@media (max-width: 1000px) {
+ .original-header { padding: 0 14px; gap: 12px; }
+ .bull-logo { width: clamp(110px, 25vw, 170px); flex-shrink: 0; }
+ .dealer-logo { width: clamp(100px, 24vw, 160px); margin-right: 0; }
+ .mobile-toggle { flex-shrink: 0; min-width: 40px; min-height: 40px; align-items: center; justify-content: center; }
+ .original-header .mobile-nav > a:not(.is-active):hover { color: #fff; background: transparent; }
+ .original-header .mobile-nav .products-menu-trigger:hover { background: transparent; color: #fff; }
+ .original-header .mobile-nav .products-menu.is-open .products-menu-trigger { background: #fbb120; color: #111; }
+ .bull-logo:hover img, .dealer-logo:hover img { transform: none; }
+}
+@media (max-width: 770px) { :root { --header-height: 60px; } }
+@media (max-width: 400px) { .original-header { padding-inline: 10px; gap: 8px; } .bull-logo { width: 105px; } .dealer-logo { width: 92px; } }
+@media (prefers-reduced-motion: reduce) { .bull-logo img, .dealer-logo img { transition: none; } }
+
+/* Home uses the same yellow slanted tab as the supplied reference. */
+.original-header .primary-nav > .header-home:is(:hover, :focus-visible, .is-active) {
+  color: #111;
+}
+.original-header .primary-nav > .header-home:is(:hover, :focus-visible, .is-active)::before {
+  background: #fbb120;
+  opacity: 1;
+}

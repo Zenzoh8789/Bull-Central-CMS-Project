@@ -1,3 +1,4 @@
+import { DeliveryMediaPage } from "../pages/DeliveryMedia/DeliveryMediaPage";
 import { BlogPage } from "../pages/News/BlogPage";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { SiteLayout } from "../layouts/SiteLayout";
@@ -14,6 +15,7 @@ export function AppRoutes() {
     <Routes>
       <Route element={<SiteLayout />}>
         <Route index element={<HomePage />} />
+        <Route path="delivery-media" element={<DeliveryMediaPage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="products" element={<ProductsPage />} />
         <Route path="products/:productId" element={<ProductDetailsPage />} />

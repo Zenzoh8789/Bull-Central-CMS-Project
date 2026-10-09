@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { asset } from "../../data/siteContent";
 import { useContent } from "../../services/useContent";
@@ -16,11 +16,15 @@ export function Testimonials() {
   const [active, setActive] = useState(0);
   const [video, setVideo] = useState<OpenVideo | null>(null);
 
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const swiped = useRef(false);
+  const lastManual = useRef(0);
   const count = t.items.length;
 
   const move = (index: number) => {
     if (!count) return;
 
+    lastManual.current = Date.now();
     setActive((index + count) % count);
   };
 
@@ -32,7 +36,7 @@ export function Testimonials() {
     }
 
     const timer = window.setInterval(() => {
-      setActive((current) => (current + 1) % count);
+      if (Date.now() - lastManual.current >= 4000) setActive((current) => (current + 1) % count);
     }, 4000);
 
     return () => {
@@ -64,7 +68,15 @@ export function Testimonials() {
       {/* HEADING */}
       <h2>{t.heading}</h2>
 
-      <div className="testimonial-carousel">
+      <div className="testimonial-carousel"
+        onTouchStart={(event) => { const point = event.touches[0]; touchStart.current = { x: point.clientX, y: point.clientY }; swiped.current = false; lastManual.current = Date.now(); }}
+        onTouchEnd={(event) => {
+          const start = touchStart.current; touchStart.current = null;
+          if (!start) return;
+          const point = event.changedTouches[0]; const dx = point.clientX - start.x; const dy = point.clientY - start.y;
+          if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) { swiped.current = true; move(active + (dx < 0 ? 1 : -1)); }
+        }}
+        onClickCapture={(event) => { if (swiped.current) { event.preventDefault(); event.stopPropagation(); swiped.current = false; } }}>
         {/* PREVIOUS */}
         <button
           type="button"

@@ -21,7 +21,7 @@ import {
 } from "../services/api";
 
 const commonSections = contentSections.filter(
-  (s) => !["branding", "seo", "about"].includes(s.key),
+  (s) => !["branding", "seo", "about", "deliveryMedia"].includes(s.key),
 );
 const links = [
   ["/", "Dashboard", LayoutDashboard],

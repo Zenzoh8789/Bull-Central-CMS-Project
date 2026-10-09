@@ -22,6 +22,7 @@ export function SectionFields({
   onUploadingChange,
 }: Props) {
   const shared = { media, onUploadingChange };
+  if (section === "deliveryMedia") return <section className="editor-card"><Fields {...shared} path="deliveryMedia.items" value={value.items} template={template.items} onChange={(items) => onChange({ ...value, items })} /></section>;
   if (section === "banners")
     return (
       <BannerEditor
@@ -31,58 +32,23 @@ export function SectionFields({
       />
     );
   if (section === "products") {
-    const menu = variant === "menu";
     const index = variant === "skid" ? 1 : 0;
     const category = value.categories[index];
-    const items = menu
-      ? value.items
-      : value.items.filter((item: any) => item.category === category.category);
+    const items = value.items.filter((item: any) => item.category === category.category);
     return (
       <div className="purpose-editor">
-        {!menu && (
-          <section className="editor-card">
-            <h3>Section heading & content</h3>
-            <Fields
-              {...shared}
-              path={`products.categories.${index}`}
-              value={category}
-              template={template.categories[index]}
-              onChange={(next) =>
-                onChange({
-                  ...value,
-                  categories: value.categories.map((c: any, i: number) =>
-                    i === index ? next : c,
-                  ),
-                })
-              }
-            />
-          </section>
-        )}
         <section className="editor-card">
-          <h3>{menu ? "Our products menu" : category.category}</h3>
-          <Fields
-            {...shared}
-            path="products.items"
-            variant={menu ? "menu" : "catalogue"}
-            value={items}
-            template={template.items}
-            onChange={(next) =>
-              onChange({
-                ...value,
-                items: menu
-                  ? next
-                  : [
-                      ...value.items.filter(
-                        (item: any) => item.category !== category.category,
-                      ),
-                      ...next.map((item: any) => ({
-                        ...item,
-                        category: category.category,
-                      })),
-                    ],
-              })
-            }
-          />
+          <h3>Section heading & content</h3>
+          <Fields {...shared} path={`products.categories.${index}`} value={category} template={template.categories[index]}
+            onChange={(next) => onChange({ ...value, categories: value.categories.map((c: any, i: number) => i === index ? next : c) })} />
+        </section>
+        <section className="editor-card">
+          <h3>{category.category}</h3>
+          <Fields {...shared} path="products.items" variant={index === 0 ? "backhoe" : "catalogue"} value={items} template={template.items}
+            onChange={(next) => onChange({ ...value, items: [
+              ...value.items.filter((item: any) => item.category !== category.category),
+              ...next.map((item: any) => ({ ...item, category: category.category, menuLabel: item.name, menuImage: item.image, showInMenu: true })),
+            ] })} />
         </section>
       </div>
     );

@@ -1,3 +1,4 @@
+import { MediaDealerStateContext } from "./MediaDealerStateContext";
 import { ItemSaveContext } from "./ItemSaveContext";
 import { errorText } from "../services/api";
 import { ContentTextarea } from "./ContentTextarea";
@@ -39,6 +40,7 @@ export function Fields({
   const [expanded, setExpanded] = useState<number | null>(null);
   const [itemDraft, setItemDraft] = useState<any>(null);
   const persist = useContext(ItemSaveContext);
+  const dealerState = useContext(MediaDealerStateContext);
   const [viewOnly, setViewOnly] = useState(false);
   const [itemError, setItemError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -54,7 +56,7 @@ export function Fields({
     const openItem = (item: any, index: number, readonly = false) => {
       setViewOnly(readonly);
       setItemError("");
-      setItemDraft(structuredClone(item));
+      setItemDraft(path === "deliveryMedia.items" ? { ...structuredClone(item), state: dealerState } : structuredClone(item));
       setExpanded(index);
     };
     const closeItem = () => {
@@ -79,6 +81,7 @@ export function Fields({
               disabled={busy || value.length >= 150}
               onClick={() => {
                 const next = blankItem(template[0]);
+                if (path === "deliveryMedia.items") next.type = "photo";
                 if (path === "news.items") {
                   next.slug = "news-" + crypto.randomUUID();
                   next.date = new Date().toISOString().slice(0, 10);
@@ -144,7 +147,7 @@ export function Fields({
                   <td>
                     <strong>{itemName(v, i)}</strong>
                     <p className="table-summary">
-                      {v.description ||
+                      {(path === "products.items" ? "" : v.description) ||
                         v.body ||
                         v.text ||
                         v.placeholder ||
@@ -251,6 +254,7 @@ export function Fields({
                       if (fields.some((field) => !field.reportValidity()))
                         return;
                       const next = { ...itemDraft };
+                      if (path === "deliveryMedia.items") next.state = dealerState;
                       if (path === "products.items" && variant === "menu" && expanded === value.length) {
                         next.name = next.menuLabel;
                         next.image = next.menuImage;
@@ -301,6 +305,7 @@ export function Fields({
       <div className="field-grid">
         {Object.keys(template)
           .filter((key) => {
+            if (/^deliveryMedia\.items\.\d+$/.test(path)) return key !== "videoId" || value.type === "video";
             if (/^news\.items\.\d+$/.test(path)) return key !== "slug";
             if (path === "branding") return key === "dealerLogo";
             if (path === "banners") return key === "items";
@@ -324,7 +329,7 @@ export function Fields({
               return (
                 variant === "menu"
                   ? ["menuLabel", "menuImage", "menuOrder", "url"]
-                  : ["name", "image", "description", "url"]
+                  : variant === "backhoe" ? ["name", "image", "url", "newStyle", ...(value.newStyle ? ["productModel"] : [])] : ["name", "image", "url"]
               ).includes(key);
             if (/^testimonials\.items\.\d+$/.test(path))
               return ["image", "title", "description", "videoId"].includes(key);
@@ -350,12 +355,14 @@ export function Fields({
       </div>
     );
   const name = path.split(".").pop() || "Value";
-  const label = /url$/i.test(name)
+  const label = name === "newStyle" ? "Show new product style" : name === "productModel" ? "Product model / series" : /url$/i.test(name)
     ? title(name.replace(/url$/i, "link"))
     : title(name);
   const id = "field-" + path;
   const image = /image$|logo$|banner$|background$|favicon$/i.test(name);
   const document = /^downloads\./.test(path) && name === "url";
+  if (/^deliveryMedia\.items\.\d+\.type$/.test(path)) return <div className="field"><label htmlFor={id}>Media type</label><select id={id} value={value} onChange={e => onChange(e.target.value)}><option value="photo">Photo</option><option value="video">YouTube video</option></select></div>;
+  if (/^deliveryMedia\.items\.\d+\.state$/.test(path)) return <div className="field"><label htmlFor={id}>State</label><input id={id} value={dealerState} readOnly /></div>;
   if (name === "videoId")
     return <YouTubeField id={id} value={value} onChange={onChange} />;
   if (image || document)
@@ -400,6 +407,8 @@ export function Fields({
           ) : (
             <input
               id={id}
+              required={/^deliveryMedia\.items\.\d+\.(title|district|state)$/.test(path)}
+              placeholder={name === "district" ? "District where the machine was delivered" : undefined}
               type={name === "date" ? "date" : "text"}
               readOnly={(variant === "contact-social" && /^social\.items\.\d+\.label$/.test(path)) || /^contact\.fields\.\d+\.name$|^pageLayout\.sections\.\d+\.key$/.test(
                 path,

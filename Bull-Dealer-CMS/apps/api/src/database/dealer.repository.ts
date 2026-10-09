@@ -1,8 +1,10 @@
+import { sendEnquiryEmail } from "../enquiries/enquiry-mail";
 import { bannerMatches } from "@bull/content/banners";
 import { resolveContent } from "../cms/content";
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
   OnModuleDestroy,
   OnModuleInit,
@@ -159,9 +161,16 @@ export class Repository implements OnModuleDestroy, OnModuleInit {
           dto.district || "",
         ],
       );
-      return { reference };
     } catch {
       throw new ServiceUnavailableException("Unable to save enquiry");
+    }
+    try {
+      await sendEnquiryEmail(reference, { name: String(site.dealer.name), location: String(site.dealer.location || "") }, dto);
+      return { reference, emailSent: true };
+    } catch (error: any) {
+      // The enquiry is already stored. Avoid asking the customer to submit a duplicate.
+      new Logger("EnquiryMail").error(`Email notification failed for ${reference} (${String(error?.code || "SMTP_ERROR").replace(/[^A-Z0-9_]/gi, "")}). Enquiry remains saved in the CMS.`);
+      return { reference, emailSent: false };
     }
   }
 }

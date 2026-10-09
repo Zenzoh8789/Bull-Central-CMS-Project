@@ -112,3 +112,7 @@
 .scroll-down {
   z-index: 3;
 }
+
+@media (max-width: 998px) {
+  .hero .scroll-down, .scroll-down { display: none; }
+}

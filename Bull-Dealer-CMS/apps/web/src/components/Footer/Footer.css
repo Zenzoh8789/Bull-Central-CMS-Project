@@ -223,3 +223,38 @@ a:hover {
     transition: none;
   }
 }
+
+
+/* Adapted from the archive footer and its 900px/600px breakpoints. */
+.site-footer { background: #252525; font-size: 13.92px; line-height: 24px; }
+.site-footer .footer-container { width: min(1320px, calc(100% - 48px)); }
+.site-footer .footer-grid { grid-template-columns: repeat(4,minmax(0,1fr)); padding: 100px 0 24px; gap: 24px; }
+.site-footer .footer-column { padding: 0 12px; }
+.site-footer .footer-heading, .site-footer .footer-contact-heading, .site-footer .footer-social-heading, .site-footer .footer-link-list a, .site-footer .footer-address, .site-footer .footer-social-description, .site-footer .footer-copyright { font-size: 13.92px; line-height: 24px; }
+.site-footer .footer-address { margin-bottom: 16px; }
+.site-footer .footer-social-heading { margin-bottom: 5px; }
+.site-footer .footer-social-description { margin-bottom: 15px; }
+.site-footer .footer-social-button { width: 32px; height: 36px; }
+.site-footer .footer-social-button svg { width: 32px; height: 32px; }
+.site-footer .footer-bottom-inner { padding: 6.4px 0 12.8px; min-height: 44px; }
+.site-footer .footer-logo { width: 100px; height: 18px; }
+@media (min-width: 1700px) { .site-footer .footer-container { max-width: 1512px; } }
+@media (max-width: 1000px) {
+ .site-footer .footer-link-list a:hover { color: #ffc107; transform: none; }
+ .site-footer .footer-grid > .footer-column:nth-child(3):not(.footer-contact) .footer-link-list a:hover { color: #bdbdbd; transform: none; }
+ .site-footer .footer-social-button:hover { color: #ffb600; transform: none; }
+}
+@media (max-width: 900px) { .site-footer .footer-grid { grid-template-columns: repeat(2,minmax(0,1fr)); padding-top: 48px; gap: 28px; } .site-footer .footer-column { padding: 0; } }
+@media (max-width: 600px) {
+ .site-footer .footer-container { width: calc(100% - 32px); }
+ .site-footer .footer-grid { padding: 28px 0 20px; gap: 24px 18px; }
+ .site-footer .footer-heading, .site-footer .footer-contact-heading, .site-footer .footer-social-heading, .site-footer .footer-link-list a, .site-footer .footer-address, .site-footer .footer-social-description, .site-footer .footer-copyright { font-size: 12.18px; line-height: 20px; }
+ .site-footer .footer-address { line-height: 16px; }
+ .site-footer .footer-bottom-inner { width: 100%; gap: 12px; }
+ .site-footer .footer-social-links { gap: 10px; }
+ .site-footer .footer-social-button svg { width: 24px; height: 24px; }
+ .site-footer .footer-logo { width: 90px; }
+}
+@media (max-width: 400px) { .site-footer .footer-address { font-size: 11.2px; } }
+@media (max-width: 350px) { .site-footer .footer-grid { grid-template-columns: 1fr; } }
+@media (hover: none) { .site-footer .footer-social-button:hover { transform: none; color: #ffb600; } }
